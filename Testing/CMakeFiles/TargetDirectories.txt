@@ -1,0 +1,5 @@
+/home/karma/Desktop/Retele/Project/Testing/CMakeFiles/main.dir
+/home/karma/Desktop/Retele/Project/Testing/CMakeFiles/package.dir
+/home/karma/Desktop/Retele/Project/Testing/CMakeFiles/package_source.dir
+/home/karma/Desktop/Retele/Project/Testing/CMakeFiles/edit_cache.dir
+/home/karma/Desktop/Retele/Project/Testing/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,5 @@
+- add ctrl + v for textbox
+- add ctrl + c for textbox ?
+- (add text selections for textbox????)
+- make client "runnable" without server (await the server to come on)
+- hash passwords + salt

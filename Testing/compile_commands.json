@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/karma/Desktop/Retele/Project/Testing",
+  "command": "/usr/bin/c++   -std=gnu++20 -o CMakeFiles/main.dir/main.cpp.o -c /home/karma/Desktop/Retele/Project/Testing/main.cpp",
+  "file": "/home/karma/Desktop/Retele/Project/Testing/main.cpp"
+},
+{
+  "directory": "/home/karma/Desktop/Retele/Project/Testing",
+  "command": "/usr/bin/c++   -std=gnu++20 -o CMakeFiles/main.dir/home/karma/Desktop/Retele/Project/Server/SQL_DB.cpp.o -c /home/karma/Desktop/Retele/Project/Server/SQL_DB.cpp",
+  "file": "/home/karma/Desktop/Retele/Project/Server/SQL_DB.cpp"
+}
+]

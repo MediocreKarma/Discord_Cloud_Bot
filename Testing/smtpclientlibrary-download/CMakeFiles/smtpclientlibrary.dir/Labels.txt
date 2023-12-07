@@ -1,0 +1,14 @@
+# Target labels
+ smtpclientlibrary
+# Source files and their labels
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/CMakeFiles/smtpclientlibrary
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/CMakeFiles/smtpclientlibrary.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/CMakeFiles/smtpclientlibrary-complete.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/smtpclientlibrary-prefix/src/smtpclientlibrary-stamp/smtpclientlibrary-build.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/smtpclientlibrary-prefix/src/smtpclientlibrary-stamp/smtpclientlibrary-configure.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/smtpclientlibrary-prefix/src/smtpclientlibrary-stamp/smtpclientlibrary-download.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/smtpclientlibrary-prefix/src/smtpclientlibrary-stamp/smtpclientlibrary-install.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/smtpclientlibrary-prefix/src/smtpclientlibrary-stamp/smtpclientlibrary-mkdir.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/smtpclientlibrary-prefix/src/smtpclientlibrary-stamp/smtpclientlibrary-patch.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/smtpclientlibrary-prefix/src/smtpclientlibrary-stamp/smtpclientlibrary-test.rule
+/home/karma/Desktop/Retele/Project/Testing/smtpclientlibrary-download/smtpclientlibrary-prefix/src/smtpclientlibrary-stamp/smtpclientlibrary-update.rule

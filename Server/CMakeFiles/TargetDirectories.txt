@@ -1,0 +1,15 @@
+/home/karma/Desktop/Retele/Project/Server/CMakeFiles/Server_MyDiscordDrive.dir
+/home/karma/Desktop/Retele/Project/Server/CMakeFiles/edit_cache.dir
+/home/karma/Desktop/Retele/Project/Server/CMakeFiles/rebuild_cache.dir
+/home/karma/Desktop/Retele/Project/Server/CMakeFiles/list_install_components.dir
+/home/karma/Desktop/Retele/Project/Server/CMakeFiles/install.dir
+/home/karma/Desktop/Retele/Project/Server/CMakeFiles/install/local.dir
+/home/karma/Desktop/Retele/Project/Server/CMakeFiles/install/strip.dir
+/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build/CMakeFiles/smtpclient.dir
+/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build/CMakeFiles/uninstall.dir
+/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build/CMakeFiles/edit_cache.dir
+/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build/CMakeFiles/rebuild_cache.dir
+/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build/CMakeFiles/list_install_components.dir
+/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build/CMakeFiles/install.dir
+/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build/CMakeFiles/install/local.dir
+/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build/CMakeFiles/install/strip.dir

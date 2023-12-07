@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/home/karma/Desktop/Retele/Project/build",
+  "command": "/usr/bin/g++   -g -std=gnu++20 -o CMakeFiles/retele.dir/test.cpp.o -c /home/karma/Desktop/Retele/Project/test.cpp",
+  "file": "/home/karma/Desktop/Retele/Project/test.cpp"
+},
+{
+  "directory": "/home/karma/Desktop/Retele/Project/build",
+  "command": "/usr/bin/g++   -g -std=gnu++20 -o CMakeFiles/retele.dir/Buttons.cpp.o -c /home/karma/Desktop/Retele/Project/Buttons.cpp",
+  "file": "/home/karma/Desktop/Retele/Project/Buttons.cpp"
+},
+{
+  "directory": "/home/karma/Desktop/Retele/Project/build",
+  "command": "/usr/bin/g++   -g -std=gnu++20 -o CMakeFiles/retele.dir/RoundedRectangleShape.cpp.o -c /home/karma/Desktop/Retele/Project/RoundedRectangleShape.cpp",
+  "file": "/home/karma/Desktop/Retele/Project/RoundedRectangleShape.cpp"
+},
+{
+  "directory": "/home/karma/Desktop/Retele/Project/build",
+  "command": "/usr/bin/g++   -g -std=gnu++20 -o CMakeFiles/retele.dir/TextBox.cpp.o -c /home/karma/Desktop/Retele/Project/TextBox.cpp",
+  "file": "/home/karma/Desktop/Retele/Project/TextBox.cpp"
+}
+]

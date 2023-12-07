@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/home/karma/Desktop/Retele/Project/Server/SQL_DB.cpp.o -o main  -ldpp /usr/lib/x86_64-linux-gnu/libsqlite3.so 
