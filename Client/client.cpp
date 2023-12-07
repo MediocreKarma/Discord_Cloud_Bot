@@ -9,7 +9,7 @@
 #include <poll.h>
 
 int main(int argc, char** argv) {
-    if (!Text::init()) {
+    if (!GUI::init()) {
         exit(EXIT_FAILURE);
     }
     sf::ContextSettings settings;

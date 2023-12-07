@@ -1,11 +1,18 @@
 #include "utils.hpp"
 
-bool Text::init() {
-    return Font.loadFromFile("../Resources/Roboto-Regular.ttf");
+bool GUI::init() {
+    bool succesful = true;
+    const std::string base = "../Resources/";
+    succesful &= Font.loadFromFile(base + "Roboto-Regular.ttf");
+    succesful &= downloadIcon.loadFromFile(base + "downloadIcon.png");
+    succesful &= plusIcon.loadFromFile(base + "plusIcon.png");
+    succesful &= uploadIcon.loadFromFile(base + "uploadIcon.png");
+    succesful &= trashIcon.loadFromFile(base + "trashIcon.png");
+    return succesful;
 }
 
 void loadingMessage(sf::RenderWindow& window) {
-    RoundedRectangleTextShape loadingText(sf::RoundedRectangleShape({300, 100}, 0, 0), sf::Text("Loading", Text::Font));
+    RoundedRectangleTextShape loadingText(sf::RoundedRectangleShape({300, 100}, 0, 0), sf::Text("Loading", GUI::Font));
     loadingText.setTextFillColor(sf::Color::Black);
     loadingText.setShapeFillColor(sf::Color::Transparent);
     loadingText.setShapeOutlineColor(sf::Color::Black);

@@ -1,12 +1,12 @@
 #include "login.hpp"
 
-static TextBox emailTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), Text::Font, "Enter your email", 30, Colors::DarkGray, false, '\0', 64);
-static TextBox passwordTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), Text::Font, "Enter your password", 30, Colors::DarkGray, false, '*', 64);
-static TextBox confirmationTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), Text::Font, "Re-enter your password", 30, Colors::DarkGray, false, '*', 64);
-static RoundedRectangleButton enterButton(sf::RoundedRectangleShape({250, 120}, 30, 30), sf::Text("Continue", Text::Font, 45));
-static RoundedRectangleTextShape errorOutput(sf::RoundedRectangleShape({0, 0}, 0, 0), sf::Text("", Text::Font));
-static RoundedRectangleButton switchUpToIn(sf::RoundedRectangleShape({540, 50}, 0, 1), sf::Text("Already have an account? Sign-in here!", Text::Font));
-static RoundedRectangleButton switchInToUp(sf::RoundedRectangleShape({400, 50}, 0, 1), sf::Text("New user? Sign-up instead!", Text::Font));
+static TextBox emailTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Enter your email", 30, Colors::DarkGray, false, '\0', 64);
+static TextBox passwordTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Enter your password", 30, Colors::DarkGray, false, '*', 64);
+static TextBox confirmationTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Re-enter your password", 30, Colors::DarkGray, false, '*', 64);
+static RoundedRectangleButton enterButton(sf::RoundedRectangleShape({250, 120}, 30, 30), sf::Text("Continue", GUI::Font, 45));
+static RoundedRectangleTextShape errorOutput(sf::RoundedRectangleShape({0, 0}, 0, 0), sf::Text("", GUI::Font));
+static RoundedRectangleButton switchUpToIn(sf::RoundedRectangleShape({540, 50}, 0, 1), sf::Text("Already have an account? Sign-in here!", GUI::Font));
+static RoundedRectangleButton switchInToUp(sf::RoundedRectangleShape({400, 50}, 0, 1), sf::Text("New user? Sign-up instead!", GUI::Font));
 
 LoginScreen::UserInfoData signUp(sf::RenderWindow& window);
 
@@ -16,16 +16,16 @@ void init(const sf::RenderWindow& window) {
         return;
     }
     initialised = true;
-    emailTextbox.setFont(Text::Font);
-    passwordTextbox.setFont(Text::Font);
-    confirmationTextbox.setFont(Text::Font);
+    emailTextbox.setFont(GUI::Font);
+    passwordTextbox.setFont(GUI::Font);
+    confirmationTextbox.setFont(GUI::Font);
     emailTextbox.setShapeFillColor(Colors::LightGray);
     passwordTextbox.setShapeFillColor(Colors::LightGray);
     confirmationTextbox.setShapeFillColor(Colors::LightGray);
-    enterButton.setFont(Text::Font);
-    errorOutput.setFont(Text::Font);
-    switchUpToIn.setFont(Text::Font);
-    switchInToUp.setFont(Text::Font);
+    enterButton.setFont(GUI::Font);
+    errorOutput.setFont(GUI::Font);
+    switchUpToIn.setFont(GUI::Font);
+    switchInToUp.setFont(GUI::Font);
     emailTextbox.setOrigin(
         emailTextbox.getSize().x / 2,
         emailTextbox.getSize().y / 2  
@@ -274,7 +274,7 @@ std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool
     if (wrongCodeEntered) {
         errorOutput.setString("You have entered the wrong code");
     }
-    TextBox codeTextbox(sf::RoundedRectangleShape({250, 75}, 15, 30), Text::Font, "000000", 60, Colors::DarkGray, false, '\0', 6);
+    TextBox codeTextbox(sf::RoundedRectangleShape({250, 75}, 15, 30), GUI::Font, "000000", 60, Colors::DarkGray, false, '\0', 6);
     codeTextbox.setOrigin(codeTextbox.getSize().x / 2, codeTextbox.getSize().y / 2);
     codeTextbox.setPosition(
         window.getSize().x / 2, 
@@ -284,7 +284,7 @@ std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool
     codeTextbox.setShapeFillColor(Colors::LightGray);
     const char alphabet[] = "0123456789";
     codeTextbox.setAlphabet(std::unordered_set<char>(alphabet, alphabet + sizeof(alphabet) / sizeof(char)));
-    RoundedRectangleTextShape infoShape(sf::RoundedRectangleShape({0, 0}, 0, 0), sf::Text("Please be patient, the confirmation email\nmay take a few moments before arriving.", Text::Font));
+    RoundedRectangleTextShape infoShape(sf::RoundedRectangleShape({0, 0}, 0, 0), sf::Text("Please be patient, the confirmation email\nmay take a few moments before arriving.", GUI::Font));
     infoShape.setOrigin(infoShape.getSize().x / 2, infoShape.getSize().y / 2);
     infoShape.setPosition(
         window.getSize().x / 2,

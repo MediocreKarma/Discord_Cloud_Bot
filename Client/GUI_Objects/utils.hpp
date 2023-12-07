@@ -8,8 +8,12 @@
 #include <thread>
 #include "../../Common/commons.hpp"
 
-namespace Text {
+namespace GUI {
     inline sf::Font Font;
+    inline sf::Texture plusIcon;
+    inline sf::Texture downloadIcon;
+    inline sf::Texture uploadIcon;
+    inline sf::Texture trashIcon;
     bool init();
 }
 

@@ -1,17 +1,17 @@
 #include "gui.hpp"
 
 void GUI::displayCurrentDirectory(sf::RenderWindow& window, DirectoryTree& current) {
-    RoundedRectangleTextShape uploadButton();
-    RoundedRectangleTextShape downloadButton();
-    RoundedRectangleTextShape deleteButton();
-    RoundedRectangleTextShape renameButton();
+    //RoundedRectangleTextShape uploadButton;
+    //RoundedRectangleTextShape downloadButton;
+    //RoundedRectangleTextShape deleteButton;
+    //RoundedRectangleTextShape renameButton;
     const sf::View startingView = window.getView();
     sf::View activeView = startingView;
     std::string path = current.path();
     std::vector<TextBox> fileSquares;
     std::vector<std::reference_wrapper<sf::Drawable>> drawables;
     for (size_t i = 0; i < current.childrenSize(); ++i) {
-        fileSquares.emplace_back(sf::RoundedRectangleShape({800, 45}, 5, 5), Text::Font, current.child(i).name(), 30, sf::Color::Black, true, 0);
+        fileSquares.emplace_back(sf::RoundedRectangleShape({800, 45}, 5, 5), GUI::Font, current.child(i).name(), 30, sf::Color::Black, true, 0);
         fileSquares.back().setOrigin(
             fileSquares.back().getSize().x / 2,
             fileSquares.back().getSize().y / 2
@@ -25,6 +25,7 @@ void GUI::displayCurrentDirectory(sf::RenderWindow& window, DirectoryTree& curre
     for (size_t i = 0; i < current.childrenSize(); ++i) {
         drawables.emplace_back(std::ref(fileSquares[i]));
     }
+    size_t selected = -1;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -50,7 +51,7 @@ void GUI::displayCurrentDirectory(sf::RenderWindow& window, DirectoryTree& curre
                     mouse.y += activeView.getCenter().y - window.getSize().y / 2;
                     for (size_t i = 0; i < fileSquares.size(); ++i) {
                         if (fileSquares[i].hit(mouse)) {
-                            std::cout << "Hit the " << i + 1 << " file" << std::endl;
+                            selected = i;
                         }
                     }
             }
