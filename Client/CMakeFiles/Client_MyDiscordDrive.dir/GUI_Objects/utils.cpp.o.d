@@ -307,4 +307,20 @@ CMakeFiles/Client_MyDiscordDrive.dir/GUI_Objects/utils.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
  /usr/include/x86_64-linux-gnu/bits/netdb.h /usr/include/arpa/inet.h \
- /home/karma/Desktop/Retele/Project/Client/GUI_Objects/../../Common/DirectoryTree/DirectoryTree.hpp
+ /home/karma/Desktop/Retele/Project/Client/GUI_Objects/../../Common/DirectoryTree/DirectoryTree.hpp \
+ /usr/include/dpp/utility.h /usr/include/dpp/export.h \
+ /usr/include/dpp/snowflake.h /usr/include/dpp/json_fwd.h \
+ /usr/include/dpp/nlohmann/json_fwd.hpp /usr/include/c++/11/memory \
+ /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/11/bits/align.h /usr/include/c++/11/bit \
+ /usr/include/c++/11/bits/shared_ptr.h \
+ /usr/include/c++/11/bits/shared_ptr_base.h \
+ /usr/include/c++/11/bits/allocated_ptr.h \
+ /usr/include/c++/11/ext/concurrence.h \
+ /usr/include/c++/11/bits/shared_ptr_atomic.h \
+ /usr/include/c++/11/backward/auto_ptr.h \
+ /usr/include/c++/11/bits/ranges_uninitialized.h \
+ /usr/include/c++/11/bits/uses_allocator_args.h \
+ /usr/include/c++/11/pstl/glue_memory_defs.h /usr/include/dpp/exception.h \
+ /usr/include/dpp/misc-enum.h /usr/include/c++/11/cstddef \
+ /usr/include/c++/11/variant

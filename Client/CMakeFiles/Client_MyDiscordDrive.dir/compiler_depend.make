@@ -383,7 +383,29 @@ CMakeFiles/Client_MyDiscordDrive.dir/GUI_Objects/Buttons.cpp.o: GUI_Objects/Butt
   /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
   /usr/include/x86_64-linux-gnu/bits/netdb.h \
   /usr/include/arpa/inet.h \
-  /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp
+  /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp \
+  /usr/include/dpp/utility.h \
+  /usr/include/dpp/export.h \
+  /usr/include/dpp/snowflake.h \
+  /usr/include/dpp/json_fwd.h \
+  /usr/include/dpp/nlohmann/json_fwd.hpp \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/bits/ranges_uninitialized.h \
+  /usr/include/c++/11/bits/uses_allocator_args.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/dpp/exception.h \
+  /usr/include/dpp/misc-enum.h \
+  /usr/include/c++/11/cstddef \
+  /usr/include/c++/11/variant
 
 CMakeFiles/Client_MyDiscordDrive.dir/GUI_Objects/RoundedRectangleShape.cpp.o: GUI_Objects/RoundedRectangleShape.cpp \
   /usr/include/stdc-predef.h \
@@ -1019,6 +1041,28 @@ CMakeFiles/Client_MyDiscordDrive.dir/GUI_Objects/TextBox.cpp.o: GUI_Objects/Text
   /usr/include/x86_64-linux-gnu/bits/netdb.h \
   /usr/include/arpa/inet.h \
   /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp \
+  /usr/include/dpp/utility.h \
+  /usr/include/dpp/export.h \
+  /usr/include/dpp/snowflake.h \
+  /usr/include/dpp/json_fwd.h \
+  /usr/include/dpp/nlohmann/json_fwd.hpp \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/bits/ranges_uninitialized.h \
+  /usr/include/c++/11/bits/uses_allocator_args.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/dpp/exception.h \
+  /usr/include/dpp/misc-enum.h \
+  /usr/include/c++/11/cstddef \
+  /usr/include/c++/11/variant \
   /usr/include/c++/11/unordered_set \
   /usr/include/c++/11/bits/unordered_set.h
 
@@ -1404,7 +1448,29 @@ CMakeFiles/Client_MyDiscordDrive.dir/GUI_Objects/utils.cpp.o: GUI_Objects/utils.
   /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
   /usr/include/x86_64-linux-gnu/bits/netdb.h \
   /usr/include/arpa/inet.h \
-  /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp
+  /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp \
+  /usr/include/dpp/utility.h \
+  /usr/include/dpp/export.h \
+  /usr/include/dpp/snowflake.h \
+  /usr/include/dpp/json_fwd.h \
+  /usr/include/dpp/nlohmann/json_fwd.hpp \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/bits/ranges_uninitialized.h \
+  /usr/include/c++/11/bits/uses_allocator_args.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/dpp/exception.h \
+  /usr/include/dpp/misc-enum.h \
+  /usr/include/c++/11/cstddef \
+  /usr/include/c++/11/variant
 
 CMakeFiles/Client_MyDiscordDrive.dir/client.cpp.o: client.cpp \
   /usr/include/stdc-predef.h \
@@ -1792,6 +1858,28 @@ CMakeFiles/Client_MyDiscordDrive.dir/client.cpp.o: client.cpp \
   /usr/include/x86_64-linux-gnu/bits/netdb.h \
   /usr/include/arpa/inet.h \
   /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp \
+  /usr/include/dpp/utility.h \
+  /usr/include/dpp/export.h \
+  /usr/include/dpp/snowflake.h \
+  /usr/include/dpp/json_fwd.h \
+  /usr/include/dpp/nlohmann/json_fwd.hpp \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/bits/ranges_uninitialized.h \
+  /usr/include/c++/11/bits/uses_allocator_args.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/dpp/exception.h \
+  /usr/include/dpp/misc-enum.h \
+  /usr/include/c++/11/cstddef \
+  /usr/include/c++/11/variant \
   GUI_Objects/TextBox.hpp \
   /usr/include/c++/11/unordered_set \
   /usr/include/c++/11/bits/unordered_set.h \
@@ -2193,6 +2281,28 @@ CMakeFiles/Client_MyDiscordDrive.dir/gui.cpp.o: gui.cpp \
   /usr/include/x86_64-linux-gnu/bits/netdb.h \
   /usr/include/arpa/inet.h \
   /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp \
+  /usr/include/dpp/utility.h \
+  /usr/include/dpp/export.h \
+  /usr/include/dpp/snowflake.h \
+  /usr/include/dpp/json_fwd.h \
+  /usr/include/dpp/nlohmann/json_fwd.hpp \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/bits/ranges_uninitialized.h \
+  /usr/include/c++/11/bits/uses_allocator_args.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/dpp/exception.h \
+  /usr/include/dpp/misc-enum.h \
+  /usr/include/c++/11/cstddef \
+  /usr/include/c++/11/variant \
   GUI_Objects/TextBox.hpp \
   /usr/include/c++/11/unordered_set \
   /usr/include/c++/11/bits/unordered_set.h \
@@ -3029,6 +3139,28 @@ CMakeFiles/Client_MyDiscordDrive.dir/login.cpp.o: login.cpp \
   /usr/include/x86_64-linux-gnu/bits/netdb.h \
   /usr/include/arpa/inet.h \
   /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp \
+  /usr/include/dpp/utility.h \
+  /usr/include/dpp/export.h \
+  /usr/include/dpp/snowflake.h \
+  /usr/include/dpp/json_fwd.h \
+  /usr/include/dpp/nlohmann/json_fwd.hpp \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/bits/ranges_uninitialized.h \
+  /usr/include/c++/11/bits/uses_allocator_args.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/dpp/exception.h \
+  /usr/include/dpp/misc-enum.h \
+  /usr/include/c++/11/cstddef \
+  /usr/include/c++/11/variant \
   GUI_Objects/TextBox.hpp \
   /usr/include/c++/11/unordered_set \
   /usr/include/c++/11/bits/unordered_set.h \
@@ -3085,6 +3217,30 @@ GUI_Objects/TextBox.cpp:
 /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
 
 /usr/include/x86_64-linux-gnu/bits/math-vector.h:
+
+/usr/include/c++/11/variant:
+
+/usr/include/dpp/misc-enum.h:
+
+/usr/include/c++/11/pstl/glue_memory_defs.h:
+
+/usr/include/c++/11/bits/uses_allocator_args.h:
+
+/usr/include/c++/11/backward/auto_ptr.h:
+
+/usr/include/c++/11/ext/concurrence.h:
+
+/usr/include/c++/11/bits/allocated_ptr.h:
+
+/usr/include/c++/11/bit:
+
+/usr/include/c++/11/bits/stl_raw_storage_iter.h:
+
+/usr/include/c++/11/memory:
+
+/usr/include/dpp/nlohmann/json_fwd.hpp:
+
+/usr/include/dpp/snowflake.h:
 
 /home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.hpp:
 
@@ -3149,6 +3305,8 @@ GUI_Objects/TextBox.cpp:
 /usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h:
+
+/usr/include/dpp/export.h:
 
 /usr/include/c++/11/bits/atomic_wait.h:
 
@@ -3216,6 +3374,8 @@ gui.hpp:
 
 /usr/include/SFML/Graphics/RenderStates.hpp:
 
+/usr/include/c++/11/bits/shared_ptr_atomic.h:
+
 /usr/include/SFML/Graphics/Drawable.hpp:
 
 /usr/include/SFML/Graphics/Shape.hpp:
@@ -3252,6 +3412,8 @@ gui.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
 
+/usr/include/c++/11/bits/ranges_uninitialized.h:
+
 /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
 
 /usr/include/x86_64-linux-gnu/bits/socket_type.h:
@@ -3287,6 +3449,8 @@ gui.hpp:
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/c++/11/bits/shared_ptr_base.h:
 
 /usr/include/linux/limits.h:
 
@@ -3326,6 +3490,8 @@ GUI_Objects/utils.hpp:
 
 /usr/include/c++/11/bits/predefined_ops.h:
 
+/usr/include/c++/11/bits/shared_ptr.h:
+
 /usr/include/x86_64-linux-gnu/bits/semaphore.h:
 
 /usr/include/c++/11/bits/stl_construct.h:
@@ -3353,6 +3519,8 @@ GUI_Objects/utils.hpp:
 /usr/include/c++/11/bits/ranges_cmp.h:
 
 /usr/include/c++/11/clocale:
+
+/usr/include/dpp/json_fwd.h:
 
 /usr/include/SFML/System/Export.hpp:
 
@@ -3391,6 +3559,8 @@ GUI_Objects/Buttons.hpp:
 /usr/include/c++/11/cstdint:
 
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+/usr/include/dpp/utility.h:
 
 /usr/include/ctype.h:
 
@@ -3489,6 +3659,8 @@ GUI_Objects/Buttons.cpp:
 /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
 
 /usr/include/x86_64-linux-gnu/asm/errno.h:
+
+/usr/include/dpp/exception.h:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
@@ -3726,6 +3898,8 @@ GUI_Objects/Buttons.cpp:
 
 /usr/include/c++/11/bits/functional_hash.h:
 
+/usr/include/c++/11/bits/align.h:
+
 /usr/include/SFML/Graphics/Vertex.hpp:
 
 /usr/include/c++/11/bits/max_size_type.h:
@@ -3767,6 +3941,8 @@ GUI_Objects/Buttons.cpp:
 client.cpp:
 
 /usr/include/c++/11/system_error:
+
+/usr/include/c++/11/cstddef:
 
 /usr/include/SFML/Window/Sensor.hpp:
 

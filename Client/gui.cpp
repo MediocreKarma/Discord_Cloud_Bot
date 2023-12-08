@@ -1,15 +1,44 @@
 #include "gui.hpp"
 
 void GUI::displayCurrentDirectory(sf::RenderWindow& window, DirectoryTree& current) {
-    //RoundedRectangleTextShape uploadButton;
-    //RoundedRectangleTextShape downloadButton;
-    //RoundedRectangleTextShape deleteButton;
-    //RoundedRectangleTextShape renameButton;
+    sf::RoundedRectangleShape uploadButton({174, 174}, 15, 15);
+    uploadButton.setOrigin(uploadButton.getSize().x / 2, uploadButton.getSize().y / 2);
+    uploadButton.setPosition(
+        (window.getSize().x / 2 - 400) / 2,
+        window.getSize().y - 450
+    );
+    uploadButton.setTexture(&GUI::uploadIcon, true);
+    sf::RoundedRectangleShape downloadButton({174, 174}, 15, 15);
+    downloadButton.setTexture(&GUI::downloadIcon, true);
+    downloadButton.setOrigin(downloadButton.getSize().x / 2, downloadButton.getSize().y / 2);
+    downloadButton.setPosition(
+        (window.getSize().x / 2 - 400) / 2,
+        window.getSize().y - 200
+    );
+    sf::RoundedRectangleShape deleteButton({174, 174}, 15, 15);
+    deleteButton.setTexture(&GUI::deleteIcon, true);
+    deleteButton.setOrigin(deleteButton.getSize().x / 2, deleteButton.getSize().y / 2);
+    deleteButton.setPosition(
+        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
+        window.getSize().y - 200
+    );
+    sf::RoundedRectangleShape renameButton({174, 174}, 15, 15);
+    renameButton.setTexture(&GUI::renameIcon, true);
+    renameButton.setOrigin(renameButton.getSize().x / 2, renameButton.getSize().y / 2);
+    renameButton.setPosition(
+        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
+        window.getSize().y - 450
+    );
     const sf::View startingView = window.getView();
     sf::View activeView = startingView;
     std::string path = current.path();
     std::vector<TextBox> fileSquares;
-    std::vector<std::reference_wrapper<sf::Drawable>> drawables;
+    std::vector<std::reference_wrapper<sf::Drawable>> drawables = {
+        std::ref(uploadButton),
+        std::ref(downloadButton),
+        std::ref(deleteButton),
+        std::ref(renameButton)
+    };
     for (size_t i = 0; i < current.childrenSize(); ++i) {
         fileSquares.emplace_back(sf::RoundedRectangleShape({800, 45}, 5, 5), GUI::Font, current.child(i).name(), 30, sf::Color::Black, true, 0);
         fileSquares.back().setOrigin(

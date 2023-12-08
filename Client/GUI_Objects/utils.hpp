@@ -7,13 +7,14 @@
 #include <atomic>
 #include <thread>
 #include "../../Common/commons.hpp"
+#include <dpp/utility.h>
 
 namespace GUI {
     inline sf::Font Font;
-    inline sf::Texture plusIcon;
+    inline sf::Texture renameIcon;
     inline sf::Texture downloadIcon;
     inline sf::Texture uploadIcon;
-    inline sf::Texture trashIcon;
+    inline sf::Texture deleteIcon;
     bool init();
 }
 

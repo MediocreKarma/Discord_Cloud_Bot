@@ -5,9 +5,9 @@ bool GUI::init() {
     const std::string base = "../Resources/";
     succesful &= Font.loadFromFile(base + "Roboto-Regular.ttf");
     succesful &= downloadIcon.loadFromFile(base + "downloadIcon.png");
-    succesful &= plusIcon.loadFromFile(base + "plusIcon.png");
+    succesful &= renameIcon.loadFromFile(base + "renameIcon.png");
     succesful &= uploadIcon.loadFromFile(base + "uploadIcon.png");
-    succesful &= trashIcon.loadFromFile(base + "trashIcon.png");
+    succesful &= deleteIcon.loadFromFile(base + "trashIcon.png");
     return succesful;
 }
 
@@ -43,4 +43,16 @@ DirectoryTree buildFilesystem(const int sd) {
         throw std::ios::failure("File tree could not be read");
     }
     return DirectoryTree::buildTree(treeString);
+}
+
+// need rvalue ref, don't copy strings of 25MB
+std::string encrypt(std::string&& data, const std::string& encryptionKey) {
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] ^= encryptionKey[i % encryptionKey.size()];
+    }
+    return data;
+}
+
+std::string decrypt(std::string&& data, const std::string& encryptionKey) {
+    return encrypt(std::move(data), encryptionKey);
 }
