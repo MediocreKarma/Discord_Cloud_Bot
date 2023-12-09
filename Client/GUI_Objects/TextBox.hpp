@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_set>
 
-class TextBox : public RoundedRectangleButton {
+class TextBox : public RoundedRectangleTextButton {
 public:
     TextBox(
         const sf::RoundedRectangleShape& shape, 

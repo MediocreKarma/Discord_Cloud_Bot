@@ -100,29 +100,55 @@ sf::Vector2f RoundedRectangleTextShape::getSize() const {
 ///
 //////////////////////////////////////////////////
 
-RoundedRectangleButton::RoundedRectangleButton(const sf::RoundedRectangleShape& shape, const sf::Text& text) :
-    RoundedRectangleTextShape(shape, text) {}
+RoundedRectangleButton::RoundedRectangleButton(sf::Vector2f size, float degree, unsigned int points) :
+    sf::RoundedRectangleShape(size, degree, points) {}
 
-bool RoundedRectangleButton::hit(sf::Vector2f click) const {
-    sf::FloatRect fr = shape.getGlobalBounds();
-    fr.width *= getScale().x;
-    fr.height *= getScale().y;
-    return fr.contains(click - getPosition() + getOrigin());
-}
-
-bool RoundedRectangleButton::hit(int x, int y) const {
-    return hit(sf::Vector2f({1.f * x, 1.f * y}));
-}
-
-CircularButton::CircularButton(const sf::CircleShape& base) : CircleShape(base) {}
-
-bool CircularButton::hit(sf::Vector2f click) const {
+bool RoundedRectangleButton::hit(const sf::Vector2f click) const {
     sf::FloatRect fr = getGlobalBounds();
     fr.width *= getScale().x;
     fr.height *= getScale().y;
     return fr.contains(click - getPosition() + getOrigin());
 }
 
-bool CircularButton::hit(int x, int y) const {
+bool RoundedRectangleButton::hit(const int x, const int y) const {
+    return hit(sf::Vector2f({1.f * x, 1.f * y}));
+}
+
+//////////////////////////////////////////////////
+///
+/// Implementation for RoundedRectangleTextButton
+///
+//////////////////////////////////////////////////
+
+RoundedRectangleTextButton::RoundedRectangleTextButton(const sf::RoundedRectangleShape& shape, const sf::Text& text) :
+    RoundedRectangleTextShape(shape, text) {}
+
+bool RoundedRectangleTextButton::hit(const sf::Vector2f click) const {
+    sf::FloatRect fr = shape.getGlobalBounds();
+    fr.width *= getScale().x;
+    fr.height *= getScale().y;
+    return fr.contains(click - getPosition() + getOrigin());
+}
+
+bool RoundedRectangleTextButton::hit(const int x, const int y) const {
+    return hit(sf::Vector2f({1.f * x, 1.f * y}));
+}
+
+//////////////////////////////////////////////////
+///
+/// Implementation for CircularButton
+///
+//////////////////////////////////////////////////
+
+CircularButton::CircularButton(const sf::CircleShape& base) : CircleShape(base) {}
+
+bool CircularButton::hit(const sf::Vector2f click) const {
+    sf::FloatRect fr = getGlobalBounds();
+    fr.width *= getScale().x;
+    fr.height *= getScale().y;
+    return fr.contains(click - getPosition() + getOrigin());
+}
+
+bool CircularButton::hit(const int x, const int y) const {
     return hit(sf::Vector2f({1.f * x, 1.f * y}));
 }

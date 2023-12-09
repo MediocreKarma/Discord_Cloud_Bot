@@ -3,10 +3,10 @@
 static TextBox emailTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Enter your email", 30, Colors::DarkGray, false, '\0', 64);
 static TextBox passwordTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Enter your password", 30, Colors::DarkGray, false, '*', 64);
 static TextBox confirmationTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Re-enter your password", 30, Colors::DarkGray, false, '*', 64);
-static RoundedRectangleButton enterButton(sf::RoundedRectangleShape({250, 120}, 30, 30), sf::Text("Continue", GUI::Font, 45));
+static RoundedRectangleTextButton enterButton(sf::RoundedRectangleShape({250, 120}, 30, 30), sf::Text("Continue", GUI::Font, 45));
 static RoundedRectangleTextShape errorOutput(sf::RoundedRectangleShape({0, 0}, 0, 0), sf::Text("", GUI::Font));
-static RoundedRectangleButton switchUpToIn(sf::RoundedRectangleShape({540, 50}, 0, 1), sf::Text("Already have an account? Sign-in here!", GUI::Font));
-static RoundedRectangleButton switchInToUp(sf::RoundedRectangleShape({400, 50}, 0, 1), sf::Text("New user? Sign-up instead!", GUI::Font));
+static RoundedRectangleTextButton switchUpToIn(sf::RoundedRectangleShape({540, 50}, 0, 1), sf::Text("Already have an account? Sign-in here!", GUI::Font));
+static RoundedRectangleTextButton switchInToUp(sf::RoundedRectangleShape({400, 50}, 0, 1), sf::Text("New user? Sign-up instead!", GUI::Font));
 
 LoginScreen::UserInfoData signUp(sf::RenderWindow& window);
 

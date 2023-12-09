@@ -41,9 +41,15 @@ public:
     virtual bool hit(sf::Vector2f click) const = 0;
 };
 
-class RoundedRectangleButton : public RoundedRectangleTextShape, public Hittable {
+class RoundedRectangleButton : public sf::RoundedRectangleShape, public Hittable {
+    RoundedRectangleButton(sf::Vector2f size, float degree = 0, unsigned int points = 1);
+    virtual bool hit(sf::Vector2f click) const;
+    virtual bool hit(int x, int y) const;
+};
+
+class RoundedRectangleTextButton : public RoundedRectangleTextShape, public Hittable {
 public:
-    RoundedRectangleButton(const sf::RoundedRectangleShape& shape, const sf::Text& text);
+    RoundedRectangleTextButton(const sf::RoundedRectangleShape& shape, const sf::Text& text);
     virtual bool hit(sf::Vector2f click) const;
     virtual bool hit(int x, int y) const;
 };

@@ -11,7 +11,7 @@ TextBox::TextBox(
     const bool alwaysHasInput,
     const char _cover,
     size_t maxLen
-    ) : RoundedRectangleButton(shape, sf::Text(sf::String(displayString), font, charSize)),
+    ) : RoundedRectangleTextButton(shape, sf::Text(sf::String(displayString), font, charSize)),
         buffer(""), noInputText(displayString), noInputColor(displayColor), cursorIndex(0), 
         visibileTextIndex{0, 0}, hasInput(false), alwaysHasInput(false), frame(0), 
         coverChar(_cover), enter(false), mouse({-1, -1}), maxLength(maxLen), alphabet() {
@@ -27,7 +27,7 @@ TextBox::TextBox(
 }
 
 void TextBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    RoundedRectangleButton::draw(target, states);
+    RoundedRectangleTextButton::draw(target, states);
     if (frame < FLICKER_WRITELINE_PER_FRAMES) {
         states.transform *= getTransform();
         target.draw(writeLine.data(), writeLine.size(), sf::PrimitiveType::Lines, states);
