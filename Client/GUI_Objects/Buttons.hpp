@@ -39,26 +39,27 @@ class Hittable {
 public:
     Hittable() {}
     virtual bool hit(sf::Vector2f click) const = 0;
+    virtual bool hit(int x, int y) const {
+        return hit(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+    };
 };
 
 class RoundedRectangleButton : public sf::RoundedRectangleShape, public Hittable {
+public:
     RoundedRectangleButton(sf::Vector2f size, float degree = 0, unsigned int points = 1);
     virtual bool hit(sf::Vector2f click) const;
-    virtual bool hit(int x, int y) const;
 };
 
 class RoundedRectangleTextButton : public RoundedRectangleTextShape, public Hittable {
 public:
     RoundedRectangleTextButton(const sf::RoundedRectangleShape& shape, const sf::Text& text);
     virtual bool hit(sf::Vector2f click) const;
-    virtual bool hit(int x, int y) const;
 };
 
 class CircularButton : public sf::CircleShape, public Hittable {
 public:
     CircularButton(const sf::CircleShape& shape);
     virtual bool hit(sf::Vector2f click) const;
-    virtual bool hit(int x, int y) const;
 };
 
 #endif

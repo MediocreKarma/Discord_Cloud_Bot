@@ -1,6 +1,7 @@
 #ifndef _COMMONS__
 #define _COMMONS__
 
+#include <fstream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <errno.h>
@@ -16,22 +17,28 @@ namespace Files {
     inline const char* PortFile = "/tmp/MyCloudPort.txt";
 }
 
+namespace FileTransfer {
+    // 24,75 MiB chunks, to be safe
+    constexpr ssize_t MAX_FILE_TRANSFER = 25 * 1024 * 1024 - 256 * 1024; 
+}
 
 struct ClientMessage {
     enum MessageType {
+        OK, 
         Empty,
         SignUpRequest,
         SignInRequest,
         SignUpCode,
         RequestFileTree,
-        FileTransfer,
+        FileUpload,
+        FileDownload
     } type;
 
     union MessageContent {
 
         struct SignData { char email[65]; char pass[65]; char signCode[7]; } signData;
 
-        size_t size;
+        size_t fileSize;
 
     } content;
 
@@ -43,7 +50,8 @@ struct ServerMessage {
         RequestCode,
         Error,
         ServerQuit,
-        FileTransfer
+        FileReceive,
+        FileSend
     } type;
 
     enum ErrorType {

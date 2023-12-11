@@ -21,7 +21,8 @@ void buildTree_util(const std::string& encoding, size_t& index, DirectoryTree& p
         return;
     }
     std::size_t filenameSeparator = encoding.find_first_of(std::string("/\\"), index + 1);
-    std::string filename = encoding.substr(index + 1, filenameSeparator - index - 1);
+    std::string id = encoding.substr(index + 1, index + 1 + 8);
+    std::string filename = encoding.substr(index + 1 + 8, filenameSeparator - index - 1);
     index = filenameSeparator;
     parent.addChild(filename);
     while (index != std::string::npos) {
@@ -41,7 +42,7 @@ DirectoryTree DirectoryTree::buildTree(const std::string& encoding) {
 }
 
 std::string DirectoryTree::encodeTree() const {
-    std::string encoding = filename;
+    std::string encoding = id + filename;
     if (parent != nullptr) {
         encoding = '/' + filename;
     }

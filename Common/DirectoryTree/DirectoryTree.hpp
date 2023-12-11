@@ -26,6 +26,7 @@ public:
     std::string name() const;
 
 private:
+    std::string id;
     std::string filename = "";
     DirectoryTree* parent = nullptr;
     std::vector<DirectoryTree> m_children = {};

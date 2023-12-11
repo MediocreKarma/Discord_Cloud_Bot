@@ -80,7 +80,7 @@ std::string TextBox::getDataFromInput(sf::RenderWindow& window, const int x, con
                     break;
                 case sf::Event::MouseButtonPressed:
                     if (event.mouseButton.button == sf::Mouse::Left) {
-                        if (hit(event.mouseButton.x, event.mouseButton.y)) {
+                        if (Hittable::hit(event.mouseButton.x, event.mouseButton.y)) {
                             setIndexFromCursor(event.mouseButton.x, event.mouseButton.y);
                         }
                         else {
@@ -178,6 +178,7 @@ void TextBox::slideWindowBackwards() {
     setText();
     if (visibileTextIndex[0] != 0) {
         visibileTextIndex[0] -= 1;
+        visibileTextIndex[1] = buffer.size();
         setText();
         while (text.getGlobalBounds().width > shape.getSize().x - 50) {
             visibileTextIndex[1] -= 1;
@@ -185,8 +186,12 @@ void TextBox::slideWindowBackwards() {
         }
     }
     else {
-        visibileTextIndex[1] -= 1;
+        visibileTextIndex[1] = buffer.size();
         setText();
+        while (text.getGlobalBounds().width > shape.getSize().x - 50) {
+            visibileTextIndex[1] -= 1;
+            setText();
+        }
     }
     setWriteLine();
 }

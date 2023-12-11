@@ -131,7 +131,7 @@ LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, con
             while (mouse.x != -1) {
                 sf::Vector2i newMouse = {-1, -1};
                 bool enterTransition = false;
-                if (emailTextbox.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (emailTextbox.Hittable::hit(mouse.x, mouse.y)) {
                     email = emailTextbox.getDataFromInput(window, mouse.x, mouse.y);
                     if (emailTextbox.pressedEnter() == false) {
                         newMouse = emailTextbox.lastMouseInput();
@@ -140,7 +140,7 @@ LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, con
                         enterTransition = true;
                     }
                 }
-                if (enterTransition || passwordTextbox.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (enterTransition || passwordTextbox.Hittable::hit(mouse.x, mouse.y)) {
                     enterTransition = false;
                     password = passwordTextbox.getDataFromInput(window, mouse.x, mouse.y);
                     if (passwordTextbox.pressedEnter() == false) {
@@ -150,7 +150,7 @@ LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, con
                         enterTransition = true;
                     }
                 }
-                if (enterTransition || enterButton.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (enterTransition || enterButton.Hittable::hit(mouse.x, mouse.y)) {
                     enterTransition = false;
                     if (emailTextbox.hasUserInput() && passwordTextbox.hasUserInput()) {
                         errorOutput.setString("");
@@ -160,7 +160,7 @@ LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, con
                         errorOutput.setString("Please complete all fields");
                     }
                 }
-                if (switchInToUp.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (switchInToUp.Hittable::hit(mouse.x, mouse.y)) {
                     return signUp(window);
                 }
                 mouse = newMouse;
@@ -212,7 +212,7 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
             while (mouse.x != -1) {
                 sf::Vector2i newMouse = {-1, -1};
                 bool enterTransition = false;
-                if (emailTextbox.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (emailTextbox.Hittable::hit(mouse.x, mouse.y)) {
                     email = emailTextbox.getDataFromInput(window, mouse.x, mouse.y);
                     if (emailTextbox.pressedEnter() == false) {
                         newMouse = emailTextbox.lastMouseInput();
@@ -221,7 +221,7 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
                         enterTransition = true;
                     }
                 }
-                if (enterTransition || passwordTextbox.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (enterTransition || passwordTextbox.Hittable::hit(mouse.x, mouse.y)) {
                     enterTransition = false;
                     password = passwordTextbox.getDataFromInput(window, mouse.x, mouse.y);
                     if (passwordTextbox.pressedEnter() == false) {
@@ -231,7 +231,7 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
                         enterTransition = true;
                     }
                 }
-                if (enterTransition || confirmationTextbox.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (enterTransition || confirmationTextbox.Hittable::hit(mouse.x, mouse.y)) {
                     enterTransition = false;
                     confirmationPassword = confirmationTextbox.getDataFromInput(window, mouse.x, mouse.y);
                     if (confirmationTextbox.pressedEnter() == false) {
@@ -241,7 +241,7 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
                         enterTransition = true;
                     }
                 }
-                if (enterTransition || enterButton.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (enterTransition || enterButton.Hittable::hit(mouse.x, mouse.y)) {
                     enterTransition = false;
                     if (emailTextbox.hasUserInput() && passwordTextbox.hasUserInput() && confirmationTextbox.hasUserInput()) {
                         if (password == confirmationPassword) {
@@ -254,7 +254,7 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
                         errorOutput.setString("Please complete all fields");
                     }
                 }
-                if (switchUpToIn.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (switchUpToIn.Hittable::hit(mouse.x, mouse.y)) {
                     return LoginScreen::getUserInfo(window);
                 }
                 mouse = newMouse;
@@ -335,7 +335,7 @@ std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool
             }
             while (mouse.x != -1 || enterTransition) {
                 sf::Vector2i newMouse = {-1, -1};
-                if (codeTextbox.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (codeTextbox.Hittable::hit(mouse.x, mouse.y)) {
                     code = codeTextbox.getDataFromInput(window, mouse.x, mouse.y);
                     if (codeTextbox.pressedEnter() == false) {
                         newMouse = codeTextbox.lastMouseInput();
@@ -344,7 +344,7 @@ std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool
                         enterTransition = true;
                     }
                 }
-                if (enterTransition || enterButton.hit(1.f * mouse.x, 1.f * mouse.y)) {
+                if (enterTransition || enterButton.Hittable::hit(mouse.x, mouse.y)) {
                     enterTransition = false;
                     if (code.size() == 6) {
                         errorOutput.setString("");

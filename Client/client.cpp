@@ -53,8 +53,7 @@ int main(int argc, char** argv) {
         for (int i = 0; i < 25; ++i) {
             root.addChild("file.txt");
         }
-        std::cout << root.encodeTree() << std::endl;
-        GUI::displayCurrentDirectory(window, root);
+        GUI::currentDirectoryRequest(window, root);
         return 0;
         // while (login) {
 

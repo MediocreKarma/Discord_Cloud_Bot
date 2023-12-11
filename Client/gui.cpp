@@ -1,43 +1,82 @@
 #include "gui.hpp"
 
-void GUI::displayCurrentDirectory(sf::RenderWindow& window, DirectoryTree& current) {
-    sf::RoundedRectangleShape uploadButton({174, 174}, 30, 15);
+std::string userInputString(const std::string& windowTitle, const std::string& startingString, const sf::RenderWindow& mainWindow) {
+    const static auto desktop = sf::VideoMode::getDesktopMode();
+    sf::RenderWindow textWindow(sf::VideoMode(900, 400), windowTitle, sf::Style::Titlebar | sf::Style::Close, mainWindow.getSettings());
+    textWindow.setPosition({
+        static_cast<int>(mainWindow.getPosition().x + mainWindow.getSize().x / 2 - textWindow.getSize().x / 2), 
+        static_cast<int>(mainWindow.getPosition().y + mainWindow.getSize().y / 2 - textWindow.getSize().y / 2)
+    });
+    TextBox inputBox(RoundedRectangleButton({600, 50}, 5, 5), GUI::Font, startingString, 30, Colors::DarkGray);
+    inputBox.setOrigin(inputBox.getSize().x / 2, inputBox.getSize().y / 2);
+    inputBox.setPosition(textWindow.getSize().x / 2, textWindow.getSize().y / 2);
+    while (textWindow.isOpen()) {
+        sf::Event event;
+        while (textWindow.pollEvent(event)) {
+            switch (event.type) {
+                    case sf::Event::Closed:
+                        textWindow.close(); 
+                        return inputBox.getData();
+                    case sf::Event::TextEntered:
+                        if (event.text.unicode < 128 && event.text.unicode != '\r') {
+                            return inputBox.externalType(textWindow, event.text.unicode);
+                        }
+                        break;
+                    case sf::Event::MouseButtonPressed:
+                        if (event.mouseButton.button != sf::Mouse::Left) {
+                            break;
+                        }
+                        if (inputBox.Hittable::hit(event.mouseButton.x, event.mouseButton.y)) {
+                            return inputBox.getDataFromInput(textWindow, 0, 0);
+                        }
+                        break;
+            }
+        }
+        textWindow.clear(sf::Color::White);
+        textWindow.draw(inputBox);
+        textWindow.display();
+    }
+    return inputBox.getData();
+}
+
+GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current) {
+    RoundedRectangleButton uploadButton({174, 174}, 30, 15);
     uploadButton.setOrigin(uploadButton.getSize().x / 2, uploadButton.getSize().y / 2);
     uploadButton.setPosition(
         (window.getSize().x / 2 - 400) / 2,
         window.getSize().y - 450
     );
     uploadButton.setTexture(&GUI::uploadIcon, true);
-    sf::RoundedRectangleShape downloadButton({174, 174}, 30, 15);
+    RoundedRectangleButton downloadButton({174, 174}, 30, 15);
     downloadButton.setTexture(&GUI::downloadIcon, true);
     downloadButton.setOrigin(downloadButton.getSize().x / 2, downloadButton.getSize().y / 2);
     downloadButton.setPosition(
         (window.getSize().x / 2 - 400) / 2,
         window.getSize().y - 200
     );
-    sf::RoundedRectangleShape downloadCover(downloadButton);
+    RoundedRectangleButton downloadCover(downloadButton);
     downloadCover.setTexture(nullptr);
-    downloadCover.setFillColor(sf::Color(200, 200, 200, 176));
-    sf::RoundedRectangleShape deleteButton({174, 174}, 15, 15);
+    downloadCover.setFillColor(sf::Color(200, 200, 200, 192));
+    RoundedRectangleButton deleteButton({174, 174}, 15, 15);
     deleteButton.setTexture(&GUI::deleteIcon, true);
     deleteButton.setOrigin(deleteButton.getSize().x / 2, deleteButton.getSize().y / 2);
     deleteButton.setPosition(
         window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
         window.getSize().y - 200
     );
-    sf::RoundedRectangleShape deleteCover(deleteButton);
+    RoundedRectangleButton deleteCover(deleteButton);
     deleteCover.setTexture(nullptr);
-    deleteCover.setFillColor(sf::Color(200, 200, 200, 176));
-    sf::RoundedRectangleShape renameButton({174, 174}, 15, 15);
+    deleteCover.setFillColor(sf::Color(200, 200, 200, 192));
+    RoundedRectangleButton renameButton({174, 174}, 15, 15);
     renameButton.setTexture(&GUI::renameIcon, true);
     renameButton.setOrigin(renameButton.getSize().x / 2, renameButton.getSize().y / 2);
     renameButton.setPosition(
         window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
         window.getSize().y - 450
     );
-    sf::RoundedRectangleShape renameCover(renameButton);
+    RoundedRectangleButton renameCover(renameButton);
     renameCover.setTexture(nullptr);
-    renameCover.setFillColor(sf::Color(200, 200, 200, 176));
+    renameCover.setFillColor(sf::Color(200, 200, 200, 192));
     const sf::View startingView = window.getView();
     sf::View activeView = startingView;
     std::string path = current.path();
@@ -51,10 +90,10 @@ void GUI::displayCurrentDirectory(sf::RenderWindow& window, DirectoryTree& curre
         std::ref(uploadButton),
         std::ref(downloadButton),
         std::ref(deleteButton),
-        std::ref(renameButton),
+        std::ref(renameButton)
     };
     for (size_t i = 0; i < current.childrenSize(); ++i) {
-        fileSquares.emplace_back(sf::RoundedRectangleShape({800, 45}, 5, 5), GUI::Font, current.child(i).name(), 30, sf::Color::Black, true, 0);
+        fileSquares.emplace_back(RoundedRectangleButton({800, 45}, 5, 5), GUI::Font, current.child(i).name(), 30, sf::Color::Black, true, 0);
         fileSquares.back().setOrigin(
             fileSquares.back().getSize().x / 2,
             fileSquares.back().getSize().y / 2
@@ -107,7 +146,21 @@ void GUI::displayCurrentDirectory(sf::RenderWindow& window, DirectoryTree& curre
                     if (done) {
                         break;
                     }
-                    //if (uploadButton.hit())
+                    if (uploadButton.hit(mouse)) {
+                        std::string filePath = userInputString("Add file to cloud", "Enter path here", window);
+                        std::cout << "Input is: \'" << filePath << '\'' <<  std::endl;
+                        if (std::filesystem::is_directory(filePath)) {
+                            std::cerr << "Directory instead of file" << std::endl;
+                        }
+                        std::ifstream fileStream(filePath);
+                        if (fileStream.good() == false) {
+                            std::cerr << "Invalid file path!" << std::endl;
+                        }
+                        current.addChild(filePath);
+                    }
+                    else if (selected) {
+
+                    }
             }
         }
         window.setView(activeView);
