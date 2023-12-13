@@ -335,5 +335,7 @@ CMakeFiles/Client_MyDiscordDrive.dir/gui.cpp.o: \
  /usr/include/c++/11/variant \
  /home/karma/Desktop/Retele/Project/Client/GUI_Objects/TextBox.hpp \
  /usr/include/c++/11/unordered_set \
- /usr/include/c++/11/bits/unordered_set.h /usr/include/string.h \
- /usr/include/strings.h
+ /usr/include/c++/11/bits/unordered_set.h \
+ /home/karma/Desktop/Retele/Project/Client/fileTransfer.hpp \
+ /home/karma/Desktop/Retele/Project/Client/../Common/commons.hpp \
+ /usr/include/string.h /usr/include/strings.h

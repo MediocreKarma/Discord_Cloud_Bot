@@ -18,6 +18,7 @@ add_executable(
     ../Common/commons.cpp /
     ../Common/DirectoryTree/DirectoryTree.cpp /
     gui.cpp /
+    fileTransfer.cpp /
 )
 
 add_compile_options(-Wall)

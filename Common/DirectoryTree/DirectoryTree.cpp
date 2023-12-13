@@ -1,15 +1,16 @@
 #include "DirectoryTree.hpp"
 
-DirectoryTree::DirectoryTree(const std::string& _filename, DirectoryTree* _parent) :
-    filename(_filename), parent(_parent), m_children() {}
+DirectoryTree::DirectoryTree(const std::string& _id, const std::string& _filename, DirectoryTree* _parent) :
+    id(_id), filename(_filename), parent(_parent), m_children() {}
 
-DirectoryTree::DirectoryTree(DirectoryTree&& other) {
+DirectoryTree::DirectoryTree(DirectoryTree&& other) : DirectoryTree("", "") {
     *this = std::move(other);
 }
 
 // current pointer must be destroyed
 DirectoryTree& DirectoryTree::operator = (DirectoryTree&& other) {
     filename = std::move(other.filename);
+    id = other.id;
     parent = other.parent;
     other.parent = nullptr;
     m_children = std::move(other.m_children);
@@ -24,7 +25,7 @@ void buildTree_util(const std::string& encoding, size_t& index, DirectoryTree& p
     std::string id = encoding.substr(index + 1, index + 1 + 8);
     std::string filename = encoding.substr(index + 1 + 8, filenameSeparator - index - 1);
     index = filenameSeparator;
-    parent.addChild(filename);
+    parent.addChild(id, filename);
     while (index != std::string::npos) {
         if (encoding[index] == '\0') {
             ++index;
@@ -36,15 +37,15 @@ void buildTree_util(const std::string& encoding, size_t& index, DirectoryTree& p
 
 DirectoryTree DirectoryTree::buildTree(const std::string& encoding) {
     size_t index = 0;
-    DirectoryTree root("");
+    DirectoryTree root("", "");
     buildTree_util(encoding, index, root);
     return root;
 }
 
 std::string DirectoryTree::encodeTree() const {
     std::string encoding = id + filename;
-    if (parent != nullptr) {
-        encoding = '/' + filename;
+    if (parent) {
+        encoding = '/' + encoding;
     }
     for (const DirectoryTree& child : m_children) {
         encoding += child.encodeTree();
@@ -53,8 +54,8 @@ std::string DirectoryTree::encodeTree() const {
     return  encoding;
 }
 
-void DirectoryTree::addChild(const std::string& filename) {
-    m_children.emplace_back(filename, this);
+void DirectoryTree::addChild(const std::string& id, const std::string& filename) {
+    m_children.emplace_back(id, filename, this);
 }
 
 void DirectoryTree::addChild(DirectoryTree&& child) {
@@ -78,4 +79,17 @@ std::string DirectoryTree::path() const {
 
 std::string DirectoryTree::name() const {
     return filename;
+}
+
+DirectoryTree* DirectoryTree::findID(const std::string& target) {
+    if (id == target) {
+        return this;
+    }
+    for (DirectoryTree& child : m_children) {
+        DirectoryTree* ptr = child.findID(target);
+        if (ptr) {
+            return ptr;
+        }
+    }
+    return nullptr;
 }

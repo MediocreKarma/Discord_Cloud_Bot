@@ -286,6 +286,10 @@ CMakeFiles/Client_MyDiscordDrive.dir/client.cpp.o: \
  /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/semaphore.h \
  /usr/include/x86_64-linux-gnu/bits/semaphore.h \
  /home/karma/Desktop/Retele/Project/Client/GUI_Objects/../../Common/commons.hpp \
+ /usr/include/c++/11/fstream \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+ /usr/include/c++/11/bits/fstream.tcc \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
@@ -328,10 +332,7 @@ CMakeFiles/Client_MyDiscordDrive.dir/client.cpp.o: \
  /home/karma/Desktop/Retele/Project/Client/GUI_Objects/TextBox.hpp \
  /usr/include/c++/11/unordered_set \
  /usr/include/c++/11/bits/unordered_set.h /usr/include/string.h \
- /usr/include/strings.h /usr/include/c++/11/fstream \
- /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
- /usr/include/c++/11/bits/fstream.tcc \
+ /usr/include/strings.h \
  /home/karma/Desktop/Retele/Project/Client/../Common/commons.hpp \
  /home/karma/Desktop/Retele/Project/Client/gui.hpp \
  /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
@@ -339,5 +340,6 @@ CMakeFiles/Client_MyDiscordDrive.dir/client.cpp.o: \
  /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/sstream \
  /usr/include/c++/11/bits/sstream.tcc /usr/include/c++/11/codecvt \
  /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
+ /home/karma/Desktop/Retele/Project/Client/fileTransfer.hpp \
  /usr/include/poll.h /usr/include/x86_64-linux-gnu/sys/poll.h \
  /usr/include/x86_64-linux-gnu/bits/poll.h

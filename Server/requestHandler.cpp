@@ -30,7 +30,7 @@ std::pair<dpp::snowflake, ServerMessage> Request::signIn(const char email[], con
         }
         std::string password = loginDB.extract<std::string>(0);
         std::string salt     = loginDB.extract<std::string>(1);
-        dpp::snowflake res   = loginDB.extract<  int64_t  >(2);
+        dpp::snowflake res   = std::stoull(loginDB.extract<std::string>(2));
         loginDB.unlock();
         if (password != passwordHash(std::string(pass) + salt)) {
             return {0, {ServerMessage::Error, ServerMessage::WrongLogin}};
@@ -122,34 +122,16 @@ ServerMessage Request::finalizeSignup(
     const dpp::snowflake clientInfoChannelSnowflake
 ) {
     dpp::message managerCreatorFile;
-    managerCreatorFile.add_file(
-        "FileManager.txt", "" 
-    );
-    dpp::snowflake messageSnowflake = 0;
-    managerCreatorFile.set_channel_id(clientInfoChannelSnowflake);
-    int depth = 0;
-    bool done = false;
-    dpp::command_completion_event_t tryToCreate = [&](const dpp::confirmation_callback_t& result) {
-        // HTTP Errors 4**, unrecoverable
-        if (result.http_info.status / 100 == 4) {
-            throw dpp::rest_exception("Unrecoverable error");
-        }
-        // recoverable
-        if (result.http_info.status != 200) {
-            ++depth;
-            std::this_thread::sleep_for(std::chrono::seconds(3));
-            discord.message_create(managerCreatorFile, tryToCreate);
-        }
-        messageSnowflake = std::get<dpp::message>(result.value).id;
-        done = true;
-    };
-    discord.message_create(managerCreatorFile, tryToCreate);
-    while (!done && depth < 3) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
-    }
-    if (!done) {
-        return {ServerMessage::Error, ServerMessage::InternalError};
-    }
+    managerCreatorFile
+        .set_channel_id(clientInfoChannelSnowflake)
+        .add_file(
+            "FileManager.sqlite3", "" 
+        ).add_file(
+            "FileTree.tree", "\0"
+        );
+    dpp::snowflake messageSnowflake = discord.message_create_sync(managerCreatorFile).id;
+    
+    
     const std::string salt = generateSalt();
     const std::string hashedPass = passwordHash(password + salt);
     loginDB.lock();

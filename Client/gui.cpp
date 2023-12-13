@@ -114,7 +114,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
             switch (event.type) {
                 case sf::Event::Closed:
                     window.close();
-                    return;
+                    return {};
                 case sf::Event::MouseWheelScrolled: {
                     constexpr float SCROLL_MOVEMENT = 20;
                     if (event.mouseWheelScroll.delta > 0 && activeView.getCenter().y > window.getSize().y / 2) {
@@ -156,7 +156,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                         if (fileStream.good() == false) {
                             std::cerr << "Invalid file path!" << std::endl;
                         }
-                        current.addChild(filePath);
+                        //current.addChild(filePath);
                     }
                     else if (selected) {
 
@@ -178,3 +178,4 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     }
 
 }
+

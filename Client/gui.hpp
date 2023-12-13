@@ -9,8 +9,10 @@
 #include "GUI_Objects/RoundedRectangleShape.hpp"
 #include "GUI_Objects/Buttons.hpp"
 #include "GUI_Objects/TextBox.hpp"
+#include "fileTransfer.hpp"
 #include <vector>
 #include <string.h>
+#include <variant>
 
 namespace GUI {
 
@@ -25,11 +27,8 @@ namespace GUI {
 
         } type;
 
-        union {
-            std::string input;
-            ssize_t directChange;
-        } data;
-    }
+        std::variant<std::string, ssize_t> data;
+    };
 
     UserRequests currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current);
 

@@ -1,4 +1,5 @@
 #include "fileTransfer.hpp"
+#include <filesystem>
 
 void FileTransfer::receiveFile(int sd, const std::string& filepath) {
     std::ofstream file(filepath, std::ios::binary | std::ios::trunc);
@@ -21,7 +22,7 @@ void FileTransfer::receiveFile(int sd, const std::string& filepath) {
     cmsg.type = ClientMessage::OK;
     size_t total = smsg.content.size;
     size_t current = 0;
-    std::string chunk(MAX_FILE_TRANSFER);
+    std::string chunk(MAX_FILE_TRANSFER, '\0');
     while (current < total) {
         size_t readLength = std::min(MAX_FILE_TRANSFER, total - current);
         if (Communication::read(sd, chunk.data(), readLength) == false) {
@@ -29,7 +30,7 @@ void FileTransfer::receiveFile(int sd, const std::string& filepath) {
             throw std::ios::failure("Write failure to socket");
         }
         if (!file.write(chunk.c_str(), readLength)) {
-            std::remove(file);
+            std::remove(filepath.c_str());
             throw std::ios::failure("Writing to file failed");
         }
         current += readLength;
@@ -47,7 +48,9 @@ void FileTransfer::sendFile(int sd, const std::string& filepath) {
         throw std::invalid_argument("Bad filepath!");
     }
     std::size_t fileSize = std::filesystem::file_size(filepath);
-    ClientMessage cmsg = {ClientMessage::FileUpload, fileSize};
+    ClientMessage cmsg;
+    cmsg.type = ClientMessage::FileUpload;
+    cmsg.content.fileSize = fileSize;
     ServerMessage smsg;
     if (Communication::write(sd, &cmsg, sizeof(cmsg)) == false) {
         perror("error writing to server");
@@ -60,7 +63,7 @@ void FileTransfer::sendFile(int sd, const std::string& filepath) {
     if (smsg.type != ServerMessage::OK) {
         throw std::ios::failure("Server refused file transfer");
     }
-    std::string chunk(MAX_FILE_TRANSFER);
+    std::string chunk(MAX_FILE_TRANSFER, '\0');
     while (file.read(chunk.data(), MAX_FILE_TRANSFER)) {
         if (Communication::write(sd, chunk.c_str(), file.gcount()) == false) {
             perror("error writing to server");

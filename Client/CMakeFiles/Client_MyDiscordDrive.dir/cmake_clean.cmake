@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Client_MyDiscordDrive.dir/GUI_Objects/utils.cpp.o.d"
   "CMakeFiles/Client_MyDiscordDrive.dir/client.cpp.o"
   "CMakeFiles/Client_MyDiscordDrive.dir/client.cpp.o.d"
+  "CMakeFiles/Client_MyDiscordDrive.dir/fileTransfer.cpp.o"
+  "CMakeFiles/Client_MyDiscordDrive.dir/fileTransfer.cpp.o.d"
   "CMakeFiles/Client_MyDiscordDrive.dir/gui.cpp.o"
   "CMakeFiles/Client_MyDiscordDrive.dir/gui.cpp.o.d"
   "CMakeFiles/Client_MyDiscordDrive.dir/home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.cpp.o"

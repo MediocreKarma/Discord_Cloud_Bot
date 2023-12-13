@@ -249,6 +249,30 @@ client.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Client_MyDiscordDrive.dir/build.make CMakeFiles/Client_MyDiscordDrive.dir/client.cpp.s
 .PHONY : client.cpp.s
 
+fileTransfer.o: fileTransfer.cpp.o
+.PHONY : fileTransfer.o
+
+# target to build an object file
+fileTransfer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Client_MyDiscordDrive.dir/build.make CMakeFiles/Client_MyDiscordDrive.dir/fileTransfer.cpp.o
+.PHONY : fileTransfer.cpp.o
+
+fileTransfer.i: fileTransfer.cpp.i
+.PHONY : fileTransfer.i
+
+# target to preprocess a source file
+fileTransfer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Client_MyDiscordDrive.dir/build.make CMakeFiles/Client_MyDiscordDrive.dir/fileTransfer.cpp.i
+.PHONY : fileTransfer.cpp.i
+
+fileTransfer.s: fileTransfer.cpp.s
+.PHONY : fileTransfer.s
+
+# target to generate assembly for a file
+fileTransfer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Client_MyDiscordDrive.dir/build.make CMakeFiles/Client_MyDiscordDrive.dir/fileTransfer.cpp.s
+.PHONY : fileTransfer.cpp.s
+
 gui.o: gui.cpp.o
 .PHONY : gui.o
 
@@ -369,6 +393,9 @@ help:
 	@echo "... client.o"
 	@echo "... client.i"
 	@echo "... client.s"
+	@echo "... fileTransfer.o"
+	@echo "... fileTransfer.i"
+	@echo "... fileTransfer.s"
 	@echo "... gui.o"
 	@echo "... gui.i"
 	@echo "... gui.s"

@@ -6,8 +6,8 @@
 
 class DirectoryTree {
 public:
-    DirectoryTree() = default;
-    DirectoryTree(const std::string& filename, DirectoryTree* parent = nullptr);
+    //DirectoryTree() = default;
+    DirectoryTree(const std::string& id, const std::string& filename, DirectoryTree* parent = nullptr);
     DirectoryTree(const DirectoryTree&) = delete;
     DirectoryTree(DirectoryTree&&);
 
@@ -17,7 +17,7 @@ public:
     static DirectoryTree buildTree(const std::string& encoding);
     std::string encodeTree() const;
 
-    void addChild(const std::string& filename);
+    void addChild(const std::string& id, const std::string& filename);
     void addChild(DirectoryTree&& child);
     size_t childrenSize() const;
     DirectoryTree& child(size_t index);
@@ -25,8 +25,12 @@ public:
     std::string path() const;
     std::string name() const;
 
+    DirectoryTree* findID(const std::string& id);
+
 private:
+    // db identifier
     std::string id;
+    // aka alias, screen name
     std::string filename = "";
     DirectoryTree* parent = nullptr;
     std::vector<DirectoryTree> m_children = {};

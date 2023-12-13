@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
             "email TEXT PRIMARY KEY,"
             "password TEXT NOT NULL,"
             "salt TEXT NOT NULL,"
-            "files_id INTEGER NOT NULL"
+            "files_id TEXT NOT NULL"
         ");"
     )) {
         std::cerr << "Statement of table creation failed" << std::endl;

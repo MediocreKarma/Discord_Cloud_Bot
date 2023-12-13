@@ -1,6 +1,6 @@
 #include "commons.hpp"
 
-bool writeComms(int sd, char* buff, size_t len) {
+bool writeComms(int sd, const char* buff, size_t len) {
     int retry = 0;
     ssize_t sent = 0, total = 0;
     while (retry < 10) {
@@ -72,6 +72,6 @@ bool Communication::read(int sd, void* buff, size_t len) {
     return readComms(sd, static_cast<char*>(buff), len);
 }
 
-bool Communication::write(int sd, void* buff, size_t len) {
-    return writeComms(sd, static_cast<char*>(buff), len);
+bool Communication::write(int sd, const void* buff, size_t len) {
+    return writeComms(sd, static_cast<const char*>(buff), len);
 }

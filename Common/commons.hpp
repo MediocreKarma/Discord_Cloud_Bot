@@ -19,7 +19,7 @@ namespace Files {
 
 namespace FileTransfer {
     // 24,75 MiB chunks, to be safe
-    constexpr ssize_t MAX_FILE_TRANSFER = 25 * 1024 * 1024 - 256 * 1024; 
+    constexpr size_t MAX_FILE_TRANSFER = 25 * 1024 * 1024 - 256 * 1024; 
 }
 
 struct ClientMessage {
@@ -86,7 +86,7 @@ struct ServerMessage {
 
 namespace Communication {
 
-    bool write(int sd, void* buffer, size_t len);
+    bool write(int sd, const void* buffer, size_t len);
     bool read(int sd, void* buffer, size_t len);
 
 }

@@ -78,6 +78,8 @@ void clientHandler(
                     flag |= ClientThreads::REQUEST_SAVE_FLAG;
                 }
                 break;
+            case ClientMessage::RequestFileTree:
+                std::cout << "File Tree Requested" << std::endl;
         }
         cmessage.type = ClientMessage::Empty;
         std::cout << "Writing to client: " << smessage.type << std::endl; 
