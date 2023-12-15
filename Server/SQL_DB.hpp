@@ -14,25 +14,18 @@ public:
     SQL_DB() = delete;
     SQL_DB(const std::string& filename);
     ~SQL_DB();
-
     SQL_DB(const SQL_DB&) = delete;
     SQL_DB& operator = (const SQL_DB&) = delete;
-
     SQL_DB(SQL_DB&&);
     SQL_DB& operator = (SQL_DB&&);
 
     bool createStatement(const std::string& sql_statement);
     bool nextRow();
-
     bool isOpen() const;
-
-    // unorthodox methods, but I want the SQL_STATEMENT to survive
-    // even if there may be multiple rows to parse through
+    std::string name() const;
+    
     void lock();
     void unlock();
-
-    std::string name() const;
-
 
     /// @brief extract column value
     /// @tparam T type of data to be extracted

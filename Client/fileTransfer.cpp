@@ -50,7 +50,10 @@ void FileTransfer::sendFile(int sd, const std::string& filepath, const Directory
     ClientMessage cmsg;
     cmsg.type = ClientMessage::FileUpload;
     cmsg.content.file.size = fileSize;
-    std::string alias = filepath.substr(filepath.find_last_of('/'));
+    std::string alias = filepath.substr(filepath.find_last_of('/') + 1);
+    if (alias.empty()) {
+        throw std::ios::failure("Incorrect file");
+    }
     std::cout << "\'" + alias + "\' " << fileSize << std::endl;
     strncpy(cmsg.content.file.alias, alias.c_str(), 255);
     cmsg.content.file.alias[255] = '\0';
@@ -70,7 +73,6 @@ void FileTransfer::sendFile(int sd, const std::string& filepath, const Directory
     bool reading = true;
     while (reading) {
         reading = static_cast<bool>(file.read(chunk.data(), MAX_FILE_TRANSFER));
-        std::cout << "\'" + chunk + "\'" << std::endl;
         if (Communication::write(sd, chunk.c_str(), file.gcount()) == false) {
             perror("error writing to server");
             throw std::ios::failure("Write failure to socket");
@@ -83,8 +85,8 @@ void FileTransfer::sendFile(int sd, const std::string& filepath, const Directory
         if (smsg.type != ServerMessage::OK) {
             throw std::ios::failure("Server canceled file request");
         }
-        std::cout << "Wrote and read" << std::endl;
     }
+    std::cout << "Finished upload" << std::endl;
     if (Communication::read(sd, &smsg, sizeof(smsg)) == false) {
         perror("error reading request");
         throw std::ios::failure("Read from socket failed");

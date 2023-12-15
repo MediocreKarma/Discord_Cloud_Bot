@@ -17,22 +17,25 @@ DirectoryTree& DirectoryTree::operator = (DirectoryTree&& other) {
     return *this;
 }
 
-void buildTree_util(const std::string& encoding, size_t& index, DirectoryTree& current) {
-    if (encoding[index] == '\0') {
-        return;
-    }
+void buildTree_util(const std::string& encoding, size_t& index, DirectoryTree& parent) {
+    // explicit null string instantiation (to prevent c-string related problems)
     const std::string SEP = std::string(1, '\0') + std::string(1, '/');
-    std::size_t filenameSeparator = encoding.find_first_of(SEP, index + 1);
-    std::string id = encoding.substr(index + 1, 8);
-    std::string filename = encoding.substr(index + 1 + 8, filenameSeparator - index - 1 - 8);
-    index = filenameSeparator;
-    current.addChild(id, filename);
-    while (index != std::string::npos) {
+    while (index < encoding.size()) {
         if (encoding[index] == '\0') {
             ++index;
             return;
         }
-        buildTree_util(encoding, index, current.child(current.childrenSize() - 1));
+        else if (encoding[index] == '/') {
+            size_t filenameSeparator = encoding.find_first_of(SEP, index + 1);
+            std::string id = encoding.substr(index + 1, DirectoryTree::ID_LEN);
+            std::string filename = encoding.substr(
+                index + 1 + DirectoryTree::ID_LEN, 
+                filenameSeparator - index - 1 - DirectoryTree::ID_LEN
+            );
+            index = filenameSeparator;
+            parent.addChild(id, filename);
+            buildTree_util(encoding, index, parent.child(parent.childrenSize() - 1));
+        }
     }
 }
 

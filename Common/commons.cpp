@@ -1,15 +1,17 @@
 #include "commons.hpp"
 
+static constexpr size_t RETRIES_MAX = 30;
+
 bool writeComms(int sd, const char* buff, size_t len) {
     int retry = 0;
     ssize_t sent = 0, total = 0;
-    while (retry < 10) {
+    while (retry < RETRIES_MAX) {
         /// possible errors include:
         /// EAGAIN or EWOULDBLOCK or EINTR -> recoverable
         /// anything else -> unrecoverable
         sent = write(sd, buff + total, len - total);
         if (sent == -1) {
-            if (errno == EINTR || errno == EWOULDBLOCK || errno == EINTR) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
                 std::this_thread::sleep_for(std::chrono::seconds(1));
                 retry++;
                 continue;
@@ -22,6 +24,8 @@ bool writeComms(int sd, const char* buff, size_t len) {
             // finished reading properly
             return true;
         }
+        // a successful write means we can continue retrying
+        retry = 0;
         total += sent;
         // this should be impossible
         if (total > len) {
@@ -37,13 +41,13 @@ bool writeComms(int sd, const char* buff, size_t len) {
 bool readComms(int sd, char* buff, size_t len) {
     int retry = 0;
     ssize_t received = 0, total = 0;
-    while (retry < 10) {
+    while (retry < RETRIES_MAX) {
         /// possible errors include:
         /// EAGAIN or EWOULDBLOCK or EINTR -> recoverable
         /// anything else -> unrecoverable
         received = read(sd, buff + total, len - total);
         if (received == -1) {
-            if (errno == EINTR || errno == EWOULDBLOCK || errno == EINTR) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
                 std::this_thread::sleep_for(std::chrono::seconds(1));
                 retry++;
                 continue;
@@ -56,6 +60,8 @@ bool readComms(int sd, char* buff, size_t len) {
             // finished writing properly
             return true;
         }
+        // a successful write means we can continue retrying
+        retry = 0;
         total += received;
         // this should be impossible
         if (total > len) {

@@ -93,8 +93,6 @@ void clientHandler(
                 else {
                     std::cout << "Failed to send file tree" << std::endl;
                 }
-                
-
                 break;
             case ClientMessage::FileUpload:
                 std::cout << "File upload requested" << std::endl;

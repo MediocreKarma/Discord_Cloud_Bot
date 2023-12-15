@@ -64,9 +64,8 @@ bool FileTransfer::receiveFile(
         if (readLength < MAX_FILE_TRANSFER) {
             chunk.resize(readLength);
         }
-        std::cout << chunk << std::endl;
         readSize += readLength;
-        std::string indexStr = std::to_string(index);
+        std::string indexStr = std::to_string(index++);
         indexStr = std::string(5 - indexStr.size(), '0') + indexStr;
         const std::string part_filename = id + "_" + indexStr;
         dpp::message fileMessage;
@@ -80,8 +79,8 @@ bool FileTransfer::receiveFile(
             perror("Could not write to client");
             goto deleteFiles;
         }
-        std::cout << "Wrote and read" << std::endl;
     }
+    std::cout << "Finished upload" << std::endl;
     // created all parts, now add to db
     info.db.lock(); 
     info.db.createStatement(

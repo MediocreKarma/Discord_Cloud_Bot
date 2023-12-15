@@ -43,6 +43,7 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
         std::string salt     = loginDB.extract<std::string>(1);
         res = std::stoull(loginDB.extract<std::string>(2));
         loginDB.unlock();
+        std::cout << "File snowflake is: " << res << std::endl;
         if (password != passwordHash(std::string(pass) + salt)) {
             return {nullptr, {ServerMessage::Error, ServerMessage::WrongLogin}};
         }
@@ -61,7 +62,6 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
         std::cerr << "User file was deleted" << std::endl;
         return {nullptr, {ServerMessage::Error, ServerMessage::InternalError}};
     }
-    
     std::string dbData = "", treeData = "\0";
     for (const dpp::attachment& attach : infoMessage.attachments) {
         std::string data;
@@ -247,7 +247,7 @@ void Request::updateDiscord(UserInfo& info, SQL_DB& loginDB, const dpp::snowflak
     // update login db
     loginDB.lock();
     loginDB.createStatement(
-        std::string("UPDATE login") +
+        std::string("UPDATE login ") +
         "SET files_id = \'" + updatedSnowflake + "\' " +
         "WHERE files_id = \'" + info.managerFile.str() + "\';"
     );

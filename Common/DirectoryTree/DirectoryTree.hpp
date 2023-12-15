@@ -6,6 +6,8 @@
 
 class DirectoryTree {
 public:
+    static constexpr size_t ID_LEN = 8;
+
     //DirectoryTree() = default;
     DirectoryTree(const std::string& id, const std::string& filename, DirectoryTree* parent = nullptr);
     DirectoryTree(const DirectoryTree&) = delete;
