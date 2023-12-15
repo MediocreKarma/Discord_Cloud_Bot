@@ -65,7 +65,7 @@ bool FileTransfer::receiveFile(
         readSize += readLength;
         std::string indexStr = std::to_string(index++);
         indexStr = std::string(5 - indexStr.size(), '0') + indexStr;
-        const std::string part_filename = id + "_" + indexStr;
+        const std::string part_filename = id + "_" + indexStr + ".txt";
         dpp::message fileMessage;
         fileMessage
             .set_channel_id(filesSnowflake)

@@ -283,7 +283,7 @@ std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool
     //codeTextbox.setScale(2, 2);
     codeTextbox.setShapeFillColor(Colors::LightGray);
     const char alphabet[] = "0123456789";
-    codeTextbox.setAlphabet(std::unordered_set<char>(alphabet, alphabet + sizeof(alphabet) / sizeof(char)));
+    codeTextbox.setAlphabet(std::unordered_set<char>(alphabet, alphabet + sizeof(alphabet) / sizeof(char) - 1));
     RoundedRectangleTextShape infoShape(sf::RoundedRectangleShape({0, 0}, 0, 0), sf::Text("Please be patient, the confirmation email\nmay take a few moments before arriving.", GUI::Font));
     infoShape.setOrigin(infoShape.getSize().x / 2, infoShape.getSize().y / 2);
     infoShape.setPosition(

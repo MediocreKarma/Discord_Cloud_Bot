@@ -1,7 +1,7 @@
 #include "requestHandler.hpp"
 
-const std::string FILE_MANAGER_NAME = "FileManager.sqlite3";
-const std::string FILE_TREE_NAME    = "FileTree.tree";
+const std::string FILE_MANAGER_NAME = "FileManager.sqlite3.txt";
+const std::string FILE_TREE_NAME    = "FileTree.tree.txt";
 
 
 bool emailInDB(const char email[], SQL_DB& loginDB) {
