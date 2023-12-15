@@ -6,3 +6,8 @@ Server_MyDiscordDrive
 CMakeFiles
 Makefile
 /Testing
+/idei.txt
+*.json
+smtpclientlibrary-*
+.vscode
+/build
