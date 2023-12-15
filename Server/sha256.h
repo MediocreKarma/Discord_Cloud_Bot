@@ -1,3 +1,6 @@
+#ifndef _SHA_256__
+#define _SHA_256__
+
 // //////////////////////////////////////////////////////////
 // sha256.h
 // Copyright (c) 2014,2015 Stephan Brumme. All rights reserved.
@@ -76,3 +79,5 @@ private:
   /// hash, stored as integers
   uint32_t m_hash[HashValues];
 };
+
+#endif

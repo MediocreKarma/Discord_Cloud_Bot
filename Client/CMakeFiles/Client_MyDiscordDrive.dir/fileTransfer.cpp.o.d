@@ -238,4 +238,6 @@ CMakeFiles/Client_MyDiscordDrive.dir/fileTransfer.cpp.o: \
  /usr/include/c++/11/bits/shared_ptr_base.h \
  /usr/include/c++/11/bits/allocated_ptr.h \
  /usr/include/c++/11/ext/aligned_buffer.h \
- /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
+ /usr/include/string.h /usr/include/strings.h \
+ /usr/include/c++/11/iostream

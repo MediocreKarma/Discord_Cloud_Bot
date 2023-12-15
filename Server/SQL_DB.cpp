@@ -1,7 +1,7 @@
 #include "SQL_DB.hpp"
 
-SQL_DB::SQL_DB(const std::string& filename) : 
-db(nullptr), stmt(nullptr), is_open(false), nextRow_rc(0), dbMutex(), isLocked(false) {
+SQL_DB::SQL_DB(const std::string& _filename) : 
+    filename(_filename), db(nullptr), stmt(nullptr), is_open(false), nextRow_rc(0), dbMutex(), isLocked(false) {
     int rc = sqlite3_open(filename.c_str(), &db);
     is_open = (rc == SQLITE_OK);
 }
@@ -13,15 +13,28 @@ SQL_DB::~SQL_DB() {
     stmt = nullptr;
 }
 
-// SQL_DB::SQL_DB(SQL_DB&& other) {
-//     *this = std::move(other);
-// }
+SQL_DB::SQL_DB(SQL_DB&& other) : 
+    filename(), db(other.db), stmt(other.stmt), nextRow_rc(other.nextRow_rc), dbMutex(), isLocked(other.isLocked) {
+    other.lock();
+    filename = std::move(other.filename);
+    other.db = nullptr;
+    other.stmt = nullptr;
+    other.isLocked = true;
+}
 
-// SQL_DB& SQL_DB::operator = (SQL_DB&& other) {
-//     memcpy(this, &other, sizeof(SQL_DB));
-//     memset(&other, 0, sizeof(SQL_DB));
-//     return *this;
-// }
+SQL_DB& SQL_DB::operator = (SQL_DB&& other)  {
+    // lock in constructor until the other one is done
+    // and leave the other one locked forever
+    db = other.db;
+    stmt = other.stmt;
+    nextRow_rc = other.nextRow_rc;
+    isLocked = other.isLocked;
+    other.lock();
+    other.db = nullptr;
+    other.stmt = nullptr;
+    other.isLocked = true;
+    return *this;
+}
 
 bool SQL_DB::createStatement(const std::string& stmtStr) {
     if (!isLocked) {
@@ -68,6 +81,10 @@ void SQL_DB::lock() {
 void SQL_DB::unlock() {
     dbMutex.unlock();
     isLocked = false;
+}
+
+std::string SQL_DB::name() const {
+    return filename;
 }
 
 template<>

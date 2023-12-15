@@ -37,22 +37,27 @@ DirectoryTree buildFilesystem(const int sd) {
     if (Communication::read(sd, &smsg, sizeof(smsg)) == false) {
         throw std::ios::failure("File tree message could not be read");
     }
+    std::cout << "Read server message" << std::endl;
     size_t size = smsg.content.size;
-    std::string treeString(size + 1, '\0');
+    std::string treeString(size, '\0');
     if (Communication::read(sd, treeString.data(), size) == false) {
         throw std::ios::failure("File tree could not be read");
+    }
+    if (Communication::read(sd, &smsg, sizeof(smsg)) == false) {
+        perror("did not read OK");
+        throw std::ios::failure("OK not received");
     }
     return DirectoryTree::buildTree(treeString);
 }
 
-// need rvalue ref, don't copy strings of 25MB
-std::string encrypt(std::string&& data, const std::string& encryptionKey) {
+// need ref, don't copy strings of 25MB
+std::string encrypt(std::string& data, const std::string& encryptionKey) {
     for (size_t i = 0; i < data.size(); ++i) {
         data[i] ^= encryptionKey[i % encryptionKey.size()];
     }
     return data;
 }
 
-std::string decrypt(std::string&& data, const std::string& encryptionKey) {
-    return encrypt(std::move(data), encryptionKey);
+std::string decrypt(std::string& data, const std::string& encryptionKey) {
+    return encrypt(data, encryptionKey);
 }

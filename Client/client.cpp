@@ -48,16 +48,24 @@ int main(int argc, char** argv) {
             return 0;
         }
         DirectoryTree root = buildFilesystem(sd);
-        GUI::currentDirectoryRequest(window, root);
-        return 0;
-        // while (login) {
-
-            // display current directory
-
-        // }
+        DirectoryTree* current = &root;
+        std::cout << "Built root filesystem: " + root.encodeTree() << std::endl;
+        while (login) {
+            GUI::UserRequests ur = GUI::currentDirectoryRequest(window, *current);
+            switch (ur.type) {
+                case GUI::UserRequests::Upload:
+                    FileTransfer::sendFile(sd, std::get<std::string>(ur.data), root, *current);
+                    break;
+                case GUI::UserRequests::ChangeDirectory:
+                    // ...
+                    break;
+                case GUI::UserRequests::Quit:
+                    goto clientShutdown;
+            }
+        }
     }
 
-
+clientShutdown:
     close(sd);
     return 0;
 }

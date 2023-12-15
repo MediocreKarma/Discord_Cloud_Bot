@@ -438,4 +438,5 @@ CMakeFiles/Server_MyDiscordDrive.dir/server.cpp.o: \
  /home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-src/src/cpp/../message.h \
  /home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-src/src/cpp/messageaddress.hpp \
  /home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-src/src/cpp/../messageaddress.h \
- /home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-src/src/cpp/../plaintextmessage.h
+ /home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-src/src/cpp/../plaintextmessage.h \
+ /home/karma/Desktop/Retele/Project/Server/fileTransfer.hpp

@@ -114,7 +114,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
             switch (event.type) {
                 case sf::Event::Closed:
                     window.close();
-                    return {};
+                    return {UserRequests::Quit, std::monostate()};
                 case sf::Event::MouseWheelScrolled: {
                     constexpr float SCROLL_MOVEMENT = 20;
                     if (event.mouseWheelScroll.delta > 0 && activeView.getCenter().y > window.getSize().y / 2) {
@@ -149,17 +149,13 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                     if (uploadButton.hit(mouse)) {
                         std::string filePath = userInputString("Add file to cloud", "Enter path here", window);
                         std::cout << "Input is: \'" << filePath << '\'' <<  std::endl;
-                        if (std::filesystem::is_directory(filePath)) {
+                        if (!std::filesystem::is_regular_file(filePath)) {
                             std::cerr << "Directory instead of file" << std::endl;
                         }
-                        std::ifstream fileStream(filePath);
-                        if (fileStream.good() == false) {
-                            std::cerr << "Invalid file path!" << std::endl;
-                        }
-                        //current.addChild(filePath);
+                        return {UserRequests::Upload, filePath};
                     }
                     else if (selected) {
-
+                        // implement other commands later
                     }
             }
         }
@@ -176,6 +172,6 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         window.display();
         std::this_thread::sleep_for(std::chrono::milliseconds(33));
     }
-
+    return {UserRequests::Quit, std::monostate()};
 }
 

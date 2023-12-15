@@ -248,6 +248,30 @@ SQL_DB.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Server_MyDiscordDrive.dir/build.make CMakeFiles/Server_MyDiscordDrive.dir/SQL_DB.cpp.s
 .PHONY : SQL_DB.cpp.s
 
+fileTransfer.o: fileTransfer.cpp.o
+.PHONY : fileTransfer.o
+
+# target to build an object file
+fileTransfer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Server_MyDiscordDrive.dir/build.make CMakeFiles/Server_MyDiscordDrive.dir/fileTransfer.cpp.o
+.PHONY : fileTransfer.cpp.o
+
+fileTransfer.i: fileTransfer.cpp.i
+.PHONY : fileTransfer.i
+
+# target to preprocess a source file
+fileTransfer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Server_MyDiscordDrive.dir/build.make CMakeFiles/Server_MyDiscordDrive.dir/fileTransfer.cpp.i
+.PHONY : fileTransfer.cpp.i
+
+fileTransfer.s: fileTransfer.cpp.s
+.PHONY : fileTransfer.s
+
+# target to generate assembly for a file
+fileTransfer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Server_MyDiscordDrive.dir/build.make CMakeFiles/Server_MyDiscordDrive.dir/fileTransfer.cpp.s
+.PHONY : fileTransfer.cpp.s
+
 home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.o: home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.cpp.o
 .PHONY : home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.o
 
@@ -413,6 +437,9 @@ help:
 	@echo "... SQL_DB.o"
 	@echo "... SQL_DB.i"
 	@echo "... SQL_DB.s"
+	@echo "... fileTransfer.o"
+	@echo "... fileTransfer.i"
+	@echo "... fileTransfer.s"
 	@echo "... home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.o"
 	@echo "... home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.i"
 	@echo "... home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.s"

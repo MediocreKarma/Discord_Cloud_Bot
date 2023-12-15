@@ -26,6 +26,7 @@ public:
     std::string name() const;
 
     DirectoryTree* findID(const std::string& id);
+    const DirectoryTree* findID(const std::string& id) const;
 
 private:
     // db identifier

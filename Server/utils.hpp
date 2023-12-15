@@ -21,6 +21,8 @@ dpp::snowflake generateLoginFile(dpp::cluster& discord, dpp::snowflake loginChan
 
 std::pair<int, sockaddr_in> makeSocket();
 
+std::string generateFilename(const std::string& APPEND = "");
+
 namespace Secrets {
 
     static inline const std::string 
@@ -41,7 +43,9 @@ namespace Channels {
 }
 
 namespace Files {
-    static inline const std::string LOGIN_FILE = "/tmp/login.sqlite3";
+    static inline const std::string PATH       = "/tmp/Discord_Cloud/";
+    static inline const std::string LOGIN_FILE = PATH + "login.sqlite3";
+    static inline const std::string SQL_APPEND = "USER_SQL_";
 }
 
 #endif

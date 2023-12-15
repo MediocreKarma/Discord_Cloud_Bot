@@ -98,12 +98,12 @@ smtpclientlibrary-build/clean: smtpclientlibrary-build/CMakeFiles/uninstall.dir/
 CMakeFiles/Server_MyDiscordDrive.dir/all: smtpclientlibrary-build/CMakeFiles/smtpclient.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Server_MyDiscordDrive.dir/build.make CMakeFiles/Server_MyDiscordDrive.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Server_MyDiscordDrive.dir/build.make CMakeFiles/Server_MyDiscordDrive.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/karma/Desktop/Retele/Project/Server/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target Server_MyDiscordDrive"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/karma/Desktop/Retele/Project/Server/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target Server_MyDiscordDrive"
 .PHONY : CMakeFiles/Server_MyDiscordDrive.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Server_MyDiscordDrive.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karma/Desktop/Retele/Project/Server/CMakeFiles 33
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karma/Desktop/Retele/Project/Server/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Server_MyDiscordDrive.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/karma/Desktop/Retele/Project/Server/CMakeFiles 0
 .PHONY : CMakeFiles/Server_MyDiscordDrive.dir/rule
@@ -124,7 +124,7 @@ CMakeFiles/Server_MyDiscordDrive.dir/clean:
 smtpclientlibrary-build/CMakeFiles/smtpclient.dir/all:
 	$(MAKE) $(MAKESILENT) -f smtpclientlibrary-build/CMakeFiles/smtpclient.dir/build.make smtpclientlibrary-build/CMakeFiles/smtpclient.dir/depend
 	$(MAKE) $(MAKESILENT) -f smtpclientlibrary-build/CMakeFiles/smtpclient.dir/build.make smtpclientlibrary-build/CMakeFiles/smtpclient.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/karma/Desktop/Retele/Project/Server/CMakeFiles --progress-num=10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33 "Built target smtpclient"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/karma/Desktop/Retele/Project/Server/CMakeFiles --progress-num=11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34 "Built target smtpclient"
 .PHONY : smtpclientlibrary-build/CMakeFiles/smtpclient.dir/all
 
 # Build rule for subdir invocation for target.

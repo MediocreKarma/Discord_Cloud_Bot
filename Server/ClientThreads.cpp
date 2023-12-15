@@ -12,7 +12,8 @@ void clientHandler(
     ClientMessage cmessage;
     ServerMessage smessage;
     bool loggedIn = false;
-    dpp::snowflake dbManagerFileSnowflake = 0;
+    bool updated = false;
+    std::unique_ptr<Request::UserInfo> userManagerFiles = nullptr;
     std::string code;
     std::string username, password;
     pollfd clientPoll = {client, POLLIN | POLLNVAL, 0};
@@ -46,11 +47,17 @@ void clientHandler(
                 break;
             case ClientMessage::SignInRequest:
                 // verify Sign In from login database
-                std::tie(dbManagerFileSnowflake, smessage) = Request::signIn(cmessage.content.signData.email, cmessage.content.signData.pass, loginDB);
+                std::tie(userManagerFiles, smessage) = Request::signIn(
+                    cmessage.content.signData.email, 
+                    cmessage.content.signData.pass, 
+                    loginDB, 
+                    discord, 
+                    channelSnowflakes.at(Channels::USER_INFO)
+                );
                 loggedIn = (smessage.type == ServerMessage::OK);
+                std::cout << "Log in request finished" << std::endl;
                 break;
             case ClientMessage::SignUpRequest:
-                std::cout << "Receiving sign up request" << std::endl;
                 // check if email is already in use
                 smessage = Request::verifyEmailAlreadyInUse(loginDB, cmessage.content.signData.email);
                 if (smessage.type != ServerMessage::OK) {
@@ -58,15 +65,16 @@ void clientHandler(
                 }
                 std::cout << "Sending email" << std::endl;
                 std::tie(smessage, code) = Request::sendSignUpEmail(cmessage.content.signData.email, secrets);
-                std::cout << "Email sent" << std::endl;
+                std::cout << "Email sent (if possible)" << std::endl;
                 break;
             case ClientMessage::SignUpCode:
-                std::cout << "Receiving client code" << std::endl;
                 if (code != cmessage.content.signData.signCode) {
+                    std::cout << "Invalid code" << std::endl;
                     smessage.type = ServerMessage::Error;
                     smessage.error = ServerMessage::WrongCode;
                 } 
                 else {
+                    std::cout << "Good code, finalizing signup" << std::endl;
                     smessage = Request::finalizeSignup(
                         cmessage.content.signData.email, 
                         cmessage.content.signData.pass,
@@ -79,7 +87,34 @@ void clientHandler(
                 }
                 break;
             case ClientMessage::RequestFileTree:
-                std::cout << "File Tree Requested" << std::endl;
+                if (Request::sendTreeFile(client, userManagerFiles->tree)) {
+                    std::cout << "File Tree Sent" << std::endl;
+                }
+                else {
+                    std::cout << "Failed to send file tree" << std::endl;
+                }
+                
+
+                break;
+            case ClientMessage::FileUpload:
+                std::cout << "File upload requested" << std::endl;
+                bool newUpdate = FileTransfer::receiveFile(
+                    client,
+                    discord,
+                    channelSnowflakes.at(Channels::DATA),
+                    *userManagerFiles,
+                    cmessage.content.file.size,
+                    std::string(cmessage.content.file.alias)
+                );
+                if (newUpdate) {
+                    updated |= true;
+                    smessage.type = ServerMessage::OK;
+                }
+                else {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::InternalError;
+                }
+                break;
         }
         cmessage.type = ClientMessage::Empty;
         std::cout << "Writing to client: " << smessage.type << std::endl; 
@@ -90,7 +125,9 @@ void clientHandler(
     }
 
 endHandler:
-    flag |= ClientThreads::TERMINATE_FLAG;
+    if (updated) {
+        Request::updateDiscord(*userManagerFiles, loginDB, channelSnowflakes.at(Channels::USER_INFO), discord);
+    }
     std::cout << "Thread done" << std::endl;
     smessage = {ServerMessage::ServerQuit, ServerMessage::NoError};
     if (Communication::write(client, &smessage, sizeof(smessage)) == false) {

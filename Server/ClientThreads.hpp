@@ -9,6 +9,7 @@
 #include "SQL_DB.hpp"
 #include "../Common/commons.hpp"
 #include <poll.h>
+#include "fileTransfer.hpp"
 
 class ClientThreads {
 public:

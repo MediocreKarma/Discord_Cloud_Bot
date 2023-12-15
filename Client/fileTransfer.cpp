@@ -1,5 +1,4 @@
 #include "fileTransfer.hpp"
-#include <filesystem>
 
 void FileTransfer::receiveFile(int sd, const std::string& filepath) {
     std::ofstream file(filepath, std::ios::binary | std::ios::trunc);
@@ -42,7 +41,7 @@ void FileTransfer::receiveFile(int sd, const std::string& filepath) {
     
 }
 
-void FileTransfer::sendFile(int sd, const std::string& filepath) {
+void FileTransfer::sendFile(int sd, const std::string& filepath, const DirectoryTree& root, DirectoryTree& current) {
     std::ifstream file(filepath, std::ios::binary);
     if (!file.is_open()) {
         throw std::invalid_argument("Bad filepath!");
@@ -50,7 +49,11 @@ void FileTransfer::sendFile(int sd, const std::string& filepath) {
     std::size_t fileSize = std::filesystem::file_size(filepath);
     ClientMessage cmsg;
     cmsg.type = ClientMessage::FileUpload;
-    cmsg.content.fileSize = fileSize;
+    cmsg.content.file.size = fileSize;
+    std::string alias = filepath.substr(filepath.find_last_of('/'));
+    std::cout << "\'" + alias + "\' " << fileSize << std::endl;
+    strncpy(cmsg.content.file.alias, alias.c_str(), 255);
+    cmsg.content.file.alias[255] = '\0';
     ServerMessage smsg;
     if (Communication::write(sd, &cmsg, sizeof(cmsg)) == false) {
         perror("error writing to server");
@@ -64,7 +67,10 @@ void FileTransfer::sendFile(int sd, const std::string& filepath) {
         throw std::ios::failure("Server refused file transfer");
     }
     std::string chunk(MAX_FILE_TRANSFER, '\0');
-    while (file.read(chunk.data(), MAX_FILE_TRANSFER)) {
+    bool reading = true;
+    while (reading) {
+        reading = static_cast<bool>(file.read(chunk.data(), MAX_FILE_TRANSFER));
+        std::cout << "\'" + chunk + "\'" << std::endl;
         if (Communication::write(sd, chunk.c_str(), file.gcount()) == false) {
             perror("error writing to server");
             throw std::ios::failure("Write failure to socket");
@@ -77,6 +83,35 @@ void FileTransfer::sendFile(int sd, const std::string& filepath) {
         if (smsg.type != ServerMessage::OK) {
             throw std::ios::failure("Server canceled file request");
         }
+        std::cout << "Wrote and read" << std::endl;
     }
+    if (Communication::read(sd, &smsg, sizeof(smsg)) == false) {
+        perror("error reading request");
+        throw std::ios::failure("Read from socket failed");
+    }
+    if (smsg.type != ServerMessage::SendID) {
+        std::cerr << "Invalid message type: " << (int)smsg.type << std::endl;
+        throw std::ios::failure("Server went haywire");
+    }
+    std::string id = smsg.content.file_id;
+    current.addChild(id, alias);
+    chunk = root.encodeTree();
+    cmsg.type = ClientMessage::UpdateFileTree;
+    cmsg.content.file.size = chunk.size();
+    if (Communication::write(sd, &cmsg, sizeof(cmsg)) == false ||
+        Communication::write(sd, chunk.c_str(), chunk.size()) == false) {
+        perror("error writing to server");
+        throw std::ios::failure("Write failure to socket");
+    }
+    if (Communication::read(sd, &smsg, sizeof(smsg)) == false) {
+        perror("error reading ok from server");
+        throw std::ios::failure("Failed right at the end of the upload");
+    }
+    if (smsg.type != ServerMessage::OK) {
+        // what the hell happened here???
+        std::cerr << "Server refused to finish operation" << std::endl;
+        throw std::ios::failure("Server refused upload");
+    }
+    // YAY!!!!
 }
 

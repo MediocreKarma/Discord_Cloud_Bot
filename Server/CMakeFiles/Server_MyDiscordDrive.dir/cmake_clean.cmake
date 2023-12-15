@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Server_MyDiscordDrive.dir/ClientThreads.cpp.o.d"
   "CMakeFiles/Server_MyDiscordDrive.dir/SQL_DB.cpp.o"
   "CMakeFiles/Server_MyDiscordDrive.dir/SQL_DB.cpp.o.d"
+  "CMakeFiles/Server_MyDiscordDrive.dir/fileTransfer.cpp.o"
+  "CMakeFiles/Server_MyDiscordDrive.dir/fileTransfer.cpp.o.d"
   "CMakeFiles/Server_MyDiscordDrive.dir/home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.cpp.o"
   "CMakeFiles/Server_MyDiscordDrive.dir/home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.cpp.o.d"
   "CMakeFiles/Server_MyDiscordDrive.dir/home/karma/Desktop/Retele/Project/Common/commons.cpp.o"

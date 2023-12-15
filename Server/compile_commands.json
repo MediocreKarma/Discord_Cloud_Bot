@@ -40,6 +40,11 @@
   "file": "/home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.cpp"
 },
 {
+  "directory": "/home/karma/Desktop/Retele/Project/Server",
+  "command": "/usr/bin/c++  -I/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-src/src -std=gnu++20 -o CMakeFiles/Server_MyDiscordDrive.dir/fileTransfer.cpp.o -c /home/karma/Desktop/Retele/Project/Server/fileTransfer.cpp",
+  "file": "/home/karma/Desktop/Retele/Project/Server/fileTransfer.cpp"
+},
+{
   "directory": "/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-build",
   "command": "/usr/bin/c++   -O3 -DNDEBUG -Wall -Wfatal-errors -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wnull-dereference -Wuseless-cast -Wdouble-promotion -Wformat=2 -std=gnu++17 -o CMakeFiles/smtpclient.dir/src/attachment.cpp.o -c /home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-src/src/attachment.cpp",
   "file": "/home/karma/Desktop/Retele/Project/Server/smtpclientlibrary-src/src/attachment.cpp"

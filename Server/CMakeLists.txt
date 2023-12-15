@@ -17,6 +17,7 @@ add_executable(
     sha256.cpp /
     ../Common/commons.cpp /
     ../Common/DirectoryTree/DirectoryTree.cpp
+    fileTransfer.cpp / 
 )
 
 add_compile_options(-Wall)

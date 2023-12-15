@@ -17,21 +17,22 @@ DirectoryTree& DirectoryTree::operator = (DirectoryTree&& other) {
     return *this;
 }
 
-void buildTree_util(const std::string& encoding, size_t& index, DirectoryTree& parent) {
+void buildTree_util(const std::string& encoding, size_t& index, DirectoryTree& current) {
     if (encoding[index] == '\0') {
         return;
     }
-    std::size_t filenameSeparator = encoding.find_first_of(std::string("/\\"), index + 1);
-    std::string id = encoding.substr(index + 1, index + 1 + 8);
-    std::string filename = encoding.substr(index + 1 + 8, filenameSeparator - index - 1);
+    const std::string SEP = std::string(1, '\0') + std::string(1, '/');
+    std::size_t filenameSeparator = encoding.find_first_of(SEP, index + 1);
+    std::string id = encoding.substr(index + 1, 8);
+    std::string filename = encoding.substr(index + 1 + 8, filenameSeparator - index - 1 - 8);
     index = filenameSeparator;
-    parent.addChild(id, filename);
+    current.addChild(id, filename);
     while (index != std::string::npos) {
         if (encoding[index] == '\0') {
             ++index;
             return;
         }
-        buildTree_util(encoding, index, parent.child(parent.childrenSize() - 1));
+        buildTree_util(encoding, index, current.child(current.childrenSize() - 1));
     }
 }
 
@@ -87,6 +88,19 @@ DirectoryTree* DirectoryTree::findID(const std::string& target) {
     }
     for (DirectoryTree& child : m_children) {
         DirectoryTree* ptr = child.findID(target);
+        if (ptr) {
+            return ptr;
+        }
+    }
+    return nullptr;
+}
+
+const DirectoryTree* DirectoryTree::findID(const std::string& target) const {
+    if (id == target) {
+        return this;
+    }
+    for (const DirectoryTree& child : m_children) {
+        const DirectoryTree* ptr = child.findID(target);
         if (ptr) {
             return ptr;
         }

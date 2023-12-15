@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/karma/Desktop/Retele/Project/Server/ClientThreads.cpp" "CMakeFiles/Server_MyDiscordDrive.dir/ClientThreads.cpp.o" "gcc" "CMakeFiles/Server_MyDiscordDrive.dir/ClientThreads.cpp.o.d"
   "/home/karma/Desktop/Retele/Project/Server/SQL_DB.cpp" "CMakeFiles/Server_MyDiscordDrive.dir/SQL_DB.cpp.o" "gcc" "CMakeFiles/Server_MyDiscordDrive.dir/SQL_DB.cpp.o.d"
+  "/home/karma/Desktop/Retele/Project/Server/fileTransfer.cpp" "CMakeFiles/Server_MyDiscordDrive.dir/fileTransfer.cpp.o" "gcc" "CMakeFiles/Server_MyDiscordDrive.dir/fileTransfer.cpp.o.d"
   "/home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.cpp" "CMakeFiles/Server_MyDiscordDrive.dir/home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.cpp.o" "gcc" "CMakeFiles/Server_MyDiscordDrive.dir/home/karma/Desktop/Retele/Project/Common/DirectoryTree/DirectoryTree.cpp.o.d"
   "/home/karma/Desktop/Retele/Project/Common/commons.cpp" "CMakeFiles/Server_MyDiscordDrive.dir/home/karma/Desktop/Retele/Project/Common/commons.cpp.o" "gcc" "CMakeFiles/Server_MyDiscordDrive.dir/home/karma/Desktop/Retele/Project/Common/commons.cpp.o.d"
   "/home/karma/Desktop/Retele/Project/Server/requestHandler.cpp" "CMakeFiles/Server_MyDiscordDrive.dir/requestHandler.cpp.o" "gcc" "CMakeFiles/Server_MyDiscordDrive.dir/requestHandler.cpp.o.d"

@@ -1,5 +1,9 @@
 #include "requestHandler.hpp"
 
+const std::string FILE_MANAGER_NAME = "FileManager.sqlite3";
+const std::string FILE_TREE_NAME    = "FileTree.tree";
+
+
 bool emailInDB(const char email[], SQL_DB& loginDB) {
     loginDB.lock();
     loginDB.createStatement(
@@ -14,12 +18,19 @@ bool emailInDB(const char email[], SQL_DB& loginDB) {
     throw std::ios::failure("Problematic SQL communcations for email acquisition");
 }
 
-std::pair<dpp::snowflake, ServerMessage> Request::signIn(const char email[], const char pass[], SQL_DB& loginDB) {
+std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
+    const char email[], 
+    const char pass[], 
+    SQL_DB& loginDB, 
+    dpp::cluster& discord,
+    const dpp::snowflake infoSnowflake
+) {
     // Nothing here should throw, beside the ios::failure, so the mutex should not end in an invalid state
+    dpp::snowflake res = 0;
     try {
         bool used = emailInDB(email, loginDB);
         if (!used) {
-            return {0, {ServerMessage::Error, ServerMessage::WrongLogin}};
+            return {nullptr, {ServerMessage::Error, ServerMessage::WrongLogin}};
         }
         loginDB.lock();
         loginDB.createStatement(
@@ -30,18 +41,78 @@ std::pair<dpp::snowflake, ServerMessage> Request::signIn(const char email[], con
         }
         std::string password = loginDB.extract<std::string>(0);
         std::string salt     = loginDB.extract<std::string>(1);
-        dpp::snowflake res   = std::stoull(loginDB.extract<std::string>(2));
+        res = std::stoull(loginDB.extract<std::string>(2));
         loginDB.unlock();
         if (password != passwordHash(std::string(pass) + salt)) {
-            return {0, {ServerMessage::Error, ServerMessage::WrongLogin}};
+            return {nullptr, {ServerMessage::Error, ServerMessage::WrongLogin}};
         }
-        return {res, {ServerMessage::OK, ServerMessage::NoError}};
     }
     catch (std::exception& e) {
         loginDB.unlock();
         std::cerr << e.what() << std::endl;
-        return {0, {ServerMessage::Error, ServerMessage::InternalError}};
+        return {nullptr, {ServerMessage::Error, ServerMessage::InternalError}};
     }
+    std::cout << "Logged in" << std::endl;
+    dpp::message infoMessage;
+    try {
+        infoMessage = discord.message_get_sync(res, infoSnowflake);
+    }
+    catch (...) {
+        std::cerr << "User file was deleted" << std::endl;
+        return {nullptr, {ServerMessage::Error, ServerMessage::InternalError}};
+    }
+    
+    std::string dbData = "", treeData = "\0";
+    for (const dpp::attachment& attach : infoMessage.attachments) {
+        std::string data;
+        std::atomic_flag flag = ATOMIC_FLAG_INIT;
+        discord.request(attach.url, dpp::m_get, [&flag, &data] (const dpp::http_request_completion_t& result) {
+            if (result.status != 200) {
+                std::cerr << "Could not retrieve login files: " << result.error <<std::endl;
+            }
+            else {
+                data = result.body;
+            }
+            flag.test_and_set(std::memory_order_relaxed);
+        });
+        while (flag.test(std::memory_order_relaxed) == false) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+        
+        if (attach.filename == FILE_MANAGER_NAME) {
+            std::cout << "Found manager file" << std::endl;
+            dbData = std::move(data);
+        }
+        else if (attach.filename == FILE_TREE_NAME) {
+            std::cout << "Found tree file" << std::endl;
+            treeData = std::move(data);
+        }
+    }
+    std::string dbFile = generateFilename(Files::SQL_APPEND);
+    std::ofstream dbOut(dbFile);
+    if (dbOut.is_open() == false) {
+        std::cerr << "Could not open user's db file" << std::endl;
+        return {nullptr, {ServerMessage::Error, ServerMessage::InternalError}};
+    }
+    dbOut.write(dbData.c_str(), dbData.size());
+    std::unique_ptr<UserInfo> info = std::make_unique<UserInfo>(UserInfo{
+        res,
+        SQL_DB(dbFile),
+        treeData
+    });
+    info->db.lock();
+    if (!info->db.createStatement(
+        "CREATE TABLE IF NOT EXISTS info ("
+            "file TEXT PRIMARY KEY,"
+            "data TEXT NOT NULL"
+        ");"
+    )) {
+        std::cerr << "Statement of table 'info' creation failed" << std::endl;
+    }
+    info->db.nextRow();
+    info->db.unlock();
+    std::cout << "Successful sign in" << std::endl;
+    return {std::move(info), {ServerMessage::OK, ServerMessage::NoError, 0}};
 }
 
 std::string generateSignUpCode() {
@@ -100,8 +171,7 @@ std::pair<ServerMessage, std::string> Request::sendSignUpEmail(const char email[
 
 ServerMessage Request::verifyEmailAlreadyInUse(SQL_DB& loginDB, const char email[]) {
     try {
-        bool used = emailInDB(email, loginDB);
-        if (used) {
+        if (emailInDB(email, loginDB)) {
             return {ServerMessage::Error, ServerMessage::EmailAlreadyInUse};
         }
         else {
@@ -125,9 +195,9 @@ ServerMessage Request::finalizeSignup(
     managerCreatorFile
         .set_channel_id(clientInfoChannelSnowflake)
         .add_file(
-            "FileManager.sqlite3", "" 
+            FILE_MANAGER_NAME, "" 
         ).add_file(
-            "FileTree.tree", "\0"
+            FILE_TREE_NAME, std::string(1, '\0')
         );
     dpp::snowflake messageSnowflake = discord.message_create_sync(managerCreatorFile).id;
     
@@ -137,7 +207,7 @@ ServerMessage Request::finalizeSignup(
     loginDB.lock();
     loginDB.createStatement(
         std::string("INSERT INTO login (email, password, salt, files_id) ") +
-        "VALUES(" + "\'" + email + "\', \'" + hashedPass + "\', \'" + salt + "\', " + messageSnowflake.str() + ");"
+        "VALUES(" + "\'" + email + "\', \'" + hashedPass + "\', \'" + salt + "\', \'" + messageSnowflake.str() + "\');"
     );
     if (!loginDB.nextRow()) {
         loginDB.unlock();
@@ -147,3 +217,41 @@ ServerMessage Request::finalizeSignup(
     loginDB.unlock();
     return {ServerMessage::OK, ServerMessage::NoError};
 }
+
+bool Request::sendTreeFile(const int client, const std::string& encoding) {
+    ServerMessage smsg;
+    smsg.type = ServerMessage::FileSend;
+    smsg.content.size = encoding.size();
+    if (Communication::write(client, &smsg, sizeof(smsg)) == false) {
+        perror("error using write");
+        return false;
+    }
+    if (Communication::write(client, encoding.c_str(), encoding.size()) == false) {
+        perror("error writing file tree");
+        return false;
+    }
+    // I don't care or want client confirmation
+    return true;
+}
+
+void Request::updateDiscord(UserInfo& info, SQL_DB& loginDB, const dpp::snowflake userInfoSnowflake, dpp::cluster& discord) {
+    // delete old files
+    discord.message_delete(info.managerFile, userInfoSnowflake);
+    // upload updates
+    dpp::message update;
+    update
+        .set_channel_id(userInfoSnowflake)
+        .add_file(FILE_MANAGER_NAME, dpp::utility::read_file(info.db.name()))
+        .add_file(FILE_TREE_NAME, info.tree);
+    std::string updatedSnowflake = discord.message_create_sync(update).id.str();
+    // update login db
+    loginDB.lock();
+    loginDB.createStatement(
+        std::string("UPDATE login") +
+        "SET files_id = \'" + updatedSnowflake + "\' " +
+        "WHERE files_id = \'" + info.managerFile.str() + "\';"
+    );
+    loginDB.nextRow();
+    loginDB.unlock();
+}
+

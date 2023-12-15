@@ -1,3 +1,6 @@
+#ifndef _REQUEST_HANDLER__
+#define _REQUEST_HANDLER__
+
 #include <random>
 #include "../Common/commons.hpp"
 #include "SQL_DB.hpp"
@@ -13,7 +16,19 @@
 
 namespace Request {
 
-std::pair<dpp::snowflake, ServerMessage> signIn(const char email[], const char pass[], SQL_DB& loginDB);
+struct UserInfo {
+    dpp::snowflake managerFile;
+    SQL_DB db;
+    std::string tree;
+};
+
+std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> signIn(
+    const char email[], 
+    const char pass[], 
+    SQL_DB& loginDB, 
+    dpp::cluster& discord,
+    dpp::snowflake infoSnowflake
+);
 std::pair<ServerMessage, std::string> sendSignUpEmail(const char email[], const std::unordered_map<std::string, std::string>& secrets);
 ServerMessage verifyEmailAlreadyInUse(SQL_DB& loginDB, const char email[]);
 ServerMessage finalizeSignup(
@@ -24,4 +39,10 @@ ServerMessage finalizeSignup(
     dpp::snowflake clientInfoChannelSnowflake
 );
 
+bool sendTreeFile(int client, const std::string& encoding);
+
+void updateDiscord(UserInfo& info, SQL_DB& loginDB, dpp::snowflake userInfoSnowflake, dpp::cluster& discord);
+
 }
+
+#endif

@@ -18,8 +18,8 @@ public:
     SQL_DB(const SQL_DB&) = delete;
     SQL_DB& operator = (const SQL_DB&) = delete;
 
-    SQL_DB(SQL_DB&&) = delete;
-    SQL_DB& operator = (SQL_DB&&) = delete;
+    SQL_DB(SQL_DB&&);
+    SQL_DB& operator = (SQL_DB&&);
 
     bool createStatement(const std::string& sql_statement);
     bool nextRow();
@@ -31,6 +31,8 @@ public:
     void lock();
     void unlock();
 
+    std::string name() const;
+
 
     /// @brief extract column value
     /// @tparam T type of data to be extracted
@@ -41,6 +43,7 @@ public:
     T extract(int index);
 
 private:
+    std::string filename;
     sqlite3* db;
     sqlite3_stmt* stmt;
     bool is_open;

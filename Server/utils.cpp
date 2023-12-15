@@ -121,7 +121,7 @@ dpp::snowflake generateLoginFile(dpp::cluster& discord, dpp::snowflake loginChan
             std::atomic<bool> flag = false;
             discord.request(attach.url, dpp::m_get, [&dbFile, &flag] (const dpp::http_request_completion_t& result) {
                 if (result.status != 200) {
-                    std::cerr << "Login file could not be read" << result.error << std::endl;
+                    std::cerr << "Login file could not be read: " << result.error << std::endl;
                 }
                 else {
                     dbFile = result.body;
@@ -131,11 +131,16 @@ dpp::snowflake generateLoginFile(dpp::cluster& discord, dpp::snowflake loginChan
             while (!flag) std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
     }
-    std::ofstream sqldbFileStream(Files::LOGIN_FILE, std::ios::trunc);
-    if (!sqldbFileStream.is_open()) {
+    std::error_code ec;
+    std::filesystem::remove_all(Files::PATH);
+    if (std::filesystem::create_directories(Files::PATH, ec) == false && ec) {
+        std::cerr << ec.message() << std::endl;
+    }
+    std::ofstream sqldbFileStream(Files::LOGIN_FILE, std::ios::trunc | std::ios::binary);
+    if (sqldbFileStream.is_open() == false) {
         throw std::ios_base::failure("Could not prepare login file");
     } 
-    sqldbFileStream << dbFile;
+    sqldbFileStream.write(dbFile.c_str(), dbFile.size());
     if (mm.empty()) {
         return 0;
     }
@@ -175,4 +180,25 @@ std::pair<int, sockaddr_in> makeSocket() {
         exit(1);
     }
     return {sd, from};
+}
+
+std::string generateFilename(const std::string& APPEND) { 
+    static std::random_device rd;
+	static std::mt19937 rng(rd()); 
+    static const char alphabet[] = 
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"; 
+    std::uniform_int_distribution<size_t> uid(0, sizeof(alphabet) / sizeof(char) - 1);
+    std::string str(16, '\0');
+    for (char& c : str) {
+        c = alphabet[uid(rng)];
+    }
+    const std::string PREFIX = Files::PATH + APPEND;
+    while (std::filesystem::exists(PREFIX + str)) {
+        // reroll filename
+        for (char& c : str) {
+            c = alphabet[uid(rng)];
+        }
+    }
+    return PREFIX + str;
 }

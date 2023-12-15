@@ -24,10 +24,11 @@ namespace GUI {
             ChangeDirectory,
             Upload,
             Rename,
-
+            SignOut,
+            Quit
         } type;
 
-        std::variant<std::string, ssize_t> data;
+        std::variant<std::monostate, std::string, ssize_t> data;
     };
 
     UserRequests currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current);
