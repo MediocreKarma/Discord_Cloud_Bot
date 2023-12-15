@@ -4,7 +4,7 @@
 
 std::string passwordHash(const std::string& saltedPassword) {
     // verify if this number is reasonable or not?
-    constexpr size_t ITERATIONS = 10'000'000;
+    constexpr size_t ITERATIONS = 1'000'000;
     SHA256 sha256;
     std::string result = saltedPassword;
     for (size_t i = 0; i < ITERATIONS; ++i) {

@@ -7,16 +7,13 @@ std::string generateStringNotInTree(const DirectoryTree& t) {
     static const char alphabet[] = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz";
-    static std::uniform_int_distribution<size_t> uid(0, sizeof(alphabet) / sizeof(char) - 1);
-    std::string code(8, '\0');
+    std::uniform_int_distribution<size_t> uid(0, sizeof(alphabet) / sizeof(char) - 2);
+    std::string code(DirectoryTree::ID_LEN, '\0');
     for (char& c : code) {
         c = alphabet[uid(rng)];
     }
-    // temporary tree construct
-    auto alreadyUsed = [&t] (const std::string& code) -> bool {
-        return t.findID(code) != nullptr;
-    };
-    while (alreadyUsed(code)) {
+    // stop when ID is not taken
+    while (t.findID(code)) {
         for (char& c : code) {
             c = alphabet[uid(rng)];
         }
@@ -32,6 +29,7 @@ bool FileTransfer::receiveFile(
     const size_t size, 
     const std::string& alias
 ) {
+    std::cout << '\'' << alias << "\' " << size << std::endl;
     pollfd sdPoll = {client, POLLIN, 0};
     ServerMessage smsg = {ServerMessage::OK, ServerMessage::NoError};
     // prepare id for file
