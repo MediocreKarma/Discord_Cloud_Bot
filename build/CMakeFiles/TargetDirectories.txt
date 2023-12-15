@@ -1,3 +1,0 @@
-/home/karma/Desktop/Retele/Project/build/CMakeFiles/retele.dir
-/home/karma/Desktop/Retele/Project/build/CMakeFiles/edit_cache.dir
-/home/karma/Desktop/Retele/Project/build/CMakeFiles/rebuild_cache.dir

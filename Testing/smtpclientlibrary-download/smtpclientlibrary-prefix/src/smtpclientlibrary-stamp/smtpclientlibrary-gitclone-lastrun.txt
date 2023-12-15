@@ -1,3 +1,0 @@
-repository='https://github.com/jeremydumais/CPP-SMTPClient-library.git'
-module=''
-tag='origin'

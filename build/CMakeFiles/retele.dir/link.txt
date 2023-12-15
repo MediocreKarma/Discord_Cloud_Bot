@@ -1,1 +1,0 @@
-/usr/bin/g++ -g CMakeFiles/retele.dir/test.cpp.o CMakeFiles/retele.dir/Buttons.cpp.o CMakeFiles/retele.dir/RoundedRectangleShape.cpp.o CMakeFiles/retele.dir/TextBox.cpp.o -o retele  -lsfml-graphics -lsfml-window -lsfml-system 
