@@ -21,9 +21,8 @@ public:
     ClientThreads(const ClientThreads&) = delete;
     void add(
         int client, 
-        dpp::cluster& discord,
+        BotWrapper& discord,
         SQL_DB& loginDB,
-        const std::unordered_map<std::string, dpp::snowflake>& channelSnowflakes,
         const std::unordered_map<std::string, std::string>& secrets
     );
     void terminate();

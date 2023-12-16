@@ -1,7 +1,7 @@
 #include "requestHandler.hpp"
 
-const std::string FILE_MANAGER_NAME = "FileManager.sqlite3.txt";
-const std::string FILE_TREE_NAME    = "FileTree.tree.txt";
+const std::string FILE_MANAGER_NAME = "FileManager.sqlite3";
+const std::string FILE_TREE_NAME    = "FileTree.tree";
 
 
 bool emailInDB(const char email[], SQL_DB& loginDB) {
@@ -22,8 +22,7 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
     const char email[], 
     const char pass[], 
     SQL_DB& loginDB, 
-    dpp::cluster& discord,
-    const dpp::snowflake infoSnowflake
+    BotWrapper& discord
 ) {
     // Nothing here should throw, beside the ios::failure, so the mutex should not end in an invalid state
     dpp::snowflake res = 0;
@@ -54,42 +53,18 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
         return {nullptr, {ServerMessage::Error, ServerMessage::InternalError}};
     }
     std::cout << "Logged in" << std::endl;
-    dpp::message infoMessage;
-    try {
-        infoMessage = discord.message_get_sync(res, infoSnowflake);
-    }
-    catch (...) {
-        std::cerr << "User file was deleted" << std::endl;
-        return {nullptr, {ServerMessage::Error, ServerMessage::InternalError}};
-    }
+    std::vector<BotWrapper::File> contents = discord.download(res, discord.channel(BotWrapper::USER_INFO));
     std::string dbData = "", treeData = "\0";
-    for (const dpp::attachment& attach : infoMessage.attachments) {
-        std::string data;
-        std::atomic_flag flag = ATOMIC_FLAG_INIT;
-        discord.request(attach.url, dpp::m_get, [&flag, &data] (const dpp::http_request_completion_t& result) {
-            if (result.status != 200) {
-                std::cerr << "Could not retrieve login files: " << result.error <<std::endl;
-            }
-            else {
-                data = result.body;
-            }
-            flag.test_and_set(std::memory_order_relaxed);
-        });
-        while (flag.test(std::memory_order_relaxed) == false) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    for (BotWrapper::File& file : contents) {
+        if (file.name == FILE_MANAGER_NAME) {
+            dbData = std::move(file.body);
         }
-        
-        if (attach.filename == FILE_MANAGER_NAME) {
-            std::cout << "Found manager file" << std::endl;
-            dbData = std::move(data);
+        else if (file.name == FILE_TREE_NAME) {
+            treeData = std::move(file.body);
         }
-        else if (attach.filename == FILE_TREE_NAME) {
-            std::cout << "Found tree file" << std::endl;
-            treeData = std::move(data);
-        }
-    }
+    } 
     std::string dbFile = generateFilename(Files::SQL_APPEND);
-    std::ofstream dbOut(dbFile);
+    std::ofstream dbOut(dbFile, std::ios::trunc | std::ios::binary);
     if (dbOut.is_open() == false) {
         std::cerr << "Could not open user's db file" << std::endl;
         return {nullptr, {ServerMessage::Error, ServerMessage::InternalError}};
@@ -98,7 +73,7 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
     std::unique_ptr<UserInfo> info = std::make_unique<UserInfo>(UserInfo{
         res,
         SQL_DB(dbFile),
-        treeData
+        std::move(treeData)
     });
     info->db.lock();
     if (!info->db.createStatement(
@@ -187,21 +162,16 @@ ServerMessage Request::verifyEmailAlreadyInUse(SQL_DB& loginDB, const char email
 ServerMessage Request::finalizeSignup(
     const char* email, 
     const char* password, 
-    dpp::cluster& discord, 
-    SQL_DB& loginDB, 
-    const dpp::snowflake clientInfoChannelSnowflake
+    BotWrapper& discord, 
+    SQL_DB& loginDB
 ) {
-    dpp::message managerCreatorFile;
-    managerCreatorFile
-        .set_channel_id(clientInfoChannelSnowflake)
-        .add_file(
-            FILE_MANAGER_NAME, "" 
-        ).add_file(
-            FILE_TREE_NAME, std::string(1, '\0')
-        );
-    dpp::snowflake messageSnowflake = discord.message_create_sync(managerCreatorFile).id;
-    
-    
+    dpp::snowflake messageSnowflake = discord.upload(
+        discord.channel(BotWrapper::USER_INFO), 
+        {
+            {FILE_MANAGER_NAME, ""},
+            {FILE_TREE_NAME, std::string(1, '\0')}
+        }
+    );
     const std::string salt = generateSalt();
     const std::string hashedPass = passwordHash(password + salt);
     loginDB.lock();
@@ -234,21 +204,21 @@ bool Request::sendTreeFile(const int client, const std::string& encoding) {
     return true;
 }
 
-void Request::updateDiscord(UserInfo& info, SQL_DB& loginDB, const dpp::snowflake userInfoSnowflake, dpp::cluster& discord) {
+void Request::updateDiscord(UserInfo& info, SQL_DB& loginDB, BotWrapper& discord) {
     // delete old files
-    discord.message_delete(info.managerFile, userInfoSnowflake);
-    // upload updates
-    dpp::message update;
-    update
-        .set_channel_id(userInfoSnowflake)
-        .add_file(FILE_MANAGER_NAME, dpp::utility::read_file(info.db.name()))
-        .add_file(FILE_TREE_NAME, info.tree);
-    std::string updatedSnowflake = discord.message_create_sync(update).id.str();
+    discord.remove(info.managerFile, discord.channel(BotWrapper::USER_INFO));
+    dpp::snowflake updateSf = discord.upload(
+        discord.channel(BotWrapper::USER_INFO),
+        {
+            {FILE_MANAGER_NAME, dpp::utility::read_file(info.db.name())},
+            {FILE_TREE_NAME, info.tree}
+        }
+    );
     // update login db
     loginDB.lock();
     loginDB.createStatement(
         std::string("UPDATE login ") +
-        "SET files_id = \'" + updatedSnowflake + "\' " +
+        "SET files_id = \'" + updateSf.str() + "\' " +
         "WHERE files_id = \'" + info.managerFile.str() + "\';"
     );
     loginDB.nextRow();

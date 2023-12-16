@@ -18,6 +18,7 @@ add_executable(
     ../Common/commons.cpp /
     ../Common/DirectoryTree/DirectoryTree.cpp
     fileTransfer.cpp / 
+    botWrapper.cpp /
 )
 
 add_compile_options(-Wall)

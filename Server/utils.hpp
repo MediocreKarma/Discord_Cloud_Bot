@@ -8,6 +8,7 @@
 #include "sha256.h"
 #include <random>
 #include "../Common/commons.hpp"
+#include "botWrapper.hpp"
 
 std::string passwordHash(const std::string& saltedPassword);
 
@@ -15,9 +16,7 @@ std::string generateSalt();
 
 std::unordered_map<std::string, std::string> readSecretFile(const char* filename);
 
-std::unordered_map<std::string, dpp::snowflake> getChannelSnowflakes(dpp::cluster& discord, dpp::snowflake guildID);
-
-dpp::snowflake generateLoginFile(dpp::cluster& discord, dpp::snowflake loginChannel);
+dpp::snowflake generateLoginFile(BotWrapper& discord);
 
 std::pair<int, sockaddr_in> makeSocket();
 
@@ -30,15 +29,6 @@ namespace Secrets {
         EMAIL = "email",
         EMAIL_PASSWORD = "password",
         GUILD_SNOWFLAKE = "guild_snowflake";
-
-}
-
-namespace Channels {
-
-    static inline const std::string
-        LOG_INFO = "log-info",
-        USER_INFO = "user-info",
-        DATA = "data";
 
 }
 

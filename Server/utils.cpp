@@ -88,51 +88,10 @@ std::unordered_map<std::string, std::string> readSecretFile(const char* filename
     return secrets;
 }
 
-std::unordered_map<std::string, dpp::snowflake> getChannelSnowflakes(dpp::cluster& discord, const dpp::snowflake guildID) {
-    std::unordered_map<std::string, dpp::snowflake> channelSnowflakes = {
-        {Channels::LOG_INFO, 0}, 
-        {Channels::USER_INFO, 0}, 
-        {Channels::DATA, 0}
-    };
-    const dpp::channel_map channels = discord.channels_get_sync(guildID);
-    for (const auto& [snowflake, channel] : channels) {
-        auto it = channelSnowflakes.find(channel.name);
-        if (it != channelSnowflakes.end()) {
-            it->second = snowflake;
-        }
-    }
-    auto c = dpp::channel();
-    c.guild_id = guildID;
-    for (auto& [name, snowflake] : channelSnowflakes) {
-        if (snowflake == 0) {
-            c.name = name;
-            snowflake = discord.channel_create_sync(c).id;
-        }
-    }
-    return channelSnowflakes;
-}
-
-dpp::snowflake generateLoginFile(dpp::cluster& discord, dpp::snowflake loginChannel) {
-    const dpp::message_map mm = discord.messages_get_sync(loginChannel, 0, 0, 0, 1);
-    std::string dbFile;
-    // one or no entries here, probably one
-    for (const auto& [snowflake, message] : mm) {
-        for (const auto& attach : message.attachments) {
-            std::atomic<bool> flag = false;
-            discord.request(attach.url, dpp::m_get, [&dbFile, &flag] (const dpp::http_request_completion_t& result) {
-                if (result.status != 200) {
-                    std::cerr << "Login file could not be read: " << result.error << std::endl;
-                }
-                else {
-                    dbFile = result.body;
-                }
-                flag = true;
-            });
-            while (!flag) std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        }
-    }
-    std::error_code ec;
+dpp::snowflake generateLoginFile(BotWrapper& discord) {
+    auto [sf, components] = discord.latest_download(discord.channel(BotWrapper::LOG_INFO));
     std::filesystem::remove_all(Files::PATH);
+    std::error_code ec;
     if (std::filesystem::create_directories(Files::PATH, ec) == false && ec) {
         std::cerr << ec.message() << std::endl;
     }
@@ -140,11 +99,11 @@ dpp::snowflake generateLoginFile(dpp::cluster& discord, dpp::snowflake loginChan
     if (sqldbFileStream.is_open() == false) {
         throw std::ios_base::failure("Could not prepare login file");
     } 
-    sqldbFileStream.write(dbFile.c_str(), dbFile.size());
-    if (mm.empty()) {
+    if (components.empty()) {
         return 0;
     }
-    return mm.begin()->first;
+    sqldbFileStream.write(components[0].body.c_str(), components[0].body.size());
+    return sf;
 }
 
 std::pair<int, sockaddr_in> makeSocket() {

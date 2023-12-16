@@ -2,10 +2,9 @@
 
 void clientHandler(
     int client, 
-    dpp::cluster& discord,
+    BotWrapper& discord,
     SQL_DB& loginDB, 
     std::atomic<uint8_t>& flag,
-    const std::unordered_map<std::string, dpp::snowflake>& channelSnowflakes,
     const std::unordered_map<std::string, std::string>& secrets
 ) {
     signal(SIGPIPE, SIG_DFL);
@@ -51,8 +50,7 @@ void clientHandler(
                     cmessage.content.signData.email, 
                     cmessage.content.signData.pass, 
                     loginDB, 
-                    discord, 
-                    channelSnowflakes.at(Channels::USER_INFO)
+                    discord
                 );
                 loggedIn = (smessage.type == ServerMessage::OK);
                 std::cout << "Log in request finished" << std::endl;
@@ -79,8 +77,7 @@ void clientHandler(
                         cmessage.content.signData.email, 
                         cmessage.content.signData.pass,
                         discord,
-                        loginDB,
-                        channelSnowflakes.at(Channels::USER_INFO)
+                        loginDB
                     );
                     // request main thread to update the login file on discord
                     flag |= ClientThreads::REQUEST_SAVE_FLAG;
@@ -99,7 +96,6 @@ void clientHandler(
                 bool newUpdate = FileTransfer::receiveFile(
                     client,
                     discord,
-                    channelSnowflakes.at(Channels::DATA),
                     *userManagerFiles,
                     cmessage.content.file.size,
                     std::string(cmessage.content.file.alias)
@@ -123,8 +119,9 @@ void clientHandler(
     }
 
 endHandler:
+    flag |= ClientThreads::TERMINATE_FLAG;
     if (updated) {
-        Request::updateDiscord(*userManagerFiles, loginDB, channelSnowflakes.at(Channels::USER_INFO), discord);
+        Request::updateDiscord(*userManagerFiles, loginDB, discord);
     }
     std::cout << "Thread done" << std::endl;
     smessage = {ServerMessage::ServerQuit, ServerMessage::NoError};
@@ -136,9 +133,8 @@ endHandler:
 
 void ClientThreads::add(
     int client, 
-    dpp::cluster& discord,
+    BotWrapper& discord,
     SQL_DB& db,
-    const std::unordered_map<std::string, dpp::snowflake>& channelSnowflakes,
     const std::unordered_map<std::string, std::string>& secrets
 ) {
     flags.emplace_back(0);
@@ -148,7 +144,6 @@ void ClientThreads::add(
         std::ref(discord), 
         std::ref(db), 
         std::ref(flags.back()), 
-        std::cref(channelSnowflakes), 
         std::cref(secrets)
     );
 }
@@ -156,7 +151,6 @@ void ClientThreads::add(
 void ClientThreads::terminate() {
     for (std::atomic<uint8_t>& flag : flags) {
         flag |= TERMINATE_FLAG;
-        std::cout << (int)flag.load(std::memory_order_relaxed) << ' ';
     }
     std::cout << std::endl;
 }
@@ -167,7 +161,7 @@ void ClientThreads::trim() {
     while (hndlrIt != clientHandlers.end()) {
         auto hndlrItCopy = hndlrIt++;
         auto flagsItCopy = flagsIt++;
-        if (flagsItCopy->load(std::memory_order_relaxed)) {
+        if (flagsItCopy->load(std::memory_order_relaxed) & TERMINATE_FLAG) {
             hndlrItCopy->join();
             clientHandlers.erase(hndlrItCopy);
             flags.erase(flagsItCopy);

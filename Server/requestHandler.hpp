@@ -26,22 +26,20 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> signIn(
     const char email[], 
     const char pass[], 
     SQL_DB& loginDB, 
-    dpp::cluster& discord,
-    dpp::snowflake infoSnowflake
+    BotWrapper& discord
 );
 std::pair<ServerMessage, std::string> sendSignUpEmail(const char email[], const std::unordered_map<std::string, std::string>& secrets);
 ServerMessage verifyEmailAlreadyInUse(SQL_DB& loginDB, const char email[]);
 ServerMessage finalizeSignup(
     const char* email, 
     const char* password,
-    dpp::cluster& discord, 
-    SQL_DB& loginDB, 
-    dpp::snowflake clientInfoChannelSnowflake
+    BotWrapper& discord, 
+    SQL_DB& loginDB
 );
 
 bool sendTreeFile(int client, const std::string& encoding);
 
-void updateDiscord(UserInfo& info, SQL_DB& loginDB, dpp::snowflake userInfoSnowflake, dpp::cluster& discord);
+void updateDiscord(UserInfo& info, SQL_DB& loginDB, BotWrapper& discord);
 
 }
 

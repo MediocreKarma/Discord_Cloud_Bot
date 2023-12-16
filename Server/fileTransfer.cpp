@@ -23,8 +23,7 @@ std::string generateStringNotInTree(const DirectoryTree& t) {
 
 bool FileTransfer::receiveFile(
     const int client, 
-    dpp::cluster& discord, 
-    const dpp::snowflake filesSnowflake, 
+    BotWrapper& discord, 
     Request::UserInfo& info, 
     const size_t size, 
     const std::string& alias
@@ -65,12 +64,8 @@ bool FileTransfer::receiveFile(
         readSize += readLength;
         std::string indexStr = std::to_string(index++);
         indexStr = std::string(5 - indexStr.size(), '0') + indexStr;
-        const std::string part_filename = id + "_" + indexStr + ".txt";
-        dpp::message fileMessage;
-        fileMessage
-            .set_channel_id(filesSnowflake)
-            .add_file(part_filename, chunk);
-        uint64_t val = discord.message_create_sync(fileMessage).id;
+        const std::string part_filename = id + "_" + indexStr;
+        uint64_t val = discord.upload(discord.channel(BotWrapper::DATA), {part_filename, chunk});
         fileparts.resize(fileparts.size() + 8);
         memcpy(fileparts.data() + fileparts.size() - 8, &val, 8);
         if (Communication::write(client, &smsg, sizeof(smsg)) == false) {
@@ -131,7 +126,7 @@ deleteFiles:
         uint64_t id = 0;
         memcpy(&id, fileparts.data() + i * 8, 8);
         dpp::snowflake snowflake = id;
-        discord.message_delete(snowflake, filesSnowflake);
+        discord.remove(snowflake, discord.channel(BotWrapper::DATA));
     }
     info.db.lock();
     // failure is irrelevant

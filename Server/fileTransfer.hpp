@@ -10,15 +10,14 @@ namespace FileTransfer {
 // afterwards send file id
 bool receiveFile(
     int client, 
-    dpp::cluster& discord, 
-    const dpp::snowflake filesSnowflake, 
+    BotWrapper& discord, 
     Request::UserInfo& info, 
     size_t size, 
     const std::string& alias
 );
 
 
-//void    sendFile(int sd, dpp::cluster& discord, SQL_DB& db, const std::string& filename);
+//void    sendFile(int sd, BotWrapper& discord, SQL_DB& db, const std::string& filename);
 
 }
 

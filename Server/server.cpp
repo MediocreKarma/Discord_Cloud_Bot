@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include <dpp/dpp.h>
+#include "botWrapper.hpp"
 #include "SQL_DB.hpp"
 #include "utils.hpp"
 #include <poll.h>
@@ -26,18 +26,9 @@ int main(int argc, char* argv[]) {
         std::cerr << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
-    dpp::cluster discord(secrets[Secrets::BOT_TOKEN]);
-    discord.on_log(dpp::utility::cout_logger());
-    std::unordered_map<std::string, dpp::snowflake> channelSnowflakes;
-    dpp::snowflake loginFileMessage = 0;
-    try {
-        channelSnowflakes = getChannelSnowflakes(discord, std::stoull(secrets[Secrets::GUILD_SNOWFLAKE]));
-        loginFileMessage  = generateLoginFile(discord, channelSnowflakes[Channels::LOG_INFO]);
-    }
-    catch (std::exception& e) {
-        std::cerr << e.what();
-        exit(EXIT_FAILURE);
-    }
+    // if this throws process can't continue
+    BotWrapper discord(secrets[Secrets::BOT_TOKEN], secrets[Secrets::GUILD_SNOWFLAKE]);
+    dpp::snowflake loginMessageSnowflake = generateLoginFile(discord);
     std::cout << "Obtained discord's data" << std::endl;
     ClientThreads clientData;
     SQL_DB loginDB(Files::LOGIN_FILE);
@@ -114,20 +105,20 @@ int main(int argc, char* argv[]) {
             continue;
         }
         std::cout << "Starting thread" << std::endl;
-        clientData.add(client, discord, loginDB, channelSnowflakes, secrets);
+        clientData.add(client, discord, loginDB, secrets);
     }
     clientData.terminate();
     clientData.trim();
     close(sd);
-    dpp::message login_file;
-    if (loginFileMessage != 0) {
-        discord.message_delete(loginFileMessage, channelSnowflakes[Channels::LOG_INFO]);
+    if (loginMessageSnowflake != 0) {
+        discord.remove(loginMessageSnowflake, discord.channel(BotWrapper::LOG_INFO));
     }
-    login_file.set_channel_id(channelSnowflakes[Channels::LOG_INFO]);
-    login_file.add_file(
-        Files::LOGIN_FILE.substr(Files::LOGIN_FILE.find_last_of('/')),
-        dpp::utility::read_file(Files::LOGIN_FILE)
+    discord.upload(
+        discord.channel(BotWrapper::LOG_INFO), 
+        {
+            Files::LOGIN_FILE.substr(Files::LOGIN_FILE.find_last_of('/') + 1), 
+            std::move(dpp::utility::read_file(Files::LOGIN_FILE))
+        }
     );
-    discord.message_create_sync(login_file);
 }
                   
