@@ -23,12 +23,13 @@ namespace GUI {
         enum Type {
             ChangeDirectory,
             Upload,
+            Download,
             Rename,
             SignOut,
             Quit
         } type;
 
-        std::variant<std::monostate, std::string, ssize_t> data;
+        std::variant<std::monostate, std::string, ssize_t, const DirectoryTree*> data;
     };
 
     UserRequests currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current);

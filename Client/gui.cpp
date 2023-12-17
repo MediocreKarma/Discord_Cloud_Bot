@@ -154,8 +154,10 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                         }
                         return {UserRequests::Upload, filePath};
                     }
-                    else if (selected) {
-                        // implement other commands later
+                    else if (selected != -1) {
+                        if (downloadButton.hit(mouse)) {
+                            return {UserRequests::Download, &(current.child(selected))};
+                        }
                     }
             }
         }

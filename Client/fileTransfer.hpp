@@ -5,7 +5,7 @@
 
 namespace FileTransfer {
 
-void receiveFile(int sd, const std::string& filepath);
+void receiveFile(int sd, const DirectoryTree& downloadable);
 void    sendFile(int sd, const std::string& filepath, const DirectoryTree& root, DirectoryTree& current);
 
 }

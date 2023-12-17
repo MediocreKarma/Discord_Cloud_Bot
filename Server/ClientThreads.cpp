@@ -91,7 +91,7 @@ void clientHandler(
                     std::cout << "Failed to send file tree" << std::endl;
                 }
                 break;
-            case ClientMessage::FileUpload:
+            case ClientMessage::FileUpload: {
                 std::cout << "File upload requested" << std::endl;
                 bool newUpdate = FileTransfer::receiveFile(
                     client,
@@ -109,6 +109,21 @@ void clientHandler(
                     smessage.error = ServerMessage::InternalError;
                 }
                 break;
+            }
+            case ClientMessage::FileDownload:
+                std::cout << "Download requested" << std::endl;
+                if (FileTransfer::sendFile(
+                    client,
+                    discord,
+                    *userManagerFiles,
+                    cmessage.content.file.id
+                )) {
+                    smessage.type = ServerMessage::OK;
+                }
+                else {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::InternalError;
+                }
         }
         cmessage.type = ClientMessage::Empty;
         std::cout << "Writing to client: " << smessage.type << std::endl; 

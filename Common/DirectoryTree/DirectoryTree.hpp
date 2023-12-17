@@ -3,13 +3,14 @@
 
 #include <string>
 #include <vector>
+#include <cstring>
 
 class DirectoryTree {
 public:
     static constexpr size_t ID_LEN = 8;
 
     //DirectoryTree() = default;
-    DirectoryTree(const std::string& id, const std::string& filename, DirectoryTree* parent = nullptr);
+    DirectoryTree(const std::string& id, size_t size, const std::string& filename, DirectoryTree* parent = nullptr);
     DirectoryTree(const DirectoryTree&) = delete;
     DirectoryTree(DirectoryTree&&);
 
@@ -19,7 +20,7 @@ public:
     static DirectoryTree buildTree(const std::string& encoding);
     std::string encodeTree() const;
 
-    void addChild(const std::string& id, const std::string& filename);
+    void addChild(const std::string& id, size_t size, const std::string& filename);
     void addChild(DirectoryTree&& child);
     size_t childrenSize() const;
     DirectoryTree& child(size_t index);
@@ -30,9 +31,13 @@ public:
     DirectoryTree* findID(const std::string& id);
     const DirectoryTree* findID(const std::string& id) const;
 
+    std::string id() const;
+    size_t size() const;
+
 private:
     // db identifier
-    std::string id;
+    std::string m_id;
+    size_t m_size;
     // aka alias, screen name
     std::string filename = "";
     DirectoryTree* parent = nullptr;

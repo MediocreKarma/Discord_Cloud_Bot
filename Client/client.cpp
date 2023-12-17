@@ -56,6 +56,8 @@ int main(int argc, char** argv) {
                 case GUI::UserRequests::Upload:
                     FileTransfer::sendFile(sd, std::get<std::string>(ur.data), root, *current);
                     break;
+                case GUI::UserRequests::Download:
+                    FileTransfer::receiveFile(sd, *std::get<const DirectoryTree*>(ur.data));
                 case GUI::UserRequests::ChangeDirectory:
                     // ...
                     break;

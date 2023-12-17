@@ -39,7 +39,7 @@ struct ClientMessage {
 
         struct SignData { char email[65]; char pass[65]; char signCode[7]; } signData;
 
-        struct FileInfo { size_t size; char alias[256]; } file;
+        struct FileInfo { size_t size; char alias[256]; char id[9]; } file;
 
     } content;
 

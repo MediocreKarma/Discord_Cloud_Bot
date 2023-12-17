@@ -17,7 +17,7 @@ bool receiveFile(
 );
 
 
-//void    sendFile(int sd, BotWrapper& discord, SQL_DB& db, const std::string& filename);
+bool sendFile(int sd, BotWrapper& discord, Request::UserInfo& info, const std::string& fileID);
 
 }
 

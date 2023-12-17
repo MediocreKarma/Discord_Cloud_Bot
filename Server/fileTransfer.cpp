@@ -141,3 +141,43 @@ deleteFiles:
     smsg.error = ServerMessage::InternalError;
     return false;
 }
+
+bool FileTransfer::sendFile(int sd, BotWrapper& discord, Request::UserInfo& info, const std::string& fileID) {
+    // request received / user already knows size
+    ServerMessage smsg = {ServerMessage::OK, ServerMessage::NoError};
+    if (Communication::write(sd, &smsg, sizeof(smsg)) == false) {
+        perror("error using write");
+        return false;
+    }
+    ClientMessage cmsg;
+    info.db.lock();
+    info.db.createStatement(
+        "SELECT data FROM info WHERE file = \'" + fileID + "\';"
+    );
+    info.db.nextRow();
+    std::string fileparts = info.db.extract<std::string>(0);
+    info.db.unlock();
+    for (size_t i = 0; i * 8 < fileparts.size(); ++i) {
+        uint64_t id = 0;
+        memcpy(&id, fileparts.c_str() + i * 8, 8);
+        dpp::snowflake snowflake = id;
+        std::vector<BotWrapper::File> files = discord.download(snowflake, discord.channel(BotWrapper::DATA));
+        if (files.size() != 1) {
+            // error, wrong amount of files?
+        }
+        std::string body = std::move(files[0].body);
+        if (Communication::write(sd, body.c_str(), body.size()) == false) {
+            perror("error writing file to client");
+            return false;
+        }
+        if (Communication::read(sd, &cmsg, sizeof(cmsg)) == false) {
+            perror("Error reading client response");
+            return false;
+        }
+        if (cmsg.type != ClientMessage::OK) {
+            std::cerr << "Client canceled transfer operation" << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
