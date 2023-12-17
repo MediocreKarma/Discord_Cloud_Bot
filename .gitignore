@@ -11,3 +11,4 @@ Makefile
 smtpclientlibrary-*
 .vscode
 /build
+*.cmake
