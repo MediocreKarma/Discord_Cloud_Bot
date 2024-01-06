@@ -30,9 +30,13 @@ public:
 
     DirectoryTree* findID(const std::string& id);
     const DirectoryTree* findID(const std::string& id) const;
+    DirectoryTree* parent();
 
     std::string id() const;
     size_t size() const;
+
+    bool isDirectory() const;
+
 
 private:
     // db identifier
@@ -40,7 +44,7 @@ private:
     size_t m_size;
     // aka alias, screen name
     std::string filename = "";
-    DirectoryTree* parent = nullptr;
+    DirectoryTree* m_parent = nullptr;
     std::vector<DirectoryTree> m_children = {};
 };
 

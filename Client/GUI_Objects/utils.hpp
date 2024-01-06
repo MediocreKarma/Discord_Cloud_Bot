@@ -15,6 +15,11 @@ namespace GUI {
     inline sf::Texture downloadIcon;
     inline sf::Texture uploadIcon;
     inline sf::Texture deleteIcon;
+    inline sf::Texture copyIcon;
+    inline sf::Texture cutIcon;
+    inline sf::Texture pasteIcon;
+    inline sf::Texture backIcon;
+    inline sf::Texture changeDirIcon;
     bool init();
 }
 

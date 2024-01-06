@@ -40,13 +40,56 @@ std::string userInputString(const std::string& windowTitle, const std::string& s
 }
 
 GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current) {
+    RoundedRectangleButton backButton({50, 50}, 45, 15);
+    backButton.setTexture(&GUI::backIcon, true);
+    backButton.setOrigin(backButton.getSize().x / 2, backButton.getSize().y / 2);
     RoundedRectangleButton uploadButton({174, 174}, 30, 15);
+    uploadButton.setTexture(&GUI::uploadIcon, true);
     uploadButton.setOrigin(uploadButton.getSize().x / 2, uploadButton.getSize().y / 2);
     uploadButton.setPosition(
         (window.getSize().x / 2 - 400) / 2,
+        window.getSize().y - 950
+    );
+    RoundedRectangleButton cutButton({174, 174}, 30, 15);
+    cutButton.setTexture(&GUI::cutIcon, true);
+    cutButton.setOrigin(cutButton.getSize().x / 2, cutButton.getSize().y / 2);
+    cutButton.setPosition(
+        (window.getSize().x / 2 - 400) / 2,
         window.getSize().y - 450
     );
-    uploadButton.setTexture(&GUI::uploadIcon, true);
+    sf::RoundedRectangleShape cutCover(cutButton);
+    cutCover.setTexture(nullptr);
+    cutCover.setFillColor(sf::Color(200, 200, 200, 192));
+    RoundedRectangleButton copyButton({174, 174}, 30, 15);
+    copyButton.setTexture(&GUI::copyIcon, true);
+    copyButton.setOrigin(copyButton.getSize().x / 2, copyButton.getSize().y / 2);
+    copyButton.setPosition(
+        (window.getSize().x / 2 - 400) / 2,
+        window.getSize().y - 700
+    );
+    sf::RoundedRectangleShape copyCover(copyButton);
+    copyCover.setTexture(nullptr);
+    copyCover.setFillColor(sf::Color(200, 200, 200, 192));
+    RoundedRectangleButton changeDirButton({174, 174}, 30, 15);
+    changeDirButton.setTexture(&GUI::changeDirIcon, true);
+    changeDirButton.setOrigin(changeDirButton.getSize().x / 2, changeDirButton.getSize().y / 2);
+    changeDirButton.setPosition(
+        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
+        window.getSize().y - 950
+    );
+    sf::RoundedRectangleShape changeDirCover(changeDirButton);
+    changeDirCover.setTexture(nullptr);
+    changeDirCover.setFillColor(sf::Color(200, 200, 200, 192));
+    RoundedRectangleButton pasteButton({174, 174}, 30, 15);
+    pasteButton.setTexture(&GUI::pasteIcon, true);
+    pasteButton.setOrigin(pasteButton.getSize().x / 2, pasteButton.getSize().y / 2);
+    pasteButton.setPosition(
+        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
+        window.getSize().y - 700
+    );
+    sf::RoundedRectangleShape pasteCover(pasteButton);
+    pasteCover.setTexture(nullptr);
+    pasteCover.setFillColor(sf::Color(200, 200, 200, 192));
     RoundedRectangleButton downloadButton({174, 174}, 30, 15);
     downloadButton.setTexture(&GUI::downloadIcon, true);
     downloadButton.setOrigin(downloadButton.getSize().x / 2, downloadButton.getSize().y / 2);
@@ -54,7 +97,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         (window.getSize().x / 2 - 400) / 2,
         window.getSize().y - 200
     );
-    RoundedRectangleButton downloadCover(downloadButton);
+    sf::RoundedRectangleShape downloadCover(downloadButton);
     downloadCover.setTexture(nullptr);
     downloadCover.setFillColor(sf::Color(200, 200, 200, 192));
     RoundedRectangleButton deleteButton({174, 174}, 15, 15);
@@ -64,7 +107,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
         window.getSize().y - 200
     );
-    RoundedRectangleButton deleteCover(deleteButton);
+    sf::RoundedRectangleShape deleteCover(deleteButton);
     deleteCover.setTexture(nullptr);
     deleteCover.setFillColor(sf::Color(200, 200, 200, 192));
     RoundedRectangleButton renameButton({174, 174}, 15, 15);
@@ -74,24 +117,34 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
         window.getSize().y - 450
     );
-    RoundedRectangleButton renameCover(renameButton);
+    sf::RoundedRectangleShape renameCover(renameButton);
     renameCover.setTexture(nullptr);
     renameCover.setFillColor(sf::Color(200, 200, 200, 192));
     const sf::View startingView = window.getView();
     sf::View activeView = startingView;
     std::string path = current.path();
     std::vector<TextBox> fileSquares;
-    std::vector<std::reference_wrapper<sf::Drawable>> drawableCovers = {
+    std::vector<std::reference_wrapper<sf::RoundedRectangleShape>> buttonCovers = {
         std::ref(downloadCover),
         std::ref(deleteCover),
-        std::ref(renameCover)
+        std::ref(renameCover),
+        std::ref(copyCover),
+        std::ref(cutCover),
+        std::ref(pasteCover),
+        std::ref(changeDirCover)
     };
-    std::vector<std::reference_wrapper<sf::Drawable>> drawables = {
+    std::vector<std::reference_wrapper<sf::RoundedRectangleShape>> shapes = {
         std::ref(uploadButton),
         std::ref(downloadButton),
         std::ref(deleteButton),
-        std::ref(renameButton)
+        std::ref(renameButton),
+        std::ref(cutButton),
+        std::ref(copyButton),
+        std::ref(pasteButton),
+        std::ref(changeDirButton)
     };
+    std::vector<std::reference_wrapper<sf::Drawable>> drawables(shapes.begin(), shapes.end());
+    shapes.insert(shapes.end(), buttonCovers.begin(), buttonCovers.end());
     for (size_t i = 0; i < current.childrenSize(); ++i) {
         fileSquares.emplace_back(RoundedRectangleButton({800, 45}, 5, 5), GUI::Font, current.child(i).name(), 30, sf::Color::Black, true, 0);
         fileSquares.back().setOrigin(
@@ -119,9 +172,15 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                     constexpr float SCROLL_MOVEMENT = 20;
                     if (event.mouseWheelScroll.delta > 0 && activeView.getCenter().y > window.getSize().y / 2) {
                         activeView.move(0, -SCROLL_MOVEMENT);
+                        for (auto& shape : shapes) {
+                            shape.get().move(0, -SCROLL_MOVEMENT);
+                        }
                     }
                     else if (event.mouseWheelScroll.delta < 0 && activeView.getCenter().y + window.getSize().y / 2 <= fileSquares.back().getPosition().y + fileSquares.back().getSize().y / 2) {
                         activeView.move(0, +SCROLL_MOVEMENT);
+                        for (auto& shape : shapes) {
+                            shape.get().move(0, +SCROLL_MOVEMENT);
+                        }
                     }
                     break;
                 }
@@ -166,10 +225,18 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         for (sf::Drawable& drawable : drawables) {
             window.draw(drawable);
         }
-        if (selected == static_cast<size_t>(-1)) {
-            for (sf::Drawable& drawable : drawableCovers) {
+        if (selected == -1) {
+            for (sf::Drawable& drawable : buttonCovers) {
                 window.draw(drawable);
             }
+        }
+        else {
+            if (current.child(selected).isDirectory() == false) {
+                window.draw(changeDirCover);
+            }
+        }
+        if (current.parent()) {
+            window.draw(backButton);
         }
         window.display();
         std::this_thread::sleep_for(std::chrono::milliseconds(33));

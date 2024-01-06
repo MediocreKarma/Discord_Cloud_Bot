@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <fstream>
 #include <dpp/dpp.h>
-#include "sha256.h"
+#include "ExternalDependencies/sha256.h"
 #include <random>
 #include "../Common/commons.hpp"
 #include "botWrapper.hpp"

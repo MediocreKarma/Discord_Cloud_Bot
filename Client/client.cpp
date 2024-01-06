@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 4;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "My Cloud Drive", sf::Style::Default, settings);
+    /*
     std::ifstream portFile(Files::PortFile);
     if (!portFile.is_open()) {
 
@@ -41,26 +42,42 @@ int main(int argc, char** argv) {
     }
     std::cout << "Connected to server" << std::endl;
     pollfd poll_sd = {sd, POLLIN, 0};  
-    
+    */
     while (true) {
-        bool login;
-        if ((login = LoginScreen::loginProcedure(window, sd)) == false) {
-            return 0;
+        bool login = true;
+        // if ((login = LoginScreen::loginProcedure(window, sd)) == false) {
+        //     return 0;
+        // }
+        //DirectoryTree root = buildFilesystem(sd);
+        DirectoryTree root("00000000", 0, "");
+        for (int i = 0; i < 30; ++i) {
+            std::string nr = std::to_string(i + 1);
+            root.addChild(std::string('0', 8 - nr.size()) + nr, 1, "file" + nr + ".txt"); 
         }
-        DirectoryTree root = buildFilesystem(sd);
+        
         DirectoryTree* current = &root;
         std::cout << "Built root filesystem: " + root.encodeTree() << std::endl;
         while (login) {
             GUI::UserRequests ur = GUI::currentDirectoryRequest(window, *current);
             switch (ur.type) {
                 case GUI::UserRequests::Upload:
-                    FileTransfer::sendFile(sd, std::get<std::string>(ur.data), root, *current);
+                    //FileTransfer::sendFile(sd, std::get<std::string>(ur.data), root, *current);
                     break;
                 case GUI::UserRequests::Download:
-                    FileTransfer::receiveFile(sd, *std::get<const DirectoryTree*>(ur.data));
+                    //FileTransfer::receiveFile(sd, *std::get<const DirectoryTree*>(ur.data));
+                    break;
                 case GUI::UserRequests::ChangeDirectory:
                     // ...
                     break;
+                case GUI::UserRequests::Copy:
+                    // ...
+                    break;
+                case GUI::UserRequests::Cut:
+                    // ...
+                    break;  
+                case GUI::UserRequests::Paste:
+                    // ...
+                    break;    
                 case GUI::UserRequests::Quit:
                     goto clientShutdown;
             }
@@ -68,6 +85,6 @@ int main(int argc, char** argv) {
     }
 
 clientShutdown:
-    close(sd);
+    //close(sd);
     return 0;
 }

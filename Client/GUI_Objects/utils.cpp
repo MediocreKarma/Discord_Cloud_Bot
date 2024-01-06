@@ -4,10 +4,15 @@ bool GUI::init() {
     bool succesful = true;
     const std::string base = "../Resources/";
     succesful &= Font.loadFromFile(base + "Roboto-Regular.ttf");
-    succesful &= downloadIcon.loadFromFile(base + "downloadIcon.png");
-    succesful &= renameIcon.loadFromFile(base + "renameIcon.png");
-    succesful &= uploadIcon.loadFromFile(base + "uploadIcon.png");
-    succesful &= deleteIcon.loadFromFile(base + "trashIcon.png");
+    succesful &= downloadIcon.loadFromFile(base + "download.png");
+    succesful &= renameIcon.loadFromFile(base + "rename.png");
+    succesful &= uploadIcon.loadFromFile(base + "upload.png");
+    succesful &= deleteIcon.loadFromFile(base + "trash.png");
+    succesful &= cutIcon.loadFromFile(base + "cut.png");
+    succesful &= copyIcon.loadFromFile(base + "copy.png");
+    succesful &= pasteIcon.loadFromFile(base + "paste.png");
+    succesful &= changeDirIcon.loadFromFile(base + "changeDir.png");
+    succesful &= backIcon.loadFromFile(base + "back.png");
     return succesful;
 }
 

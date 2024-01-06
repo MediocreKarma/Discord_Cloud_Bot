@@ -7,6 +7,18 @@ project (${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 
+file(MAKE_DIRECTORY ./ExternalDependencies)
+
+file(DOWNLOAD 
+  https://raw.githubusercontent.com/stbrumme/hash-library/master/sha256.cpp
+  ExternalDependencies/sha256.cpp
+)
+
+file(DOWNLOAD 
+  https://raw.githubusercontent.com/stbrumme/hash-library/master/sha256.h
+  ExternalDependencies/sha256.h
+)
+
 add_executable(
   ${PROJECT_NAME} /
     server.cpp /
@@ -14,7 +26,7 @@ add_executable(
     utils.cpp /
     SQL_DB.cpp /
     ClientThreads.cpp /
-    sha256.cpp /
+    ExternalDependencies/sha256.cpp /
     ../Common/commons.cpp /
     ../Common/DirectoryTree/DirectoryTree.cpp
     fileTransfer.cpp / 

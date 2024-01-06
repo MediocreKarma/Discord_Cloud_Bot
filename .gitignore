@@ -12,3 +12,4 @@ smtpclientlibrary-*
 .vscode
 /build
 *.cmake
+ExternalDependencies

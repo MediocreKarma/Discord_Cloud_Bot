@@ -1,7 +1,7 @@
 #include "DirectoryTree.hpp"
 
 DirectoryTree::DirectoryTree(const std::string& _id, const size_t _size, const std::string& _filename, DirectoryTree* _parent) :
-    m_id(_id), m_size(_size), filename(_filename), parent(_parent), m_children() {}
+    m_id(_id), m_size(_size), filename(_filename), m_parent(_parent), m_children() {}
 
 DirectoryTree::DirectoryTree(DirectoryTree&& other) : DirectoryTree("", 0, "") {
     *this = std::move(other);
@@ -12,8 +12,8 @@ DirectoryTree& DirectoryTree::operator = (DirectoryTree&& other) {
     filename = std::move(other.filename);
     m_id = other.m_id;
     m_size = other.m_size;
-    parent = other.parent;
-    other.parent = nullptr;
+    m_parent = other.m_parent;
+    other.m_parent = nullptr;
     m_children = std::move(other.m_children);
     return *this;
 }
@@ -54,7 +54,7 @@ std::string DirectoryTree::encodeTree() const {
     std::string sizeString(8, '\0');
     memcpy(sizeString.data(), &m_size, 8);
     std::string encoding = m_id + sizeString + filename;
-    if (parent) {
+    if (m_parent) {
         encoding = '/' + encoding;
     }
     for (const DirectoryTree& child : m_children) {
@@ -81,10 +81,10 @@ DirectoryTree& DirectoryTree::child(const size_t index) {
 }
 
 std::string DirectoryTree::path() const {
-    if (parent == nullptr) {
+    if (m_parent == nullptr) {
         return filename + "/";
     }
-    return parent->path() + filename + "/";
+    return m_parent->path() + filename + "/";
 }
 
 std::string DirectoryTree::name() const {
@@ -122,5 +122,21 @@ std::string DirectoryTree::id() const {
 }
 
 size_t DirectoryTree::size() const {
+    // file is directory
+    if (m_size == 0) {
+        size_t res = 0;
+        for (auto& child : m_children) {
+            res += child.size();
+        }
+        return res;
+    }
     return m_size;
+}
+
+bool DirectoryTree::isDirectory() const {
+    return m_size == 0;
+}
+
+DirectoryTree* DirectoryTree::parent() {
+    return m_parent;
 }

@@ -25,6 +25,10 @@ namespace GUI {
             Upload,
             Download,
             Rename,
+            Cut,
+            Copy,
+            Paste,
+            Delete,
             SignOut,
             Quit
         } type;
