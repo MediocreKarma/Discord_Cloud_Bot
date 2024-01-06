@@ -1,19 +1,18 @@
 #include "DirectoryTree.hpp"
 
 DirectoryTree::DirectoryTree(const std::string& _id, const size_t _size, const std::string& _filename, DirectoryTree* _parent) :
-    m_id(_id), m_size(_size), filename(_filename), m_parent(_parent), m_children() {}
+    m_id(_id), m_size(_size), filename(_filename), m_parent(_parent), m_children{} {}
 
-DirectoryTree::DirectoryTree(DirectoryTree&& other) : DirectoryTree("", 0, "") {
+DirectoryTree::DirectoryTree(DirectoryTree&& other) {
     *this = std::move(other);
 }
 
 // current pointer must be destroyed
 DirectoryTree& DirectoryTree::operator = (DirectoryTree&& other) {
-    filename = std::move(other.filename);
-    m_id = other.m_id;
+    m_id = std::move(other.m_id);
     m_size = other.m_size;
+    filename = std::move(other.filename);
     m_parent = other.m_parent;
-    other.m_parent = nullptr;
     m_children = std::move(other.m_children);
     return *this;
 }
@@ -57,19 +56,30 @@ std::string DirectoryTree::encodeTree() const {
     if (m_parent) {
         encoding = '/' + encoding;
     }
-    for (const DirectoryTree& child : m_children) {
-        encoding += child.encodeTree();
+    for (const auto& child : m_children) {
+        encoding += child->encodeTree();
     }
     encoding += '\0';
     return  encoding;
 }
 
 void DirectoryTree::addChild(const std::string& id, const size_t size, const std::string& filename) {
-    m_children.emplace_back(id, size, filename, this);
+    m_children.emplace_back(std::make_unique<DirectoryTree>(id, size, filename, this));
 }
 
+#include <iostream>
+
 void DirectoryTree::addChild(DirectoryTree&& child) {
-    m_children.push_back(std::move(child));
+    child.m_parent = this;
+    m_children.push_back(std::make_unique<DirectoryTree>(std::move(child)));
+}
+
+void DirectoryTree::erase(const size_t index) {
+    m_children.erase(m_children.begin() + index);
+}
+
+void DirectoryTree::rename(const std::string& name) {
+    filename = name;
 }
 
 size_t DirectoryTree::childrenSize() const {
@@ -77,7 +87,7 @@ size_t DirectoryTree::childrenSize() const {
 }
 
 DirectoryTree& DirectoryTree::child(const size_t index) {
-    return m_children[index];
+    return *(m_children[index]);
 }
 
 std::string DirectoryTree::path() const {
@@ -95,8 +105,8 @@ DirectoryTree* DirectoryTree::findID(const std::string& target) {
     if (m_id == target) {
         return this;
     }
-    for (DirectoryTree& child : m_children) {
-        DirectoryTree* ptr = child.findID(target);
+    for (auto& child : m_children) {
+        DirectoryTree* ptr = child->findID(target);
         if (ptr) {
             return ptr;
         }
@@ -108,8 +118,8 @@ const DirectoryTree* DirectoryTree::findID(const std::string& target) const {
     if (m_id == target) {
         return this;
     }
-    for (const DirectoryTree& child : m_children) {
-        const DirectoryTree* ptr = child.findID(target);
+    for (const auto& child : m_children) {
+        const DirectoryTree* ptr = child->findID(target);
         if (ptr) {
             return ptr;
         }
@@ -126,7 +136,7 @@ size_t DirectoryTree::size() const {
     if (m_size == 0) {
         size_t res = 0;
         for (auto& child : m_children) {
-            res += child.size();
+            res += child->size();
         }
         return res;
     }
@@ -139,4 +149,12 @@ bool DirectoryTree::isDirectory() const {
 
 DirectoryTree* DirectoryTree::parent() {
     return m_parent;
+}
+
+DirectoryTree DirectoryTree::clone() const {
+    DirectoryTree cloneFile(id(), size(), name(), m_parent);
+    for (const auto& child : m_children) {
+        cloneFile.addChild(child->clone());
+    }
+    return cloneFile;
 }

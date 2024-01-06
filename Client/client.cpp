@@ -49,16 +49,23 @@ int main(int argc, char** argv) {
         //     return 0;
         // }
         //DirectoryTree root = buildFilesystem(sd);
-        DirectoryTree root("00000000", 0, "");
+        DirectoryTree root = DirectoryTree("00000000", 0, "");
+        root.addChild("00000000", 0, "dir");
         for (int i = 0; i < 30; ++i) {
             std::string nr = std::to_string(i + 1);
-            root.addChild(std::string('0', 8 - nr.size()) + nr, 1, "file" + nr + ".txt"); 
+            root.addChild(std::string(8 - nr.size(), '0') + nr, 1, "file" + nr + ".txt"); 
+            root.child(0).addChild(std::string(8 - nr.size(), '0') + nr, 1, "file" + nr + ".txt");
         }
-        
+        std::unique_ptr<DirectoryTree> clipboard = nullptr;
+        size_t clipIndex = -1;
+        ssize_t selected = -1;
         DirectoryTree* current = &root;
-        std::cout << "Built root filesystem: " + root.encodeTree() << std::endl;
+        std::cout << "Built root filesystem" << std::endl;
         while (login) {
-            GUI::UserRequests ur = GUI::currentDirectoryRequest(window, *current);
+            GUI::UserRequests ur = GUI::currentDirectoryRequest(window, *current, selected, clipboard.get() != nullptr);
+            ssize_t index;
+            if (selected == -1) index = -1 ;
+            else index = current->childrenSize() - 1 - selected;
             switch (ur.type) {
                 case GUI::UserRequests::Upload:
                     //FileTransfer::sendFile(sd, std::get<std::string>(ur.data), root, *current);
@@ -66,18 +73,38 @@ int main(int argc, char** argv) {
                 case GUI::UserRequests::Download:
                     //FileTransfer::receiveFile(sd, *std::get<const DirectoryTree*>(ur.data));
                     break;
-                case GUI::UserRequests::ChangeDirectory:
-                    // ...
+                case GUI::UserRequests::ChangeDirectory: {
+                    selected = -1;
+                    sf::View view = window.getView();
+                    view.setCenter(window.getSize().x / 2, window.getSize().y / 2);
+                    if (index != -1) {
+                        current = &(current->child(index));
+                    }
+                    else {
+                        current = current->parent();
+                    }
                     break;
+                }
                 case GUI::UserRequests::Copy:
-                    // ...
+                    clipboard = std::make_unique<DirectoryTree>(current->child(index).clone());
+                    clipIndex = -1;
                     break;
                 case GUI::UserRequests::Cut:
-                    // ...
+                    clipboard = std::make_unique<DirectoryTree>(current->child(index).clone());
+                    clipIndex = index;
                     break;  
                 case GUI::UserRequests::Paste:
-                    // ...
-                    break;    
+                    current->addChild(clipboard->clone());
+                    if (clipIndex != -1) {
+                        clipboard->parent()->erase(clipIndex);
+                        clipIndex = -1;
+                    }
+                    break;
+                case GUI::UserRequests::Rename: {
+                    std::string originalName = current->child(index).name();
+                    current->child(index).rename(std::get<std::string>(ur.data));
+                    break;
+                }
                 case GUI::UserRequests::Quit:
                     goto clientShutdown;
             }

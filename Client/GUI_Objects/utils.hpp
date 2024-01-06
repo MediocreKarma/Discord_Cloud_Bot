@@ -19,8 +19,12 @@ namespace GUI {
     inline sf::Texture cutIcon;
     inline sf::Texture pasteIcon;
     inline sf::Texture backIcon;
-    inline sf::Texture changeDirIcon;
+    inline sf::Texture forwardIcon;
+    inline sf::Texture createDirIcon;
     bool init();
+
+    sf::Text& centerOrigin(sf::Text&);
+    sf::RoundedRectangleShape& centerOrigin(sf::RoundedRectangleShape&);
 }
 
 namespace Colors {

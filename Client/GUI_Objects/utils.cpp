@@ -11,8 +11,9 @@ bool GUI::init() {
     succesful &= cutIcon.loadFromFile(base + "cut.png");
     succesful &= copyIcon.loadFromFile(base + "copy.png");
     succesful &= pasteIcon.loadFromFile(base + "paste.png");
-    succesful &= changeDirIcon.loadFromFile(base + "changeDir.png");
+    succesful &= createDirIcon.loadFromFile(base + "createDir.png");
     succesful &= backIcon.loadFromFile(base + "back.png");
+    succesful &= forwardIcon.loadFromFile(base + "forward.png");
     return succesful;
 }
 
@@ -65,4 +66,15 @@ std::string& encrypt(std::string& data, const std::string& encryptionKey) {
 
 std::string& decrypt(std::string& data, const std::string& encryptionKey) {
     return encrypt(data, encryptionKey);
+}
+
+sf::RoundedRectangleShape& GUI::centerOrigin(sf::RoundedRectangleShape& rrect) {
+    rrect.setOrigin(rrect.getSize().x / 2, rrect.getSize().y / 2);
+    return rrect;
+}
+
+sf::Text& GUI::centerOrigin(sf::Text& txt) {
+    sf::FloatRect rect = txt.getGlobalBounds();
+    txt.setOrigin(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    return txt;
 }

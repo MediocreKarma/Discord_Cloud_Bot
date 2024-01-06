@@ -16,9 +16,6 @@
 
 namespace GUI {
 
-    // return next directory -> 0 = current, -1 = previous, > 0 = child of current
-    // boolean will be 
-
     struct UserRequests {
         enum Type {
             ChangeDirectory,
@@ -29,14 +26,15 @@ namespace GUI {
             Copy,
             Paste,
             Delete,
+            ChangeTree,
             SignOut,
             Quit
         } type;
 
-        std::variant<std::monostate, std::string, ssize_t, const DirectoryTree*> data;
+        std::variant<std::monostate, std::string> data;
     };
-
-    UserRequests currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current);
+    
+    UserRequests currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current, ssize_t& selected, bool clipboard);
 
 }
 

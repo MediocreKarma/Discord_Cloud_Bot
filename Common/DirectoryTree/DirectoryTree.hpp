@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <cstring>
 
 class DirectoryTree {
@@ -11,7 +12,6 @@ public:
 
     //DirectoryTree() = default;
     DirectoryTree(const std::string& id, size_t size, const std::string& filename, DirectoryTree* parent = nullptr);
-    DirectoryTree(const DirectoryTree&) = delete;
     DirectoryTree(DirectoryTree&&);
 
     DirectoryTree& operator = (const DirectoryTree&) = delete;
@@ -22,6 +22,10 @@ public:
 
     void addChild(const std::string& id, size_t size, const std::string& filename);
     void addChild(DirectoryTree&& child);
+    void erase(size_t index);
+
+    void rename(const std::string& name);
+    
     size_t childrenSize() const;
     DirectoryTree& child(size_t index);
 
@@ -37,6 +41,7 @@ public:
 
     bool isDirectory() const;
 
+    DirectoryTree clone() const;
 
 private:
     // db identifier
@@ -45,7 +50,7 @@ private:
     // aka alias, screen name
     std::string filename = "";
     DirectoryTree* m_parent = nullptr;
-    std::vector<DirectoryTree> m_children = {};
+    std::vector<std::unique_ptr<DirectoryTree>> m_children = {};
 };
 
 #endif
