@@ -9,7 +9,7 @@
 
 class RoundedRectangleTextShape : public sf::Drawable, public sf::Transformable {
 public:
-    RoundedRectangleTextShape(const sf::RoundedRectangleShape& shape, const sf::Text& text);
+    RoundedRectangleTextShape(const sf::RoundedRectangleShape& shape, const sf::Text& text, bool leftAlign = false);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     virtual size_t getPointCount() const;
     virtual sf::Vector2f getPoint(size_t index) const;
@@ -33,6 +33,7 @@ public:
 protected:
     sf::Text text;
     mutable sf::RoundedRectangleShape shape;
+    bool leftAlign;
 };
 
 class Hittable {
@@ -52,7 +53,7 @@ public:
 
 class RoundedRectangleTextButton : public RoundedRectangleTextShape, public Hittable {
 public:
-    RoundedRectangleTextButton(const sf::RoundedRectangleShape& shape, const sf::Text& text);
+    RoundedRectangleTextButton(const sf::RoundedRectangleShape& shape, const sf::Text& text, bool leftAlign = false);
     virtual bool hit(sf::Vector2f click) const;
 };
 

@@ -19,6 +19,7 @@ namespace GUI {
     struct UserRequests {
         enum Type {
             ChangeDirectory,
+            CreateDirectory,
             Upload,
             Download,
             Rename,
@@ -28,13 +29,14 @@ namespace GUI {
             Delete,
             ChangeTree,
             SignOut,
-            Quit
+            Quit,
+            Reload
         } type;
 
         std::variant<std::monostate, std::string> data;
     };
     
-    UserRequests currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current, ssize_t& selected, bool clipboard);
+    UserRequests currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current, ssize_t& selected, DirectoryTree* clipboard);
 
 }
 

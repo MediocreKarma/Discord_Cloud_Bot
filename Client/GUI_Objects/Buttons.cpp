@@ -6,13 +6,10 @@
 ///
 //////////////////////////////////////////////////
 
-RoundedRectangleTextShape::RoundedRectangleTextShape(const sf::RoundedRectangleShape& _shape, const sf::Text& _text) :
-    text(_text), shape(_shape) {
-    const float DEFAULT_OFFSET = 50;
-    text.setOrigin(
-        text.getGlobalBounds().width / 2 + text.getLocalBounds().left - shape.getSize().x / 2,
-        text.getGlobalBounds().height / 2 + text.getLocalBounds().top - shape.getSize().y / 2
-    );
+RoundedRectangleTextShape::RoundedRectangleTextShape(const sf::RoundedRectangleShape& _shape, const sf::Text& _text, bool _leftAlign) :
+    text(), shape(_shape), leftAlign(_leftAlign) {
+    text.setFont(*_text.getFont());
+    setString(_text.getString());
     shape.setFillColor(Colors::Gray);
     shape.setOutlineThickness(1);
     shape.setOutlineColor(sf::Color::Black);
@@ -59,11 +56,30 @@ void RoundedRectangleTextShape::setFont(const sf::Font& font) {
 }
 
 void RoundedRectangleTextShape::setString(const std::string& _text) {
+    const float DEFAULT_OFFSET = 50;
     text.setString(_text);
-    text.setOrigin(
-        text.getGlobalBounds().width / 2 + text.getLocalBounds().left - shape.getSize().x / 2,
-        text.getGlobalBounds().height / 2 + text.getLocalBounds().top - shape.getSize().y / 2
-    );
+    sf::FloatRect frect = text.getGlobalBounds();
+    if (_text.size() > 0 && frect.width > shape.getSize().x - DEFAULT_OFFSET) {
+        size_t i = 1;
+        while (text.getString().getSize() > 3 && frect.width > shape.getSize().x - DEFAULT_OFFSET) {
+            text.setString(_text.substr(0, _text.size() - i) + "...");
+            i++;
+            frect = text.getGlobalBounds();
+        }
+    }
+    if (leftAlign) {
+        text.setOrigin(0, text.getGlobalBounds().height / 2 + text.getLocalBounds().top - shape.getSize().y / 2);
+        text.setPosition(
+            DEFAULT_OFFSET / 2 - text.getLocalBounds().left,
+            0
+        );
+    }
+    else {
+        text.setOrigin(
+            text.getGlobalBounds().width / 2 + text.getLocalBounds().left - shape.getSize().x / 2,
+            text.getGlobalBounds().height / 2 + text.getLocalBounds().top - shape.getSize().y / 2
+        );
+    }
 }
 
 void RoundedRectangleTextShape::setStyle(const sf::Uint32 style) {
@@ -114,8 +130,8 @@ bool RoundedRectangleButton::hit(const sf::Vector2f click) const {
 ///
 //////////////////////////////////////////////////
 
-RoundedRectangleTextButton::RoundedRectangleTextButton(const sf::RoundedRectangleShape& shape, const sf::Text& text) :
-    RoundedRectangleTextShape(shape, text) {}
+RoundedRectangleTextButton::RoundedRectangleTextButton(const sf::RoundedRectangleShape& shape, const sf::Text& text, bool leftAlign) :
+    RoundedRectangleTextShape(shape, text, leftAlign) {}
 
 bool RoundedRectangleTextButton::hit(const sf::Vector2f click) const {
     sf::FloatRect fr = shape.getGlobalBounds();

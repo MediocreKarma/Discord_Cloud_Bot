@@ -28,8 +28,8 @@ namespace GUI {
 }
 
 namespace Colors {
-    const sf::Color LightGray = sf::Color(218, 223, 225); 
-    const sf::Color Gray = sf::Color(211, 211, 211);
+    const sf::Color LightGray = sf::Color(233, 233, 233); 
+    const sf::Color Gray = sf::Color(218, 223, 225);
     const sf::Color DarkGray = sf::Color(169, 169, 169);
 }
 

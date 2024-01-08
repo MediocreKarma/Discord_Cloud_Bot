@@ -53,16 +53,16 @@ int main(int argc, char** argv) {
         root.addChild("00000000", 0, "dir");
         for (int i = 0; i < 30; ++i) {
             std::string nr = std::to_string(i + 1);
-            root.addChild(std::string(8 - nr.size(), '0') + nr, 1, "file" + nr + ".txt"); 
+            root.addChild(std::string(8 - nr.size(), '0') + nr, 1, + "file" + nr + ".txt"); 
             root.child(0).addChild(std::string(8 - nr.size(), '0') + nr, 1, "file" + nr + ".txt");
         }
         std::unique_ptr<DirectoryTree> clipboard = nullptr;
-        size_t clipIndex = -1;
+        ssize_t clipIndex = -1;
         ssize_t selected = -1;
         DirectoryTree* current = &root;
         std::cout << "Built root filesystem" << std::endl;
         while (login) {
-            GUI::UserRequests ur = GUI::currentDirectoryRequest(window, *current, selected, clipboard.get() != nullptr);
+            GUI::UserRequests ur = GUI::currentDirectoryRequest(window, *current, selected, clipboard.get());
             ssize_t index;
             if (selected == -1) index = -1 ;
             else index = current->childrenSize() - 1 - selected;
@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
                     selected = -1;
                     sf::View view = window.getView();
                     view.setCenter(window.getSize().x / 2, window.getSize().y / 2);
+                    window.setView(view);
                     if (index != -1) {
                         current = &(current->child(index));
                     }
@@ -100,11 +101,12 @@ int main(int argc, char** argv) {
                         clipIndex = -1;
                     }
                     break;
-                case GUI::UserRequests::Rename: {
-                    std::string originalName = current->child(index).name();
+                case GUI::UserRequests::Rename:
                     current->child(index).rename(std::get<std::string>(ur.data));
                     break;
-                }
+                case GUI::UserRequests::CreateDirectory: 
+                    current->addChild("00000000", 0, std::get<std::string>(ur.data));
+                    break;
                 case GUI::UserRequests::Quit:
                     goto clientShutdown;
             }

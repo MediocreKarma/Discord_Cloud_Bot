@@ -16,7 +16,7 @@ std::string userInputString(const std::string& windowTitle, const std::string& s
             switch (event.type) {
                 case sf::Event::Closed:
                     textWindow.close(); 
-                    return inputBox.getData();
+                    return std::string(1, '\0');
                 case sf::Event::TextEntered:
                     if (event.text.unicode < 128 && event.text.unicode != '\r') {
                         return inputBox.externalType(textWindow, event.text.unicode);
@@ -91,7 +91,7 @@ bool confirmationWindow(const std::string& windowTitle, const std::string& windo
     return false;
 }
 
-bool nameInUse(std::string& name, DirectoryTree& node) {
+bool nameInUse(std::string& name, const DirectoryTree& node) {
     for (size_t i = 0; i < node.childrenSize(); ++i) {
         if (node.child(i).name() == name) {
             return true;
@@ -100,21 +100,74 @@ bool nameInUse(std::string& name, DirectoryTree& node) {
     return false;
 } 
 
-GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current, ssize_t& selected, bool clipboard) {
+std::string sizeToByteConversion(size_t size) {
+    std::array<std::string, 4> types = {"B", "KB", "MB", "GB"};
+    size_t currentSize = 1;
+    for (const std::string& type : types) {
+        if (size < currentSize * 1000) {
+            // 6 digits after .
+            std::string result = std::to_string(1.0 * size / currentSize);
+            // 2 digits after .
+            result = result.substr(0, result.size() - 4);
+            while (result.back() == '0') result.pop_back();
+            if (result.back() == '.') result.pop_back(); 
+            return result + ' ' + type; 
+        }
+        currentSize *= 1000;
+    }
+    return "NaN";
+}
+
+// returns "\0" when user did not give a valid filename
+std::string getInputUntilValid(
+    const DirectoryTree& current,
+    const sf::RenderWindow& mainWindow,
+    const std::string& inputWindowTitle,
+    const std::string& inputStartingString,
+    const std::string& emptyError,
+    const std::string& usedError
+) {
+    std::string name = userInputString(inputWindowTitle, inputStartingString, mainWindow);
+    bool trying = true;
+    while (trying && (name.empty() || nameInUse(name, current))) {
+        if (name.empty()) {
+            if (confirmationWindow("Naming error", emptyError, mainWindow)) {
+                name = userInputString(inputWindowTitle, inputStartingString, mainWindow);
+            }
+            else {
+                trying = false;
+            }
+        }
+        else {
+            if (confirmationWindow("Naming error", usedError, mainWindow)) {
+                name = userInputString(inputStartingString, inputStartingString, mainWindow);
+            }
+            else {
+                trying = false;
+            }
+        }
+    }
+    if (trying) {
+        return name;
+    }
+    return std::string(1, '\0');
+}
+
+GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current, ssize_t& selected, DirectoryTree* clipboard) {
     const unsigned int heightOffset = window.getView().getCenter().y - window.getSize().y / 2;
     const int buttonSize = 125;
     RoundedRectangleButton uploadButton({buttonSize, buttonSize}, 30, 15);
     uploadButton.setTexture(&GUI::uploadIcon, true);
     uploadButton.setOrigin(uploadButton.getSize().x / 2, uploadButton.getSize().y / 2);
     uploadButton.setPosition(
-        (window.getSize().x / 2 - 400) / 2,
+        window.getSize().x * 1  / 16,
         window.getSize().y * 1 / 6 + heightOffset
     );
     RoundedRectangleButton downloadButton({buttonSize, buttonSize}, 30, 15);
     downloadButton.setTexture(&GUI::downloadIcon, true);
     downloadButton.setOrigin(downloadButton.getSize().x / 2, downloadButton.getSize().y / 2);
     downloadButton.setPosition(
-        (window.getSize().x / 2 - 400) / 2,
+        window.getSize().x * 1  / 16,
         window.getSize().y * 2 / 6 + heightOffset
     );
     sf::RoundedRectangleShape downloadCover(downloadButton);
@@ -124,7 +177,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     backButton.setTexture(&GUI::backIcon, true);
     backButton.setOrigin(backButton.getSize().x / 2, backButton.getSize().y / 2);
     backButton.setPosition(
-        (window.getSize().x / 2 - 400) / 2,
+        window.getSize().x / 16,
         window.getSize().y * 3 / 6 + heightOffset
     );
     sf::RoundedRectangleShape backCover(backButton);
@@ -134,7 +187,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     forwardButton.setTexture(&GUI::forwardIcon, true);
     forwardButton.setOrigin(forwardButton.getSize().x / 2, forwardButton.getSize().y / 2);
     forwardButton.setPosition(
-        (window.getSize().x / 2 - 400) / 2,
+        window.getSize().x * 1  / 16,
         window.getSize().y * 4 / 6 + heightOffset
     );
     sf::RoundedRectangleShape forwardCover(forwardButton);
@@ -144,15 +197,15 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     createDirButton.setTexture(&GUI::createDirIcon, true);
     createDirButton.setOrigin(createDirButton.getSize().x / 2, createDirButton.getSize().y / 2);
     createDirButton.setPosition(
-        (window.getSize().x / 2 - 400) / 2,
+        window.getSize().x * 1  / 16,
         window.getSize().y * 5 / 6 + heightOffset
     );
     RoundedRectangleButton copyButton({buttonSize, buttonSize}, 30, 15);
     copyButton.setTexture(&GUI::copyIcon, true);
     copyButton.setOrigin(copyButton.getSize().x / 2, copyButton.getSize().y / 2);
     copyButton.setPosition(
-        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
-        window.getSize().y * 1 / 6 + heightOffset
+        window.getSize().x * 15 / 16,
+        window.getSize().y * 1  / 6 + heightOffset
     );
     sf::RoundedRectangleShape copyCover(copyButton);
     copyCover.setTexture(nullptr);
@@ -161,7 +214,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     cutButton.setTexture(&GUI::cutIcon, true);
     cutButton.setOrigin(cutButton.getSize().x / 2, cutButton.getSize().y / 2);
     cutButton.setPosition(
-        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
+        window.getSize().x * 15 / 16,
         window.getSize().y * 2 / 6 + heightOffset
     );
     sf::RoundedRectangleShape cutCover(cutButton);
@@ -171,7 +224,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     pasteButton.setTexture(&GUI::pasteIcon, true);
     pasteButton.setOrigin(pasteButton.getSize().x / 2, pasteButton.getSize().y / 2);
     pasteButton.setPosition(
-        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
+        window.getSize().x * 15 / 16,
         window.getSize().y * 3 / 6 + heightOffset
     );
     sf::RoundedRectangleShape pasteCover(pasteButton);
@@ -181,7 +234,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     deleteButton.setTexture(&GUI::deleteIcon, true);
     deleteButton.setOrigin(deleteButton.getSize().x / 2, deleteButton.getSize().y / 2);
     deleteButton.setPosition(
-        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
+        window.getSize().x * 15 / 16,
         window.getSize().y * 4 / 6 + heightOffset
     );
     sf::RoundedRectangleShape deleteCover(deleteButton);
@@ -191,7 +244,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     renameButton.setTexture(&GUI::renameIcon, true);
     renameButton.setOrigin(renameButton.getSize().x / 2, renameButton.getSize().y / 2);
     renameButton.setPosition(
-        window.getSize().x / 2 + (window.getSize().x / 2 + 400) / 2,
+        window.getSize().x * 15 / 16,
         window.getSize().y * 5 / 6 + heightOffset
     );
     sf::RoundedRectangleShape renameCover(renameButton);
@@ -200,9 +253,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     const sf::View startingView = window.getView();
     sf::View activeView = startingView;
     std::string path = current.path();
-    std::vector<TextBox> fileSquares;
     std::vector<std::reference_wrapper<sf::RoundedRectangleShape>> selectionCovers = {
-        std::ref(downloadCover),
         std::ref(deleteCover),
         std::ref(renameCover),
         std::ref(copyCover),
@@ -223,32 +274,87 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     std::vector<std::reference_wrapper<sf::Transformable>> transformables = {
         std::ref(backCover),
         std::ref(forwardCover),
-        std::ref(pasteCover)
+        std::ref(pasteCover),
+        std::ref(downloadCover)
     };
     transformables.insert(transformables.end(), selectionCovers.begin(), selectionCovers.end());
     transformables.insert(transformables.end(), buttons.begin(), buttons.end());
     std::vector<std::reference_wrapper<sf::Drawable>> drawAlways(buttons.begin(), buttons.end());
     buttons.insert(buttons.end(), selectionCovers.begin(), selectionCovers.end());
+    constexpr unsigned FILE_HEIGHT = 400;
+    std::array<RoundedRectangleTextShape, 3> fileHeader = {
+        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 9.f / 16, 50}), sf::Text("File name", GUI::Font, 40)),
+        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 1.f / 16, 50}), sf::Text("Type", GUI::Font, 40)),
+        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 1.6f / 16, 50}), sf::Text("Size", GUI::Font, 40)),
+    };
+    for (auto& shape : fileHeader) {
+        shape.setOrigin(
+            shape.getSize().x / 2,
+            shape.getSize().y / 2
+        );
+        shape.setShapeFillColor(Colors::Gray);
+    }
+    fileHeader[0].setPosition(
+        window.getSize().x / 2,
+        FILE_HEIGHT - 50
+    );
+    fileHeader[1].setPosition(
+        window.getSize().x / 2 - fileHeader[0].getSize().x / 2 - fileHeader[1].getSize().x / 2,
+        FILE_HEIGHT - 50
+    );
+    fileHeader[2].setPosition(
+        window.getSize().x / 2 + fileHeader[0].getSize().x / 2 + fileHeader[2].getSize().x / 2,
+        FILE_HEIGHT - 50
+    );
+    std::vector<RoundedRectangleTextButton> fileSquares;
+    std::vector<RoundedRectangleTextShape> fileInfo;
+    std::vector<RoundedRectangleTextShape> sizeInfo;
     for (size_t i = 0; i < current.childrenSize(); ++i) {
-        fileSquares.emplace_back(RoundedRectangleButton({800, 45}, 5, 5), GUI::Font, current.child(current.childrenSize() - 1 - i).name(), 30, sf::Color::Black, true, 0);
+        auto& childFile = current.child(current.childrenSize() - i - 1);
+        fileSquares.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 9.f / 16, 50}), sf::Text(childFile.name(), GUI::Font, 40), true);
         fileSquares.back().setOrigin(
             fileSquares.back().getSize().x / 2,
             fileSquares.back().getSize().y / 2
         );
         fileSquares.back().setPosition(
             window.getSize().x / 2,
-            300 + i * 50
+            FILE_HEIGHT + i * 50
         );
         fileSquares.back().setShapeFillColor(Colors::LightGray);
+        std::string info = childFile.isDirectory() ? "Dir" : "File";
+        fileInfo.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 1.f / 16, 50}), sf::Text(info, GUI::Font, 40));
+        fileInfo.back().setOrigin(
+            fileInfo.back().getSize().x / 2,
+            fileInfo.back().getSize().y / 2
+        );
+        fileInfo.back().setPosition(
+            window.getSize().x / 2 - fileSquares.back().getSize().x / 2 - fileInfo.back().getSize().x / 2,
+            FILE_HEIGHT + i * 50
+        );
+        fileInfo.back().setShapeFillColor(Colors::LightGray);
+        std::string size = sizeToByteConversion(childFile.size());
+        sizeInfo.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 1.6f / 16, 50}), sf::Text(size, GUI::Font, 40), true);
+        sizeInfo.back().setOrigin(
+            sizeInfo.back().getSize().x / 2,
+            sizeInfo.back().getSize().y / 2
+        );
+        sizeInfo.back().setPosition(
+            window.getSize().x / 2 + fileSquares.back().getSize().x / 2 + sizeInfo.back().getSize().x / 2,
+            FILE_HEIGHT + i * 50
+        );
+        sizeInfo.back().setShapeFillColor(Colors::LightGray);
     }
     ssize_t selectedNode = -1;
     if (selected != -1) {
         fileSquares[selected].setShapeOutlineColor(sf::Color::Blue);
+        fileInfo[selected].setShapeOutlineColor(sf::Color::Blue);
+        sizeInfo[selected].setShapeOutlineColor(sf::Color::Blue);
         selectedNode = current.childrenSize() - 1 - selected;
     }
-    for (auto& sq : fileSquares) {
-        drawAlways.emplace_back(std::ref(sq));
-    }
+    drawAlways.insert(drawAlways.end(), fileHeader.begin(), fileHeader.end());
+    drawAlways.insert(drawAlways.end(), fileSquares.begin(), fileSquares.end());
+    drawAlways.insert(drawAlways.end(), fileInfo.begin(), fileInfo.end());
+    drawAlways.insert(drawAlways.end(), sizeInfo.begin(), sizeInfo.end());
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -256,6 +362,9 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                 case sf::Event::Closed:
                     window.close();
                     return {UserRequests::Quit, std::monostate()};
+                case sf::Event::Resized:
+                    window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+                    return {UserRequests::Reload, std::monostate()};
                 case sf::Event::MouseWheelScrolled: {
                     constexpr float SCROLL_MOVEMENT = 20;
                     int mult = 0;
@@ -282,10 +391,14 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                         if (fileSquares[i].hit(mouse)) {
                             if (selected != -1) {
                                 fileSquares[selected].setShapeOutlineColor(sf::Color::Black);
+                                fileInfo[selected].setShapeOutlineColor(sf::Color::Black);
+                                sizeInfo[selected].setShapeOutlineColor(sf::Color::Black);
                             }
                             selected = i;
                             selectedNode = static_cast<ssize_t>(current.childrenSize()) - 1 - selected;
                             fileSquares[i].setShapeOutlineColor(sf::Color::Blue);
+                            fileInfo[i].setShapeOutlineColor(sf::Color::Blue);
+                            sizeInfo[i].setShapeOutlineColor(sf::Color::Blue);
                             done = true;
                             break;
                         }
@@ -297,7 +410,8 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                         std::string filePath = userInputString("Add file to cloud", "Enter path here", window);
                         std::cout << "Input is: \'" << filePath << '\'' <<  std::endl;
                         if (!std::filesystem::is_regular_file(filePath)) {
-                            std::cerr << "Directory instead of file" << std::endl;
+                            //std::cerr << "Non-file type" << std::endl;
+
                         }
                         return {UserRequests::Upload, filePath};
                     }
@@ -305,11 +419,20 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                         selected = -1;
                         return {UserRequests::ChangeDirectory, std::monostate()};
                     }
-                    else if (forwardButton.hit(mouse) && current.child(selectedNode).isDirectory()) {
-                        return {UserRequests::ChangeDirectory, std::monostate()};
+                    else if (createDirButton.hit(mouse)) {
+                        std::string name = getInputUntilValid(
+                            current, window, 
+                            "Create directory", 
+                            "Enter name here", 
+                            "Directory name cannot be empty",
+                            "Directory name is already used by another file"
+                        );
+                        if (name != std::string(1, '\0')) {
+                            return {UserRequests::CreateDirectory, name};
+                        }
                     }
                     else if (selected != -1) {
-                        if (downloadButton.hit(mouse)) {
+                        if (downloadButton.hit(mouse) && current.child(selectedNode).isDirectory() == false) {
                             return {UserRequests::Download, std::monostate()};
                         }
                         if (deleteButton.hit(mouse)) {
@@ -318,66 +441,50 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                             }
                         }
                         if (renameButton.hit(mouse)) {
-                            std::string rename = userInputString("Rename file", "Enter name here", window);
-                            bool trying = true;
-                            while (trying && (rename.empty() || nameInUse(rename, current))) {
-                                if (rename.empty()) {
-                                    if (confirmationWindow("Rename error", "File name cannot be empty", window)) {
-                                        rename = userInputString("Rename file", "Enter name here", window);
-                                    }
-                                    else {
-                                        trying = false;
-                                    }
-                                }
-                                else {
-                                    if (confirmationWindow("Rename error", "Name is already in use!", window)) {
-                                        rename = userInputString("Rename file", "Enter name here", window);
-                                    }
-                                    else {
-                                        trying = false;
-                                    }
-                                }
-                            } 
-                            if (trying) {
+                            std::string rename = getInputUntilValid(
+                                current, window, 
+                                "Rename file", 
+                                "Enter name here", 
+                                "File name cannot be empty",
+                                "File name is already used by another file"
+                            );
+                            if (rename != std::string(1, '\0')) {
                                 return {UserRequests::Rename, rename};
                             }
                         }
                         // clone child
                         if (copyButton.hit(mouse)) {
-                            return {UserRequests::Copy, std::monostate()};
+                            std::string filename = current.child(selectedNode).name();
+                            if (filename.size() > 20) {
+                                filename = filename.substr(0, 17) + "...";
+                            }
+                            if (confirmationWindow("Clipboard", "Copied \'" + filename + "\'", window)) {
+                                return {UserRequests::Copy, std::monostate()};
+                            }
                         }
                         // move child
                         if (cutButton.hit(mouse)) {
-                            return {UserRequests::Cut, std::monostate()};
+                            std::string filename = current.child(selectedNode).name();
+                            if (filename.size() > 20) {
+                                filename = filename.substr(0, 17) + "...";
+                            }
+                            if (confirmationWindow("Clipboard", "Cut \'" + filename + "\'", window)) {
+                                return {UserRequests::Cut, std::monostate()};
+                            }
                         }
                         // add child
-                        if (pasteButton.hit(mouse) && clipboard) {
-                            return {UserRequests::Paste, std::monostate()};
-                        }
-                        if (createDirButton.hit(mouse)) {
-                            std::string name = userInputString("Rename file", "Enter name here", window);
-                            bool trying = true;
-                            while (trying && (name.empty() || nameInUse(name, current))) {
-                                if (name.empty()) {
-                                    if (confirmationWindow("Rename error", "File name cannot be empty", window)) {
-                                        name = userInputString("Rename file", "Enter name here", window);
-                                    }
-                                    else {
-                                        trying = false;
-                                    }
-                                }
-                                else {
-                                    if (confirmationWindow("Rename error", "Name is already in use!", window)) {
-                                        name = userInputString("Rename file", "Enter name here", window);
-                                    }
-                                    else {
-                                        trying = false;
-                                    }
-                                }
-                            } 
-                            if (trying) {
-                                return {UserRequests::Rename, name};
+                        if (pasteButton.hit(mouse) && clipboard != nullptr) {
+                            std::string filename = clipboard->name();
+                            if (filename.size() > 20) {
+                                filename = filename.substr(0, 17) + "...";
                             }
+                            if (confirmationWindow("Clipboard", "Paste \'" + filename + "\'?", window)) {
+                                return {UserRequests::Paste, std::monostate()};
+                            }
+                        }
+                        // go into dir
+                        if (forwardButton.hit(mouse) && current.child(selectedNode).isDirectory()) {
+                            return {UserRequests::ChangeDirectory, std::monostate()};
                         }
                     }
             }
@@ -388,6 +495,11 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         for (sf::Drawable& drawable : drawAlways) {
             window.draw(drawable);
         }
+        if (selected != -1) {
+            window.draw(fileInfo[selected]);
+            window.draw(sizeInfo[selected]);
+            window.draw(fileSquares[selected]);
+        }
         if (selected == -1) {
             for (sf::Drawable& drawable : selectionCovers) {
                 window.draw(drawable);
@@ -396,10 +508,13 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         if (selected == -1 || current.child(selectedNode).isDirectory() == false) {
             window.draw(forwardCover);
         }
+        if (selected == -1 || current.child(selectedNode).isDirectory() == true) {
+            window.draw(downloadCover);
+        }
         if (current.parent() == nullptr) {
             window.draw(backCover);
         }
-        if (clipboard == false) {
+        if (clipboard == nullptr) {
             window.draw(pasteCover);
         }
         window.display();

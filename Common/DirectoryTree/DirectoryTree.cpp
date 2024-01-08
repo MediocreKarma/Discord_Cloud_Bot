@@ -90,6 +90,10 @@ DirectoryTree& DirectoryTree::child(const size_t index) {
     return *(m_children[index]);
 }
 
+const DirectoryTree& DirectoryTree::child(const size_t index) const {
+    return *(m_children[index]);
+}
+
 std::string DirectoryTree::path() const {
     if (m_parent == nullptr) {
         return filename + "/";

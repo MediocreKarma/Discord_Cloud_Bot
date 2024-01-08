@@ -28,6 +28,7 @@ public:
     
     size_t childrenSize() const;
     DirectoryTree& child(size_t index);
+    const DirectoryTree& child(size_t index) const;
 
     std::string path() const;
     std::string name() const;
