@@ -29,16 +29,17 @@ std::array<dpp::snowflake, 3> getChannelSnowflakes(dpp::cluster& bot, const dpp:
 }
 
 BotWrapper::BotWrapper(const std::string& token, const dpp::snowflake guild) : 
-    bot(token, dpp::i_message_content | dpp::i_default_intents), uploadLock(), snowflakes(), latestSnowflake() {
+    bot(token, dpp::i_message_content | dpp::i_default_intents), uploadMutex(), snowflakes() {
     bot.on_log(dpp::utility::cout_logger());
-    bot.on_message_create([&sn = this->latestSnowflake] (const dpp::message_create_t& message) {
-        sn = message.msg.id;
+    bot.on_message_create([&messInfo = this->messageInfo, &uMutex = this->uploadMutex] (const dpp::message_create_t& message) {
+        std::lock_guard<std::mutex> lockGuard(uMutex);
+        messInfo[message.msg.attachments[0].filename] = message.msg.id;
     });
     bot.start();
     snowflakes = getChannelSnowflakes(bot, guild);
 }
 
-dpp::snowflake BotWrapper::channel(const Channel chn) {
+dpp::snowflake BotWrapper::channel(const Channel chn) const {
     return snowflakes[static_cast<size_t>(chn)];
 }
 
@@ -47,13 +48,16 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const File& file
     message
         .set_channel_id(channel)
         .add_file(file.name, file.body);
-    std::lock_guard<std::mutex> lock(uploadLock);
-    latestSnowflake = 0;
-    uint64_t snowflake = bot.message_create_sync(message).id;
-    while ((snowflake = latestSnowflake.load(std::memory_order_relaxed)) == 0) {
+    bot.message_create(message);
+    while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::lock_guard<std::mutex> lock(uploadMutex);
+        if (messageInfo.contains(file.name)) {
+            dpp::snowflake flake = messageInfo.at(file.name);
+            messageInfo.erase(file.name);
+            return flake;
+        }
     }
-    return snowflake;
 }
 
 dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vector<File>& files) {
@@ -62,13 +66,16 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vecto
     for (const auto& [filename, body] : files) {
         message.add_file(filename, body);
     }
-    std::lock_guard<std::mutex> lock(uploadLock);
-    latestSnowflake = 0;
-    uint64_t snowflake = bot.message_create_sync(message).id;
-    while ((snowflake = latestSnowflake.load(std::memory_order_relaxed)) == 0) {
+    bot.message_create(message);
+    while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::lock_guard<std::mutex> lock(uploadMutex);
+        if (messageInfo.contains(files[0].name)) {
+            dpp::snowflake flake = messageInfo.at(files[0].name);
+            messageInfo.erase(files[0].name);
+            return flake;
+        }
     }
-    return snowflake;
 }
 
 std::vector<BotWrapper::File> BotWrapper::download(const dpp::snowflake message, const dpp::snowflake channel) {

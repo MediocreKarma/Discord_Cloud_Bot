@@ -41,6 +41,8 @@ bool sendTreeFile(int client, const std::string& encoding);
 
 void updateDiscord(UserInfo& info, SQL_DB& loginDB, BotWrapper& discord);
 
+void deleteFile(int client, const std::string& id, SQL_DB& loginDB, BotWrapper& discord);
+
 }
 
 #endif

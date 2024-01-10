@@ -225,3 +225,7 @@ void Request::updateDiscord(UserInfo& info, SQL_DB& loginDB, BotWrapper& discord
     loginDB.unlock();
 }
 
+void Request::deleteFile(int client, const std::string& id, SQL_DB& loginDB, BotWrapper& discord) {
+
+}
+

@@ -32,7 +32,8 @@ struct ClientMessage {
         RequestFileTree,
         UpdateFileTree,
         FileUpload,
-        FileDownload
+        FileDownload,
+        FileDelete
     } type;
 
     union MessageContent {

@@ -19,7 +19,7 @@ public:
         std::string body;
     };
 
-    dpp::snowflake channel(Channel channel);
+    dpp::snowflake channel(Channel channel) const;
     // total size of message must be less than 25 MiB
     dpp::snowflake upload(dpp::snowflake channel, const File& file);
     dpp::snowflake upload(dpp::snowflake channel, const std::vector<File>& files);
@@ -31,9 +31,9 @@ public:
 
 private:
     dpp::cluster bot;
-    std::mutex uploadLock;
+    mutable std::mutex uploadMutex;
+    mutable std::unordered_map<std::string, dpp::snowflake> messageInfo;
     std::array<dpp::snowflake, 3> snowflakes;
-    std::atomic<uint64_t> latestSnowflake;
 };
 
 #endif

@@ -452,7 +452,10 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                             return {UserRequests::Download, std::monostate()};
                         }
                         if (deleteButton.hit(mouse)) {
-                            if (confirmationWindow("Delete file?", "Are you sure you want to delete this file?", window)) {
+                            if (current.child(selectedNode).isDirectory() && current.child(selectedNode).size() > 0) {
+                                confirmationWindow("Delete error", "Cannot delete non-empty directory!", window);
+                            }
+                            else if (confirmationWindow("Delete file?", "Are you sure you want to delete \'" + current.child(selectedNode).name() + "\' ?", window)) {
                                 return {UserRequests::Delete, std::monostate()};
                             }
                         }

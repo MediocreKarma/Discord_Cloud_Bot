@@ -135,3 +135,29 @@ void FileTransfer::sendFile(int sd, const std::string& filepath, const Directory
     // YAY!!!!
 }
 
+void FileTransfer::deleteFile(int sd, const DirectoryTree& root, DirectoryTree& parent, size_t index) {
+    // verify if last link to file
+    if (root.countLinks(parent.child(index).id()) > 1) {
+        std::cout << "Soft link deletion" << std::endl;
+        parent.erase(index);
+        return;
+    }
+    ClientMessage cmessage = {ClientMessage::FileDelete};
+    ServerMessage smessage;
+    strncpy(cmessage.content.file.id, parent.child(index).id().c_str(), 9);
+    cmessage.content.file.id[8] = '\0';
+    if (Communication::write(sd, &cmessage, sizeof(cmessage)) == false) {
+        perror("Error using write");
+        throw std::ios::failure("Failure to write to socket");
+    }
+    if (Communication::read(sd, &smessage, sizeof(smessage)) == false) {
+        perror("Error using read");
+        throw std::ios::failure("Failure to read from socket");
+    }
+    if (smessage.type != ServerMessage::OK) {
+        std::cerr << "Error deleting file: " << ServerMessage::humanReadable(smessage.error) << std::endl;
+        return;
+    }
+    parent.erase(index);
+    std::cout << "Full file deletion" << std::endl;
+}

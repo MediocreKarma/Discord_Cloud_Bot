@@ -45,17 +45,17 @@ int main(int argc, char** argv) {
     */
     int sd = 0;
     while (true) {
-        bool login = LoginScreen::loginProcedure(window, sd);
-        if (login == false) {
-            return 0;
-        }
+        // bool login = LoginScreen::loginProcedure(window, sd);
+        // if (login == false) {
+        //     return 0;
+        // }
         //DirectoryTree root = buildFilesystem(sd);
+        bool login = true;
         DirectoryTree root = DirectoryTree("00000000", 0, "");
         root.addChild("00000000", 0, "dir");
         for (int i = 0; i < 30; ++i) {
             std::string nr = std::to_string(i + 1);
             root.addChild(std::string(8 - nr.size(), '0') + nr, 1, + "file" + nr + ".txt"); 
-            root.child(0).addChild(std::string(8 - nr.size(), '0') + nr, 1, "file" + nr + ".txt");
         }
         std::unique_ptr<DirectoryTree> clipboard = nullptr;
         ssize_t clipIndex = -1;
@@ -108,6 +108,21 @@ int main(int argc, char** argv) {
                 case GUI::UserRequests::CreateDirectory: 
                     current->addChild("00000000", 0, std::get<std::string>(ur.data));
                     break;
+                case GUI::UserRequests::Delete: {
+                    DirectoryTree& deleteTarget = current->child(index);
+                    if (deleteTarget.isDirectory()) {
+                        if (deleteTarget.name() == "") {
+                            std::cerr << "Cannot delete root" << std::endl;
+                        }
+                        else {
+                            current->erase(index);
+                        }
+                    }
+                    else {
+                        FileTransfer::deleteFile(sd, root, *current, index);
+                    }   
+                    break;
+                }
                 case GUI::UserRequests::Quit:
                     goto clientShutdown;
             }

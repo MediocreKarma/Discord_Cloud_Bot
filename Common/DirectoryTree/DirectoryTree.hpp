@@ -44,6 +44,8 @@ public:
 
     DirectoryTree clone() const;
 
+    size_t countLinks(const std::string& id) const;
+
 private:
     // db identifier
     std::string m_id;

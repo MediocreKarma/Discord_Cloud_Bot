@@ -124,6 +124,10 @@ void clientHandler(
                     smessage.type = ServerMessage::Error;
                     smessage.error = ServerMessage::InternalError;
                 }
+                break;
+            case ClientMessage::FileDelete:
+                
+                break;
         }
         cmessage.type = ClientMessage::Empty;
         std::cout << "Writing to client: " << smessage.type << std::endl; 

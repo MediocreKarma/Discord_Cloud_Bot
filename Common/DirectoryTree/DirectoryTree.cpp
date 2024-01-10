@@ -162,3 +162,14 @@ DirectoryTree DirectoryTree::clone() const {
     }
     return cloneFile;
 }
+
+size_t DirectoryTree::countLinks(const std::string& id) const {
+    size_t links = 0;
+    if (id == m_id) {
+        links += 1;
+    }
+    for (const auto& child : m_children) {
+        links += child->countLinks(id);
+    }
+    return links;
+}
