@@ -75,6 +75,10 @@ std::string TextBox::getDataFromInput(sf::RenderWindow& window, const int x, con
         sf::Event event;
         while (window.pollEvent(event)) {
             switch (event.type) {
+                case sf::Event::Resized:
+                    window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+                    requestRefresh = true;
+                    return buffer;
                 case sf::Event::Closed:
                     window.close();
                     break;
@@ -123,9 +127,14 @@ std::string TextBox::getDataFromInput(sf::RenderWindow& window, const int x, con
 
             }
         }
+        auto clockStart = std::chrono::steady_clock::now();
         window.draw(*this);
         window.display();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000 / FLICKER_WRITELINE_PER_FRAMES));
+        auto clockEnd = std::chrono::steady_clock::now();
+        auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(clockEnd - clockStart);
+        if (dur.count() < 1000 / FLICKER_WRITELINE_PER_FRAMES) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / FLICKER_WRITELINE_PER_FRAMES) - dur);
+        }
     }
     // window was closed, program is dead
     return "";
@@ -272,4 +281,10 @@ sf::Vector2i TextBox::lastMouseInput() {
         return {x, y};
     }
     return {-1, -1};
+}
+
+bool TextBox::reqRefresh() {
+    bool flag = requestRefresh;
+    requestRefresh = false;
+    return flag;
 }

@@ -9,11 +9,14 @@
 
 class RoundedRectangleTextShape : public sf::Drawable, public sf::Transformable {
 public:
+    RoundedRectangleTextShape() = default;
     RoundedRectangleTextShape(const sf::RoundedRectangleShape& shape, const sf::Text& text, bool leftAlign = false);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     virtual size_t getPointCount() const;
     virtual sf::Vector2f getPoint(size_t index) const;
     sf::Vector2f getSize() const;
+
+    void replaceShape(const sf::RoundedRectangleShape& shape);
 
     void setShapeFillColor(sf::Color color);
     void setShapeOutlineColor(sf::Color color);
@@ -47,12 +50,14 @@ public:
 
 class RoundedRectangleButton : public sf::RoundedRectangleShape, public Hittable {
 public:
+    RoundedRectangleButton() = default;
     RoundedRectangleButton(sf::Vector2f size, float degree = 0, unsigned int points = 1);
     virtual bool hit(sf::Vector2f click) const;
 };
 
 class RoundedRectangleTextButton : public RoundedRectangleTextShape, public Hittable {
 public:
+    RoundedRectangleTextButton() = default;
     RoundedRectangleTextButton(const sf::RoundedRectangleShape& shape, const sf::Text& text, bool leftAlign = false);
     virtual bool hit(sf::Vector2f click) const;
 };

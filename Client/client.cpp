@@ -43,11 +43,12 @@ int main(int argc, char** argv) {
     std::cout << "Connected to server" << std::endl;
     pollfd poll_sd = {sd, POLLIN, 0};  
     */
+    int sd = 0;
     while (true) {
-        bool login = true;
-        // if ((login = LoginScreen::loginProcedure(window, sd)) == false) {
-        //     return 0;
-        // }
+        bool login = LoginScreen::loginProcedure(window, sd);
+        if (login == false) {
+            return 0;
+        }
         //DirectoryTree root = buildFilesystem(sd);
         DirectoryTree root = DirectoryTree("00000000", 0, "");
         root.addChild("00000000", 0, "dir");

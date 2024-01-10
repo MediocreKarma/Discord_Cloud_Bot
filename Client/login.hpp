@@ -17,10 +17,6 @@ namespace LoginScreen {
         std::string password;
         bool signup;
     };
-    
-    UserInfoData getUserInfo(sf::RenderWindow& window, bool wrongLogin = false, bool wrongSignup = false);
-
-    std::string getEmailConfirmationCode(sf::RenderWindow& window, bool wrongCodeEntered = false);
 
     bool loginProcedure(sf::RenderWindow& window, int sd);
 

@@ -1,31 +1,68 @@
 #include "login.hpp"
 
-static TextBox emailTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Enter your email", 30, Colors::DarkGray, false, '\0', 64);
-static TextBox passwordTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Enter your password", 30, Colors::DarkGray, false, '*', 64);
-static TextBox confirmationTextbox(sf::RoundedRectangleShape({800, 100}, 30, 30), GUI::Font, "Re-enter your password", 30, Colors::DarkGray, false, '*', 64);
-static RoundedRectangleTextButton enterButton(sf::RoundedRectangleShape({250, 120}, 30, 30), sf::Text("Continue", GUI::Font, 45));
-static RoundedRectangleTextShape errorOutput(sf::RoundedRectangleShape({0, 0}, 0, 0), sf::Text("", GUI::Font));
-static RoundedRectangleTextButton switchUpToIn(sf::RoundedRectangleShape({540, 50}, 0, 1), sf::Text("Already have an account? Sign-in here!", GUI::Font));
-static RoundedRectangleTextButton switchInToUp(sf::RoundedRectangleShape({400, 50}, 0, 1), sf::Text("New user? Sign-up instead!", GUI::Font));
+static TextBox emailTextbox;
+static TextBox passwordTextbox;
+static TextBox confirmationTextbox;
+static RoundedRectangleTextButton enterButton;
+static RoundedRectangleTextShape errorOutput;
+static RoundedRectangleTextButton switchUpToIn;
+static RoundedRectangleTextButton switchInToUp;
+static sf::Text titleText;
+
+void draw(sf::RenderWindow& window, const std::vector<std::reference_wrapper<sf::Drawable>>& drawables) {
+    auto clockStart = std::chrono::steady_clock::now();
+    window.clear(sf::Color::White);
+    for (auto& dable : drawables) {
+        window.draw(dable);
+    }
+    window.display();
+    auto clockEnd = std::chrono::steady_clock::now();
+    auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(clockEnd - clockStart);
+    if (dur.count() < 33) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(33) - dur);
+    }
+}
 
 LoginScreen::UserInfoData signUp(sf::RenderWindow& window);
 
 void init(const sf::RenderWindow& window) {
     static bool initialised = false;
-    if (initialised) {
-        return;
+    if (!initialised) {
+        titleText = sf::Text("My Cloud Drive", GUI::Font, 75);
+        errorOutput = RoundedRectangleTextShape(sf::RoundedRectangleShape({1000, 0}, 0, 0), sf::Text("", GUI::Font));
+        emailTextbox = TextBox(sf::RoundedRectangleShape({window.getSize().x / 2.f, 100}, 30, 30), GUI::Font, "Enter your email", 30, Colors::DarkGray, false, '\0', 64);
+        passwordTextbox = TextBox(sf::RoundedRectangleShape({window.getSize().x / 2.f, 100}, 30, 30), GUI::Font, "Enter your password", 30, Colors::DarkGray, false, '*', 64);
+        confirmationTextbox = TextBox(sf::RoundedRectangleShape({window.getSize().x / 2.f, 100}, 30, 30), GUI::Font, "Re-enter your password", 30, Colors::DarkGray, false, '*', 64);
+        enterButton = RoundedRectangleTextButton(sf::RoundedRectangleShape({window.getSize().x / 5.f, 120}, 30, 30), sf::Text("Continue", GUI::Font, 45));
+        switchUpToIn = RoundedRectangleTextButton(sf::RoundedRectangleShape({600, 50}, 0, 1), sf::Text("Already have an account? Sign-in here!", GUI::Font), true);
+        switchInToUp = RoundedRectangleTextButton(sf::RoundedRectangleShape({500, 50}, 0, 1), sf::Text("New user? Sign-up instead!", GUI::Font), true);
+        emailTextbox.setShapeFillColor(Colors::LightGray);
+        passwordTextbox.setShapeFillColor(Colors::LightGray);
+        confirmationTextbox.setShapeFillColor(Colors::LightGray);
+        enterButton.setShapeFillColor(sf::Color::Green);
+        errorOutput.setShapeFillColor(sf::Color::Transparent);
+        errorOutput.setShapeOutlineColor(sf::Color::Transparent);
+        errorOutput.setTextFillColor(sf::Color::Red);
+        switchUpToIn.setShapeFillColor(sf::Color::Transparent);
+        switchUpToIn.setShapeOutlineColor(sf::Color::Transparent);
+        switchUpToIn.setTextFillColor(Colors::DarkGray);
+        switchUpToIn.setStyle(sf::Text::Style::Underlined);
+        switchInToUp.setShapeFillColor(sf::Color::Transparent);
+        switchInToUp.setShapeOutlineColor(sf::Color::Transparent);
+        switchInToUp.setTextFillColor(Colors::DarkGray);
+        switchInToUp.setStyle(sf::Text::Style::Underlined);
+        titleText.setFillColor(sf::Color::Black);
     }
     initialised = true;
-    emailTextbox.setFont(GUI::Font);
-    passwordTextbox.setFont(GUI::Font);
-    confirmationTextbox.setFont(GUI::Font);
-    emailTextbox.setShapeFillColor(Colors::LightGray);
-    passwordTextbox.setShapeFillColor(Colors::LightGray);
-    confirmationTextbox.setShapeFillColor(Colors::LightGray);
-    enterButton.setFont(GUI::Font);
-    errorOutput.setFont(GUI::Font);
-    switchUpToIn.setFont(GUI::Font);
-    switchInToUp.setFont(GUI::Font);
+    // emailTextbox.replaceShape(sf::RoundedRectangleShape({window.getSize().x / 2.f, 100}, 30, 30));
+    // passwordTextbox.replaceShape(sf::RoundedRectangleShape({window.getSize().x / 2.f, 100}, 30, 30));
+    // confirmationTextbox.replaceShape(sf::RoundedRectangleShape({window.getSize().x / 2.f, 100}, 30, 30));
+    // enterButton.replaceShape(sf::RoundedRectangleShape({window.getSize().x / 5.f, 120}, 30, 30));
+    // switchUpToIn.replaceShape(sf::RoundedRectangleShape({540, 50}, 0, 1));
+    // switchInToUp.replaceShape(sf::RoundedRectangleShape({400, 50}, 0, 1));
+    sf::FloatRect fr = titleText.getLocalBounds();
+    titleText.setOrigin(fr.width / 2 + fr.left, fr.top);
+    titleText.setPosition(window.getSize().x / 2, window.getSize().y / 6);
     emailTextbox.setOrigin(
         emailTextbox.getSize().x / 2,
         emailTextbox.getSize().y / 2  
@@ -67,28 +104,16 @@ void init(const sf::RenderWindow& window) {
         passwordTextbox.getPosition().y + 120
     );
     switchUpToIn.setPosition(
-        window.getSize().x / 2 - 120,
+        window.getSize().x / 2 - 200,
         confirmationTextbox.getPosition().y + 80
     );
     errorOutput.setPosition(
         window.getSize().x / 2 - errorOutput.getSize().x / 2,
         emailTextbox.getPosition().y - 100
     );
-    enterButton.setShapeFillColor(sf::Color::Green);
-    errorOutput.setShapeFillColor(sf::Color::Transparent);
-    errorOutput.setShapeOutlineColor(sf::Color::Transparent);
-    errorOutput.setTextFillColor(sf::Color::Red);
-    switchUpToIn.setShapeFillColor(sf::Color::Transparent);
-    switchUpToIn.setShapeOutlineColor(sf::Color::Transparent);
-    switchUpToIn.setTextFillColor(Colors::DarkGray);
-    switchUpToIn.setStyle(sf::Text::Style::Underlined);
-    switchInToUp.setShapeFillColor(sf::Color::Transparent);
-    switchInToUp.setShapeOutlineColor(sf::Color::Transparent);
-    switchInToUp.setTextFillColor(Colors::DarkGray);
-    switchInToUp.setStyle(sf::Text::Style::Underlined);
 }
 
-LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, const bool wrongLogin, const bool wrongSignup) {
+LoginScreen::UserInfoData getUserInfo(sf::RenderWindow& window, const bool wrongLogin = false, const bool wrongSignup = false) {
     init(window);
     if (wrongLogin) {
         errorOutput.setString("You have entered an invalid username or password");
@@ -106,7 +131,8 @@ LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, con
         std::ref(passwordTextbox),
         std::ref(enterButton),
         std::ref(switchInToUp),
-        std::ref(errorOutput)
+        std::ref(errorOutput),
+        std::ref(titleText)
     };
     std::string email = emailTextbox.getData();
     std::string password = passwordTextbox.getData();
@@ -115,12 +141,12 @@ LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, con
         sf::Event event;
         while (window.pollEvent(event)) {
             switch (event.type) {
+                case sf::Event::Resized:
+                    window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+                    return getUserInfo(window, wrongLogin, wrongSignup);
                 case sf::Event::Closed:
                     window.close(); 
                     return {"", "", 0};
-                case sf::Event::Resized:
-                    window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
-                    break;
                 case sf::Event::MouseButtonPressed:
                     if (event.mouseButton.button != sf::Mouse::Left) {
                         break;
@@ -133,6 +159,9 @@ LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, con
                 bool enterTransition = false;
                 if (emailTextbox.Hittable::hit(mouse.x, mouse.y)) {
                     email = emailTextbox.getDataFromInput(window, mouse.x, mouse.y);
+                    if (emailTextbox.reqRefresh()) {
+
+                    }
                     if (emailTextbox.pressedEnter() == false) {
                         newMouse = emailTextbox.lastMouseInput();
                     }
@@ -165,17 +194,14 @@ LoginScreen::UserInfoData LoginScreen::getUserInfo(sf::RenderWindow& window, con
                 }
                 mouse = newMouse;
             }
-            window.clear(sf::Color::White);
-            for (sf::Drawable& shape : drawables) {
-                window.draw(shape);
-            }
-            window.display();
         }
+        draw(window, drawables);
     }
-    return UserInfoData();
+    return LoginScreen::UserInfoData();
 }
 
 LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
+    init(window);
     enterButton.setPosition(
         window.getSize().x / 2,
         confirmationTextbox.getPosition().y + 200
@@ -186,7 +212,8 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
         std::ref(confirmationTextbox),
         std::ref(enterButton),
         std::ref(switchUpToIn),
-        std::ref(errorOutput)
+        std::ref(errorOutput),
+        std::ref(titleText)
     };
     std::string email = emailTextbox.getData();
     std::string password = passwordTextbox.getData();
@@ -201,7 +228,7 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
                     break;
                 case sf::Event::Resized:
                     window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
-                    break;
+                    return signUp(window);
                 case sf::Event::MouseButtonPressed:
                     if (event.mouseButton.button != sf::Mouse::Left) {
                         break;
@@ -255,21 +282,17 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
                     }
                 }
                 if (switchUpToIn.Hittable::hit(mouse.x, mouse.y)) {
-                    return LoginScreen::getUserInfo(window);
+                    return getUserInfo(window);
                 }
                 mouse = newMouse;
             }
-            window.clear(sf::Color::White);
-            for (sf::Drawable& shape : drawables) {
-                window.draw(shape);
-            }
-            window.display();
         }
+        draw(window, drawables);
     }
     return LoginScreen::UserInfoData();
 }
 
-std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool wrongCodeEntered) {
+std::string getEmailConfirmationCode(sf::RenderWindow& window, bool wrongCodeEntered = false) {
     init(window);
     if (wrongCodeEntered) {
         errorOutput.setString("You have entered the wrong code");
@@ -300,7 +323,8 @@ std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool
         std::ref(codeTextbox),
         std::ref(infoShape),
         std::ref(errorOutput),
-        std::ref(enterButton)
+        std::ref(enterButton),
+        std::ref(titleText)
     };
     std::string code;
     sf::Vector2i mouse = {-1, -1};
@@ -314,7 +338,7 @@ std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool
                     return "";
                 case sf::Event::Resized:
                     window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
-                    break;
+                    return getEmailConfirmationCode(window, wrongCodeEntered);
                 case sf::Event::TextEntered:
                     if (event.text.unicode < 128 && event.text.unicode != '\r') {
                         code = codeTextbox.externalType(window, event.text.unicode);
@@ -356,12 +380,8 @@ std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool
                 }
                 mouse = newMouse;
             }
-            window.clear(sf::Color::White);
-            for (sf::Drawable& shape : drawables) {
-                window.draw(shape);
-            }
-            window.display();
         }
+        draw(window, drawables);
     }
 
     return "";
@@ -375,7 +395,7 @@ bool LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
     bool wrongLogin = false;
     bool wrongSignup = false;
     while (true) {
-        auto [email, password, signup] = LoginScreen::getUserInfo(window, wrongLogin, wrongSignup);
+        auto [email, password, signup] = getUserInfo(window, wrongLogin, wrongSignup);
         if (!window.isOpen()) {
             return false;
         }
@@ -422,7 +442,7 @@ bool LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
             std::cout << "Preparing signup code for server: ";
             while (smessage.type != ServerMessage::OK) {
                 // Getting email confirmation code
-                std::string code = LoginScreen::getEmailConfirmationCode(window, wrongCodeEntered);
+                std::string code = getEmailConfirmationCode(window, wrongCodeEntered);
                 if (!window.isOpen()) {
                     return false;
                 }

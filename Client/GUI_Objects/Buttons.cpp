@@ -110,6 +110,20 @@ sf::Vector2f RoundedRectangleTextShape::getSize() const {
     return shape.getSize();
 }
 
+void RoundedRectangleTextShape::replaceShape(const sf::RoundedRectangleShape& _shape) {
+    sf::Color cols[2] = {
+        shape.getFillColor(),
+        shape.getOutlineColor()
+    };
+    float thickness = shape.getOutlineThickness();
+    shape = _shape;
+    shape.setFillColor(cols[0]);
+    shape.setOutlineColor(cols[1]);
+    shape.setOutlineThickness(thickness);
+    // reinitialise basically
+    setString(text.getString().toAnsiString());
+}
+
 //////////////////////////////////////////////////
 ///
 /// Implementation for RoundedRectangleButton

@@ -9,6 +9,7 @@
 
 class TextBox : public RoundedRectangleTextButton {
 public:
+    TextBox() = default;
     TextBox(
         const sf::RoundedRectangleShape& shape, 
         const sf::Font& font, 
@@ -29,6 +30,7 @@ public:
     void setFont(const sf::Font& font);
     std::string externalType(sf::RenderWindow& window, char ch);
     std::string getData() const;
+    bool reqRefresh();
 
     void setAlphabet(const std::unordered_set<char>& alphabet);
 
@@ -49,6 +51,7 @@ private:
     sf::Vector2i mouse;
     size_t maxLength;
     std::unordered_set<char> alphabet;
+    bool requestRefresh = false;
 
     void setWriteLine();
     void modifyIndex(int offset);

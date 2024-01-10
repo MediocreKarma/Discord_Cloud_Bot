@@ -282,6 +282,14 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     std::vector<std::reference_wrapper<sf::Drawable>> drawAlways(buttons.begin(), buttons.end());
     buttons.insert(buttons.end(), selectionCovers.begin(), selectionCovers.end());
     constexpr unsigned FILE_HEIGHT = 400;
+    sf::Text titleText = {"My Cloud Drive", GUI::Font, 75};
+    titleText.setFillColor(sf::Color::Black);
+    {
+        sf::FloatRect fr = titleText.getGlobalBounds();
+        titleText.setOrigin(fr.width / 2 + fr.left, fr.top);
+        titleText.setPosition(window.getSize().x / 2, (FILE_HEIGHT - 100) / 2);
+    }
+    drawAlways.push_back(std::ref<sf::Drawable>(titleText));
     std::array<RoundedRectangleTextShape, 3> fileHeader = {
         RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 9.f / 16, 50}), sf::Text("File name", GUI::Font, 40)),
         RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 1.f / 16, 50}), sf::Text("Type", GUI::Font, 40)),
@@ -306,6 +314,14 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         window.getSize().x / 2 + fileHeader[0].getSize().x / 2 + fileHeader[2].getSize().x / 2,
         FILE_HEIGHT - 50
     );
+    sf::Text activePath = {"Path: \'" + current.path() + "\'", GUI::Font, 40};
+    activePath.setFillColor(sf::Color::Black);
+    {
+        sf::FloatRect fr = activePath.getGlobalBounds();
+        activePath.setOrigin(fr.left, fr.height / 2 + fr.top);
+        activePath.setPosition(fileHeader[1].getPosition().x - fileHeader[1].getSize().x / 2 + 20, FILE_HEIGHT - 100);
+    }
+    drawAlways.push_back(std::ref<sf::Drawable>(activePath));
     std::vector<RoundedRectangleTextButton> fileSquares;
     std::vector<RoundedRectangleTextShape> fileInfo;
     std::vector<RoundedRectangleTextShape> sizeInfo;
