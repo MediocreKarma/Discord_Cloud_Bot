@@ -1,5 +1,4 @@
-#ifndef _UTILS__
-#define _UTILS__
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include "Buttons.hpp"
@@ -36,5 +35,3 @@ namespace Colors {
 void loadingMessage(sf::RenderWindow& window);
 
 DirectoryTree buildFilesystem(int sd);
-
-#endif 

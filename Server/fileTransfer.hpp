@@ -1,5 +1,4 @@
-#ifndef _FILE_TRANSFER__
-#define _FILE_TRANSFER__
+#pragma once
 
 #include "requestHandler.hpp"
 #include <poll.h>
@@ -19,6 +18,6 @@ bool receiveFile(
 
 bool sendFile(int sd, BotWrapper& discord, Request::UserInfo& info, const std::string& fileID);
 
-}
+bool updateFileTree(int sd, Request::UserInfo& info, size_t size);
 
-#endif
+}

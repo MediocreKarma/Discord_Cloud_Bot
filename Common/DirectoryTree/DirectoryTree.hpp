@@ -1,5 +1,4 @@
-#ifndef _DIRECTORY_TREE__
-#define _DIRECTORY_TREE__
+#pragma once
 
 #include <string>
 #include <vector>
@@ -55,5 +54,3 @@ private:
     DirectoryTree* m_parent = nullptr;
     std::vector<std::unique_ptr<DirectoryTree>> m_children = {};
 };
-
-#endif

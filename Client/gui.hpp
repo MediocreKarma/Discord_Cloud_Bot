@@ -1,5 +1,4 @@
-#ifndef _GUI__
-#define _GUI__
+#pragma once
 
 #include <iostream>
 #include <filesystem>
@@ -39,5 +38,3 @@ namespace GUI {
     UserRequests currentDirectoryRequest(sf::RenderWindow& window, DirectoryTree& current, ssize_t& selected, DirectoryTree* clipboard);
 
 }
-
-#endif

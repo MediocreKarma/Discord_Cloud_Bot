@@ -161,9 +161,9 @@ bool RoundedRectangleTextButton::hit(const sf::Vector2f click) const {
 ///
 //////////////////////////////////////////////////
 
-CircularButton::CircularButton(const sf::CircleShape& base) : CircleShape(base) {}
+// CircularButton::CircularButton(const sf::CircleShape& base) : CircleShape(base) {}
 
-bool CircularButton::hit(const sf::Vector2f click) const {
-    sf::FloatRect fr = getGlobalBounds();
-    return fr.contains(click);
-}
+// bool CircularButton::hit(const sf::Vector2f click) const {
+//     sf::FloatRect fr = getGlobalBounds();
+//     return fr.contains(click);
+// }

@@ -1,5 +1,4 @@
-#ifndef _LOGIN_SCREEN__
-#define _LOGIN_SCREEN__
+#pragma once
 
 #include <iostream>
 #include <unistd.h>
@@ -18,8 +17,6 @@ namespace LoginScreen {
         bool signup;
     };
 
-    bool loginProcedure(sf::RenderWindow& window, int sd);
+    std::string loginProcedure(sf::RenderWindow& window, int sd);
 
 };
-
-#endif

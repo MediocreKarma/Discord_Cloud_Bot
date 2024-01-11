@@ -1,5 +1,4 @@
-#ifndef _COMMONS__
-#define _COMMONS__
+#pragma once
 
 #include <fstream>
 #include <sys/types.h>
@@ -94,5 +93,3 @@ namespace Communication {
     bool read(int sd, void* buffer, size_t len);
 
 }
-
-#endif

@@ -107,18 +107,21 @@ int main(int argc, char* argv[]) {
         std::cout << "Starting thread" << std::endl;
         clientData.add(client, discord, loginDB, secrets);
     }
+    bool saveRequest = clientData.saveRequest();
     clientData.terminate();
     clientData.trim();
     close(sd);
     if (loginMessageSnowflake != 0) {
         discord.remove(loginMessageSnowflake, discord.channel(BotWrapper::LOG_INFO));
     }
-    discord.upload(
-        discord.channel(BotWrapper::LOG_INFO), 
-        {
-            Files::LOGIN_FILE.substr(Files::LOGIN_FILE.find_last_of('/') + 1), 
-            std::move(dpp::utility::read_file(Files::LOGIN_FILE))
-        }
-    );
+    if (saveRequest) {
+        discord.upload(
+            discord.channel(BotWrapper::LOG_INFO), 
+            {
+                Files::LOGIN_FILE.substr(Files::LOGIN_FILE.find_last_of('/') + 1), 
+                std::move(dpp::utility::read_file(Files::LOGIN_FILE))
+            }
+        );
+    }
 }
                   

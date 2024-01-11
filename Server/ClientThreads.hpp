@@ -1,5 +1,4 @@
-#ifndef _CLIENT_THREADS__
-#define _CLIENT_THREADS__
+#pragma once
 
 #include <atomic>
 #include <list>
@@ -35,5 +34,3 @@ private:
     std::list<std::atomic<uint8_t>> flags;
     std::list<std::thread> clientHandlers;
 };
-
-#endif

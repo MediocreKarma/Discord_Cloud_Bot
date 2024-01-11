@@ -1,5 +1,4 @@
-#ifndef _SQL_DB__
-#define _SQL_DB__
+#pragma once
 
 #include <sqlite3.h>
 #include <string>
@@ -53,5 +52,3 @@ int64_t SQL_DB::extract<int64_t>(int index);
 
 template<>
 std::string SQL_DB::extract<std::string>(int index);
-
-#endif

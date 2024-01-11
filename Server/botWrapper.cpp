@@ -33,7 +33,7 @@ BotWrapper::BotWrapper(const std::string& token, const dpp::snowflake guild) :
     bot.on_log(dpp::utility::cout_logger());
     bot.on_message_create([&messInfo = this->messageInfo, &uMutex = this->uploadMutex] (const dpp::message_create_t& message) {
         std::lock_guard<std::mutex> lockGuard(uMutex);
-        messInfo[message.msg.attachments[0].filename] = message.msg.id;
+        messInfo[message.msg.content] = message.msg.id;
     });
     bot.start();
     snowflakes = getChannelSnowflakes(bot, guild);
@@ -43,26 +43,49 @@ dpp::snowflake BotWrapper::channel(const Channel chn) const {
     return snowflakes[static_cast<size_t>(chn)];
 }
 
+std::string randString() {
+    char alphabet[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+    const size_t maxIndex = sizeof(alphabet) / sizeof(char) - 2;
+    static std::random_device rd;
+    static std::seed_seq ss = { rd(), rd(), rd(), rd() };
+    static std::mt19937 rng(ss);
+    std::uniform_int_distribution<size_t> uid(0, maxIndex);
+    std::string result(8, '\0');
+    for (char& ch : result) {
+        ch = alphabet[uid(rng)];
+    }
+    return result;
+}
+
 dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const File& file) {
+    const std::string code = randString();
     dpp::message message;
     message
         .set_channel_id(channel)
+        .set_content(code)
         .add_file(file.name, file.body);
     bot.message_create(message);
     while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
         std::lock_guard<std::mutex> lock(uploadMutex);
-        if (messageInfo.contains(file.name)) {
-            dpp::snowflake flake = messageInfo.at(file.name);
-            messageInfo.erase(file.name);
+        auto it = messageInfo.find(code);
+        if (it != messageInfo.end()) {
+            dpp::snowflake flake = it->second;
+            messageInfo.erase(it);
             return flake;
         }
     }
 }
 
 dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vector<File>& files) {
+    const std::string code = randString();
     dpp::message message;
-    message.set_channel_id(channel);
+    message
+        .set_channel_id(channel)
+        .set_content(code);
     for (const auto& [filename, body] : files) {
         message.add_file(filename, body);
     }
@@ -70,9 +93,10 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vecto
     while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
         std::lock_guard<std::mutex> lock(uploadMutex);
-        if (messageInfo.contains(files[0].name)) {
-            dpp::snowflake flake = messageInfo.at(files[0].name);
-            messageInfo.erase(files[0].name);
+        auto it = messageInfo.find(code);
+        if (it != messageInfo.end()) {
+            dpp::snowflake flake = it->second;
+            messageInfo.erase(it);
             return flake;
         }
     }

@@ -1,5 +1,4 @@
-#ifndef _REQUEST_HANDLER__
-#define _REQUEST_HANDLER__
+#pragma once
 
 #include <random>
 #include "../Common/commons.hpp"
@@ -17,6 +16,7 @@
 namespace Request {
 
 struct UserInfo {
+    std::string email;
     dpp::snowflake managerFile;
     SQL_DB db;
     std::string tree;
@@ -41,8 +41,6 @@ bool sendTreeFile(int client, const std::string& encoding);
 
 void updateDiscord(UserInfo& info, SQL_DB& loginDB, BotWrapper& discord);
 
-void deleteFile(int client, const std::string& id, SQL_DB& loginDB, BotWrapper& discord);
+bool deleteFile(int client, const std::string& id, SQL_DB& loginDB, BotWrapper& discord);
 
 }
-
-#endif

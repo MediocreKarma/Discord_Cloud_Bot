@@ -1,5 +1,4 @@
-#ifndef _BUTTONS__
-#define _BUTTONS__
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include "RoundedRectangleShape.hpp"
@@ -62,15 +61,11 @@ public:
     virtual bool hit(sf::Vector2f click) const;
 };
 
-class CircularButton : public sf::CircleShape, public Hittable {
-public:
-    CircularButton(const sf::CircleShape& shape);
-    virtual bool hit(sf::Vector2f click) const;
-};
-
-#endif
-
-
+// class CircularButton : public sf::CircleShape, public Hittable {
+// public:
+//     CircularButton(const sf::CircleShape& shape);
+//     virtual bool hit(sf::Vector2f click) const;
+// };
 
 // class RectangleButton : public Hittable, public RectangleLabel {
 // public:

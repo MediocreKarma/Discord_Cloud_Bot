@@ -1,7 +1,7 @@
-#ifndef _BOT_WRAPPER__
-#define _BOT_WRAPPER__
+#pragma once
 
 #include <dpp/dpp.h>
+#include <random>
 
 class BotWrapper {
 public:
@@ -31,9 +31,7 @@ public:
 
 private:
     dpp::cluster bot;
-    mutable std::mutex uploadMutex;
-    mutable std::unordered_map<std::string, dpp::snowflake> messageInfo;
+    std::mutex uploadMutex;
+    std::unordered_map<std::string, dpp::snowflake> messageInfo;
     std::array<dpp::snowflake, 3> snowflakes;
 };
-
-#endif

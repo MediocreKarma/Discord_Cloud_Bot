@@ -1,6 +1,18 @@
 #include "fileTransfer.hpp"
 
-void FileTransfer::receiveFile(int sd, const DirectoryTree& downloadable) {
+// need ref, don't copy strings of 25MB
+std::string& encrypt(std::string& data, const std::string& encryptionKey) {
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] ^= encryptionKey[i % encryptionKey.size()];
+    }
+    return data;
+}
+
+std::string& decrypt(std::string& data, const std::string& encryptionKey) {
+    return encrypt(data, encryptionKey);
+}
+
+void FileTransfer::receiveFile(int sd, const DirectoryTree& downloadable, const std::string& encKey) {
     const std::string downloadPath = getenv("HOME") + std::string("/Downloads/");
     std::filesystem::create_directories(downloadPath);
     const std::string targetName = downloadable.name();
@@ -39,13 +51,14 @@ void FileTransfer::receiveFile(int sd, const DirectoryTree& downloadable) {
     while (current < total) {
         size_t readLength = std::min(MAX_FILE_TRANSFER, total - current);
         if (Communication::read(sd, chunk.data(), readLength) == false) {
-            perror("error writing to server");
-            throw std::ios::failure("Write failure to socket");
+            perror("error reading from server");
+            throw std::ios::failure("Read failure to socket");
         }
         if (Communication::write(sd, &cmsg, sizeof(cmsg)) == false) {
-            perror("error reading response from server");
-            throw std::ios::failure("Read from socket failed");
+            perror("error writing response from server");
+            throw std::ios::failure("Writing from socket failed");
         }
+        decrypt(chunk, encKey);
         if (!file.write(chunk.c_str(), readLength)) {
             std::remove(filepath.c_str());
             throw std::ios::failure("Writing to file failed");
@@ -59,7 +72,7 @@ void FileTransfer::receiveFile(int sd, const DirectoryTree& downloadable) {
     std::cout << "Download finalized" << std::endl;
 }
 
-void FileTransfer::sendFile(int sd, const std::string& filepath, const DirectoryTree& root, DirectoryTree& current) {
+void FileTransfer::sendFile(int sd, const std::string& filepath, const DirectoryTree& root, DirectoryTree& current, const std::string& encKey) {
     std::ifstream file(filepath, std::ios::binary);
     if (!file.is_open()) {
         throw std::invalid_argument("Bad filepath!");
@@ -91,6 +104,7 @@ void FileTransfer::sendFile(int sd, const std::string& filepath, const Directory
     bool reading = true;
     while (reading) {
         reading = static_cast<bool>(file.read(chunk.data(), MAX_FILE_TRANSFER));
+        encrypt(chunk, encKey);
         if (Communication::write(sd, chunk.c_str(), file.gcount()) == false) {
             perror("error writing to server");
             throw std::ios::failure("Write failure to socket");
@@ -116,22 +130,7 @@ void FileTransfer::sendFile(int sd, const std::string& filepath, const Directory
     std::string id = smsg.content.file_id;
     current.addChild(id, fileSize, alias);
     chunk = root.encodeTree();
-    cmsg.type = ClientMessage::UpdateFileTree;
-    cmsg.content.file.size = chunk.size();
-    if (Communication::write(sd, &cmsg, sizeof(cmsg)) == false ||
-        Communication::write(sd, chunk.c_str(), chunk.size()) == false) {
-        perror("error writing to server");
-        throw std::ios::failure("Write failure to socket");
-    }
-    if (Communication::read(sd, &smsg, sizeof(smsg)) == false) {
-        perror("error reading ok from server");
-        throw std::ios::failure("Failed right at the end of the upload");
-    }
-    if (smsg.type != ServerMessage::OK) {
-        // what the hell happened here???
-        std::cerr << "Server refused to finish operation" << std::endl;
-        throw std::ios::failure("Server refused upload");
-    }
+    updateFileTree(sd, root);
     // YAY!!!!
 }
 
@@ -160,4 +159,26 @@ void FileTransfer::deleteFile(int sd, const DirectoryTree& root, DirectoryTree& 
     }
     parent.erase(index);
     std::cout << "Full file deletion" << std::endl;
+}
+
+void FileTransfer::updateFileTree(int sd, const DirectoryTree& root) {
+    ClientMessage cmsg;
+    ServerMessage smsg;
+    cmsg.type = ClientMessage::UpdateFileTree;
+    std::string treeChunk = root.encodeTree();
+    cmsg.content.file.size = treeChunk.size();
+    if (Communication::write(sd, &cmsg, sizeof(cmsg)) == false ||
+        Communication::write(sd, treeChunk.c_str(), treeChunk.size()) == false) {
+        perror("error writing to server");
+        throw std::ios::failure("Write failure to socket");
+    }
+    if (Communication::read(sd, &smsg, sizeof(smsg)) == false) {
+        perror("error reading ok from server");
+        throw std::ios::failure("Failed right at the end of the upload");
+    }
+    if (smsg.type != ServerMessage::OK) {
+        // what the hell happened here???
+        std::cerr << "Server refused to finish operation" << std::endl;
+        throw std::ios::failure("Server refused upload");
+    }
 }

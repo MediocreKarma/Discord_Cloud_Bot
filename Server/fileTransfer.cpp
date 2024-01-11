@@ -181,3 +181,13 @@ bool FileTransfer::sendFile(int sd, BotWrapper& discord, Request::UserInfo& info
     }
     return true;
 }
+
+bool FileTransfer::updateFileTree(int sd, Request::UserInfo& info, const size_t size) {
+    std::string treeChunk(size, '\0');
+    if (Communication::read(sd, treeChunk.data(), size) == false) {
+        perror("error reading updated file tree");
+        return false;
+    }
+    info.tree = std::move(treeChunk);
+    return true;
+}

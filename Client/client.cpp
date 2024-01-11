@@ -15,7 +15,6 @@ int main(int argc, char** argv) {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 4;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "My Cloud Drive", sf::Style::Default, settings);
-    /*
     std::ifstream portFile(Files::PortFile);
     if (!portFile.is_open()) {
 
@@ -42,37 +41,28 @@ int main(int argc, char** argv) {
     }
     std::cout << "Connected to server" << std::endl;
     pollfd poll_sd = {sd, POLLIN, 0};  
-    */
-    int sd = 0;
     while (true) {
-        // bool login = LoginScreen::loginProcedure(window, sd);
-        // if (login == false) {
-        //     return 0;
-        // }
-        //DirectoryTree root = buildFilesystem(sd);
-        bool login = true;
-        DirectoryTree root = DirectoryTree("00000000", 0, "");
-        root.addChild("00000000", 0, "dir");
-        for (int i = 0; i < 30; ++i) {
-            std::string nr = std::to_string(i + 1);
-            root.addChild(std::string(8 - nr.size(), '0') + nr, 1, + "file" + nr + ".txt"); 
+        std::string email = LoginScreen::loginProcedure(window, sd);
+        if (email.empty()) {
+            return 0;
         }
+        DirectoryTree root = buildFilesystem(sd);
         std::unique_ptr<DirectoryTree> clipboard = nullptr;
         ssize_t clipIndex = -1;
         ssize_t selected = -1;
         DirectoryTree* current = &root;
         std::cout << "Built root filesystem" << std::endl;
-        while (login) {
+        while (true) {
             GUI::UserRequests ur = GUI::currentDirectoryRequest(window, *current, selected, clipboard.get());
             ssize_t index;
             if (selected == -1) index = -1 ;
             else index = current->childrenSize() - 1 - selected;
             switch (ur.type) {
                 case GUI::UserRequests::Upload:
-                    //FileTransfer::sendFile(sd, std::get<std::string>(ur.data), root, *current);
+                    FileTransfer::sendFile(sd, std::get<std::string>(ur.data), root, *current, email);
                     break;
                 case GUI::UserRequests::Download:
-                    //FileTransfer::receiveFile(sd, *std::get<const DirectoryTree*>(ur.data));
+                    FileTransfer::receiveFile(sd, current->child(index), email);
                     break;
                 case GUI::UserRequests::ChangeDirectory: {
                     selected = -1;
@@ -101,12 +91,15 @@ int main(int argc, char** argv) {
                         clipboard->parent()->erase(clipIndex);
                         clipIndex = -1;
                     }
+                    FileTransfer::updateFileTree(sd, root);
                     break;
                 case GUI::UserRequests::Rename:
                     current->child(index).rename(std::get<std::string>(ur.data));
+                    FileTransfer::updateFileTree(sd, root);
                     break;
                 case GUI::UserRequests::CreateDirectory: 
                     current->addChild("00000000", 0, std::get<std::string>(ur.data));
+                    FileTransfer::updateFileTree(sd, root);
                     break;
                 case GUI::UserRequests::Delete: {
                     DirectoryTree& deleteTarget = current->child(index);
@@ -120,6 +113,7 @@ int main(int argc, char** argv) {
                     }
                     else {
                         FileTransfer::deleteFile(sd, root, *current, index);
+                        FileTransfer::updateFileTree(sd, root);
                     }   
                     break;
                 }
@@ -130,6 +124,6 @@ int main(int argc, char** argv) {
     }
 
 clientShutdown:
-    //close(sd);
+    close(sd);
     return 0;
 }

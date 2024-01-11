@@ -71,6 +71,7 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
     }
     dbOut.write(dbData.c_str(), dbData.size());
     std::unique_ptr<UserInfo> info = std::make_unique<UserInfo>(UserInfo{
+        email,
         res,
         SQL_DB(dbFile),
         std::move(treeData)
@@ -225,7 +226,34 @@ void Request::updateDiscord(UserInfo& info, SQL_DB& loginDB, BotWrapper& discord
     loginDB.unlock();
 }
 
-void Request::deleteFile(int client, const std::string& id, SQL_DB& loginDB, BotWrapper& discord) {
-
+bool Request::deleteFile(int client, const std::string& id, SQL_DB& userDB, BotWrapper& discord) {
+    if (userDB.createStatement(
+        "SELECT data FROM info WHERE file = \'" + id + "\';"
+    ) == false) {
+        std::cerr << "Invalid SQL statement" << std::endl;
+    }
+    if (userDB.nextRow() == false) {
+        std::cerr << "No such file" << std::endl;
+    }
+    bool ok = true;
+    std::string strIDs = userDB.extract<std::string>(0);
+    for (size_t i = 0; i * 8 < strIDs.size(); i += 8) {
+        uint64_t snowflake = 0;
+        memcpy(&snowflake, strIDs.c_str() + i, 8);
+        if (discord.remove(snowflake, discord.channel(BotWrapper::DATA)) == false) {
+            ok = false;
+            std::cerr << "Failed to delete file" << std::endl;
+        }
+    }
+    if (!ok) {
+        return false;
+    }
+    if (userDB.createStatement(
+        "DELETE FROM info WHERE file = \'" + id + "\'"
+    ) == false) {
+        std::cerr << "FAilure creating delete statement" << std::endl;
+    }
+    userDB.nextRow();
+    return true;
 }
 

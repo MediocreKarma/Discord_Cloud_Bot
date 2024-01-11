@@ -1,5 +1,4 @@
-#ifndef _UTILS__
-#define _UTILS__
+#pragma once
 
 #include <unordered_map>
 #include <unordered_set>
@@ -37,5 +36,3 @@ namespace Files {
     static inline const std::string LOGIN_FILE = PATH + "login.sqlite3";
     static inline const std::string SQL_APPEND = "USER_SQL_";
 }
-
-#endif

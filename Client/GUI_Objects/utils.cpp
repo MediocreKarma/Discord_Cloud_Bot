@@ -55,26 +55,3 @@ DirectoryTree buildFilesystem(const int sd) {
     }
     return DirectoryTree::buildTree(treeString);
 }
-
-// need ref, don't copy strings of 25MB
-std::string& encrypt(std::string& data, const std::string& encryptionKey) {
-    for (size_t i = 0; i < data.size(); ++i) {
-        data[i] ^= encryptionKey[i % encryptionKey.size()];
-    }
-    return data;
-}
-
-std::string& decrypt(std::string& data, const std::string& encryptionKey) {
-    return encrypt(data, encryptionKey);
-}
-
-sf::RoundedRectangleShape& GUI::centerOrigin(sf::RoundedRectangleShape& rrect) {
-    rrect.setOrigin(rrect.getSize().x / 2, rrect.getSize().y / 2);
-    return rrect;
-}
-
-sf::Text& GUI::centerOrigin(sf::Text& txt) {
-    sf::FloatRect rect = txt.getGlobalBounds();
-    txt.setOrigin(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    return txt;
-}

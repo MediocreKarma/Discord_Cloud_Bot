@@ -387,7 +387,7 @@ std::string getEmailConfirmationCode(sf::RenderWindow& window, bool wrongCodeEnt
     return "";
 }
 
-bool LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
+std::string LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
     ClientMessage cmessage;
     memset(&cmessage, 0, sizeof(cmessage));
     ServerMessage smessage;
@@ -397,7 +397,7 @@ bool LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
     while (true) {
         auto [email, password, signup] = getUserInfo(window, wrongLogin, wrongSignup);
         if (!window.isOpen()) {
-            return false;
+            return "";
         }
         loadingMessage(window);
         strncpy(cmessage.content.signData.email,   email.c_str(), 64);
@@ -411,13 +411,13 @@ bool LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
         }
         if (Communication::write(sd, &cmessage, sizeof(cmessage)) == false) {
             perror("Write to server failed, connection is dead");
-            return false;
+            return "";
         }
         std::cout << "Wrote message to server" << std::endl;
         if (Communication::read(sd, &smessage, sizeof(smessage)) == false) {
             // unreachable error, if it occurs there is a critical issue
             perror("Error using read");
-            return false;
+            return "";
         }
         std::cout << "Received response from server" << std::endl;
         if (signup) {
@@ -435,7 +435,7 @@ bool LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
             }
             if (smessage.type != ServerMessage::RequestCode) {
                 std::cerr << "Invalid transmission\n";
-                return false;
+                return "";
             }
             cmessage.type = ClientMessage::SignUpCode;
             bool wrongCodeEntered = false;
@@ -444,19 +444,19 @@ bool LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
                 // Getting email confirmation code
                 std::string code = getEmailConfirmationCode(window, wrongCodeEntered);
                 if (!window.isOpen()) {
-                    return false;
+                    return "";
                 }
                 std::cout << "\'" + code + "\'" << std::endl;
                 strncpy(cmessage.content.signData.signCode, code.c_str(), 6);
                 if (Communication::write(sd, &cmessage, sizeof(cmessage)) == -1) {
                     perror("Write to server failed, connection is dead");
-                    return false;
+                    return "";
                 }
                 std::cout << "Wrote code to server" << std::endl;
                 if (Communication::read(sd, &smessage, sizeof(smessage)) == -1) {
                     // unreachable error, if it occurs there is a critical issue
                     perror("Error using read");
-                    return false;
+                    return "";
                 }
             }
             // signup succesful
@@ -478,11 +478,11 @@ bool LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) {
             }
             else if (smessage.type != ServerMessage::OK) {
                 std::cout << "Invalid transmission" << std::endl;
-                return false;
+                return "";
             }
             std::cout << "Logged in succesfully" << std::endl;
-            return true;
+            return email;
         }
     }
-    return false;
+    return "";
 }

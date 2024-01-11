@@ -1,5 +1,4 @@
-#ifndef _TEXT_BOX__
-#define _TEXT_BOX__
+#pragma once
 
 #include "Buttons.hpp"
 #include <chrono>
@@ -62,5 +61,3 @@ private:
     void setText();
     void internalType(char ch);
 };
-
-#endif 

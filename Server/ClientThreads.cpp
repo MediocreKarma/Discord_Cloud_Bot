@@ -84,6 +84,11 @@ void clientHandler(
                 }
                 break;
             case ClientMessage::RequestFileTree:
+                if (!loggedIn) {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::WrongLogin;
+                    break;
+                }
                 if (Request::sendTreeFile(client, userManagerFiles->tree)) {
                     std::cout << "File Tree Sent" << std::endl;
                 }
@@ -92,6 +97,11 @@ void clientHandler(
                 }
                 break;
             case ClientMessage::FileUpload: {
+                if (!loggedIn) {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::WrongLogin;
+                    break;
+                }
                 std::cout << "File upload requested" << std::endl;
                 bool newUpdate = FileTransfer::receiveFile(
                     client,
@@ -111,6 +121,11 @@ void clientHandler(
                 break;
             }
             case ClientMessage::FileDownload:
+                if (!loggedIn) {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::WrongLogin;
+                    break;
+                }
                 std::cout << "Download requested" << std::endl;
                 if (FileTransfer::sendFile(
                     client,
@@ -125,8 +140,33 @@ void clientHandler(
                     smessage.error = ServerMessage::InternalError;
                 }
                 break;
+            case ClientMessage::UpdateFileTree:
+                if (!loggedIn) {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::WrongLogin;
+                    break;
+                }
+                if (FileTransfer::updateFileTree(client, *userManagerFiles, cmessage.content.file.size)) {
+                    smessage.type = ServerMessage::OK;
+                } 
+                else {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::InternalError;
+                }
+                break;
             case ClientMessage::FileDelete:
-                
+                if (!loggedIn) {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::WrongLogin;
+                    break;
+                }
+                if (Request::deleteFile(client, cmessage.content.file.id, userManagerFiles->db, discord)) {
+                    smessage.type = ServerMessage::OK;
+                }
+                else {
+                    smessage.type = ServerMessage::Error;
+                    smessage.error = ServerMessage::InternalError;
+                }
                 break;
         }
         cmessage.type = ClientMessage::Empty;
