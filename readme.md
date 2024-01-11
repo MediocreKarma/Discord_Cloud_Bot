@@ -14,11 +14,11 @@ make
 Additionally, in order to run the program, a special argument must be provided
 to the server function, or placed in the `resources` sub-directory with the name
 `secrets.config`. This file must be formatted in the following manner.
-"
+
 email=my.email.addres@abc.def
 password=1111 2222 3333 4444
 bot_token=YOUR BOT TOKEN
 guild_snowflake=YOUR GUILD SNOWFLAKE
-"
+
 
 For gmail addresses, an app password is required.
