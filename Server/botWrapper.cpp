@@ -68,18 +68,20 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const File& file
         .set_content(code)
         .add_file(file.name, file.body);
     bot.message_create(message);
-    auto start = std::chrono::steady_clock::now();
-    auto stop  = start;
-    // 90 second upload time is maximum allowed
-    while (std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() < 90) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        stop = std::chrono::steady_clock::now();
-        std::lock_guard<std::mutex> lock(uploadMutex);
-        auto it = messageInfo.find(code);
-        if (it != messageInfo.end()) {
-            dpp::snowflake flake = it->second;
-            messageInfo.erase(it);
-            return flake;
+    // 60 * 3 second upload time is maximum allowed
+    for (int i = 0; i < 3; ++i){
+        auto start = std::chrono::steady_clock::now();
+        auto stop  = start;
+        while (std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() < 60) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            stop = std::chrono::steady_clock::now();
+            std::lock_guard<std::mutex> lock(uploadMutex);
+            auto it = messageInfo.find(code);
+            if (it != messageInfo.end()) {
+                dpp::snowflake flake = it->second;
+                messageInfo.erase(it);
+                return flake;
+            }
         }
     }
     return 0;
@@ -97,16 +99,20 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vecto
     bot.message_create(message);
     auto start = std::chrono::steady_clock::now();
     auto stop  = start;
-    // 90 second upload time is maximum allowed
-    while (std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() < 90) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        stop = std::chrono::steady_clock::now();
-        std::lock_guard<std::mutex> lock(uploadMutex);
-        auto it = messageInfo.find(code);
-        if (it != messageInfo.end()) {
-            dpp::snowflake flake = it->second;
-            messageInfo.erase(it);
-            return flake;
+    // 60 * 2 second upload time is maximum allowed
+    for (int i = 0; i < 2; ++i){
+        auto start = std::chrono::steady_clock::now();
+        auto stop  = start;
+        while (std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() < 50) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            stop = std::chrono::steady_clock::now();
+            std::lock_guard<std::mutex> lock(uploadMutex);
+            auto it = messageInfo.find(code);
+            if (it != messageInfo.end()) {
+                dpp::snowflake flake = it->second;
+                messageInfo.erase(it);
+                return flake;
+            }
         }
     }
     return 0;
