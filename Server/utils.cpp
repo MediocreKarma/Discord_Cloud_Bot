@@ -1,7 +1,6 @@
 #include "utils.hpp"
 #include <iostream>
 
-
 std::string passwordHash(const std::string& saltedPassword) {
     // verify if this number is reasonable or not?
     constexpr size_t ITERATIONS = 1'000'000;

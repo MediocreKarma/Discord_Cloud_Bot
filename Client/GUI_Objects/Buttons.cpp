@@ -9,6 +9,7 @@
 RoundedRectangleTextShape::RoundedRectangleTextShape(const sf::RoundedRectangleShape& _shape, const sf::Text& _text, bool _leftAlign) :
     text(), shape(_shape), leftAlign(_leftAlign) {
     text.setFont(*_text.getFont());
+    text.setCharacterSize(_text.getCharacterSize());
     setString(_text.getString());
     shape.setFillColor(Colors::Gray);
     shape.setOutlineThickness(1);

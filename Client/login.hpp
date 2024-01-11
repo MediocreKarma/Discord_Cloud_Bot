@@ -17,6 +17,8 @@ namespace LoginScreen {
         bool signup;
     };
 
+    std::string getEmailConfirmationCode(sf::RenderWindow& window, bool ceva);
+
     std::string loginProcedure(sf::RenderWindow& window, int sd);
 
 };

@@ -15,6 +15,9 @@
 
 namespace Request {
 
+inline std::unordered_set<std::string> loggedEmails;
+inline std::mutex loggedMutex;
+
 struct UserInfo {
     std::string email;
     dpp::snowflake managerFile;

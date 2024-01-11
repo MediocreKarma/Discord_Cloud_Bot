@@ -30,7 +30,7 @@ std::array<dpp::snowflake, 3> getChannelSnowflakes(dpp::cluster& bot, const dpp:
 
 BotWrapper::BotWrapper(const std::string& token, const dpp::snowflake guild) : 
     bot(token, dpp::i_message_content | dpp::i_default_intents), uploadMutex(), snowflakes() {
-    bot.on_log(dpp::utility::cout_logger());
+    //bot.on_log(dpp::utility::cout_logger());
     bot.on_message_create([&messInfo = this->messageInfo, &uMutex = this->uploadMutex] (const dpp::message_create_t& message) {
         std::lock_guard<std::mutex> lockGuard(uMutex);
         messInfo[message.msg.content] = message.msg.id;
@@ -68,8 +68,12 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const File& file
         .set_content(code)
         .add_file(file.name, file.body);
     bot.message_create(message);
-    while (true) {
+    auto start = std::chrono::steady_clock::now();
+    auto stop  = start;
+    // 90 second upload time is maximum allowed
+    while (std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() < 90) {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        stop = std::chrono::steady_clock::now();
         std::lock_guard<std::mutex> lock(uploadMutex);
         auto it = messageInfo.find(code);
         if (it != messageInfo.end()) {
@@ -78,6 +82,7 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const File& file
             return flake;
         }
     }
+    return 0;
 }
 
 dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vector<File>& files) {
@@ -90,8 +95,12 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vecto
         message.add_file(filename, body);
     }
     bot.message_create(message);
-    while (true) {
+    auto start = std::chrono::steady_clock::now();
+    auto stop  = start;
+    // 90 second upload time is maximum allowed
+    while (std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() < 90) {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        stop = std::chrono::steady_clock::now();
         std::lock_guard<std::mutex> lock(uploadMutex);
         auto it = messageInfo.find(code);
         if (it != messageInfo.end()) {
@@ -100,6 +109,7 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vecto
             return flake;
         }
     }
+    return 0;
 }
 
 std::vector<BotWrapper::File> BotWrapper::download(const dpp::snowflake message, const dpp::snowflake channel) {

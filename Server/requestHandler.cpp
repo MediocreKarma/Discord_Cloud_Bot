@@ -54,7 +54,7 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
     }
     std::cout << "Logged in" << std::endl;
     std::vector<BotWrapper::File> contents = discord.download(res, discord.channel(BotWrapper::USER_INFO));
-    std::string dbData = "", treeData = "\0";
+    std::string dbData = "", treeData = "";
     for (BotWrapper::File& file : contents) {
         if (file.name == FILE_MANAGER_NAME) {
             dbData = std::move(file.body);
@@ -87,6 +87,13 @@ std::pair<std::unique_ptr<Request::UserInfo>, ServerMessage> Request::signIn(
     }
     info->db.nextRow();
     info->db.unlock();
+    loggedMutex.lock();
+    if (loggedEmails.contains(email)) {
+        loggedMutex.unlock();
+        return {nullptr, {ServerMessage::Error, ServerMessage::EmailAlreadyInUse, 0}};
+    }
+    loggedEmails.insert(email);
+    loggedMutex.unlock();
     std::cout << "Successful sign in" << std::endl;
     return {std::move(info), {ServerMessage::OK, ServerMessage::NoError, 0}};
 }
@@ -206,8 +213,6 @@ bool Request::sendTreeFile(const int client, const std::string& encoding) {
 }
 
 void Request::updateDiscord(UserInfo& info, SQL_DB& loginDB, BotWrapper& discord) {
-    // delete old files
-    discord.remove(info.managerFile, discord.channel(BotWrapper::USER_INFO));
     dpp::snowflake updateSf = discord.upload(
         discord.channel(BotWrapper::USER_INFO),
         {
@@ -217,16 +222,27 @@ void Request::updateDiscord(UserInfo& info, SQL_DB& loginDB, BotWrapper& discord
     );
     // update login db
     loginDB.lock();
-    loginDB.createStatement(
+    if (loginDB.createStatement(
         std::string("UPDATE login ") +
         "SET files_id = \'" + updateSf.str() + "\' " +
         "WHERE files_id = \'" + info.managerFile.str() + "\';"
-    );
-    loginDB.nextRow();
+    ) == false) {
+        std::cerr << "Failure to create update" << std::endl;
+        loginDB.unlock();
+        return;
+    }
+    if (loginDB.nextRow() == false) {
+        std::cerr << "Failure to update db" << std::endl;
+        loginDB.unlock();
+        return;
+    }
     loginDB.unlock();
+    // delete old files
+    discord.remove(info.managerFile, discord.channel(BotWrapper::USER_INFO));
 }
 
 bool Request::deleteFile(int client, const std::string& id, SQL_DB& userDB, BotWrapper& discord) {
+    userDB.lock();
     if (userDB.createStatement(
         "SELECT data FROM info WHERE file = \'" + id + "\';"
     ) == false) {
@@ -236,10 +252,11 @@ bool Request::deleteFile(int client, const std::string& id, SQL_DB& userDB, BotW
         std::cerr << "No such file" << std::endl;
     }
     bool ok = true;
-    std::string strIDs = userDB.extract<std::string>(0);
-    for (size_t i = 0; i * 8 < strIDs.size(); i += 8) {
+    std::stringstream ss(userDB.extract<std::string>(0));
+    userDB.unlock();
+    while (ss.good()) {
         uint64_t snowflake = 0;
-        memcpy(&snowflake, strIDs.c_str() + i, 8);
+        ss >> snowflake;
         if (discord.remove(snowflake, discord.channel(BotWrapper::DATA)) == false) {
             ok = false;
             std::cerr << "Failed to delete file" << std::endl;
@@ -248,12 +265,14 @@ bool Request::deleteFile(int client, const std::string& id, SQL_DB& userDB, BotW
     if (!ok) {
         return false;
     }
+    userDB.lock();
     if (userDB.createStatement(
         "DELETE FROM info WHERE file = \'" + id + "\'"
     ) == false) {
-        std::cerr << "FAilure creating delete statement" << std::endl;
+        std::cerr << "Failure creating delete statement" << std::endl;
     }
     userDB.nextRow();
+    userDB.unlock();
     return true;
 }
 

@@ -137,8 +137,8 @@ void FileTransfer::sendFile(int sd, const std::string& filepath, const Directory
 void FileTransfer::deleteFile(int sd, const DirectoryTree& root, DirectoryTree& parent, size_t index) {
     // verify if last link to file
     if (root.countLinks(parent.child(index).id()) > 1) {
-        std::cout << "Soft link deletion" << std::endl;
         parent.erase(index);
+        std::cout << "Soft link deletion" << std::endl;
         return;
     }
     ClientMessage cmessage = {ClientMessage::FileDelete};

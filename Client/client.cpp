@@ -114,7 +114,8 @@ int main(int argc, char** argv) {
                     else {
                         FileTransfer::deleteFile(sd, root, *current, index);
                         FileTransfer::updateFileTree(sd, root);
-                    }   
+                    }
+                    selected = -1;
                     break;
                 }
                 case GUI::UserRequests::Quit:

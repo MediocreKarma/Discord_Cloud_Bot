@@ -65,22 +65,31 @@ bool FileTransfer::receiveFile(
         std::string indexStr = std::to_string(index++);
         indexStr = std::string(5 - indexStr.size(), '0') + indexStr;
         const std::string part_filename = id + "_" + indexStr;
-        uint64_t val = discord.upload(discord.channel(BotWrapper::DATA), {part_filename, chunk});
-        fileparts.resize(fileparts.size() + 8);
-        memcpy(fileparts.data() + fileparts.size() - 8, &val, 8);
+        dpp::snowflake val = discord.upload(discord.channel(BotWrapper::DATA), {part_filename, chunk});
+        if (val == 0) {
+            goto deleteFiles;
+        }
+        else {
+            fileparts += val.str() + " ";
+        }
         if (Communication::write(client, &smsg, sizeof(smsg)) == false) {
             perror("Could not write to client");
             goto deleteFiles;
         }
     }
+    fileparts.pop_back();
     std::cout << "Finished upload" << std::endl;
     // created all parts, now add to db
-    info.db.lock(); 
-    info.db.createStatement(
+    info.db.lock();
+    if (info.db.createStatement(
         std::string("INSERT INTO info (file, data) ") +
         "VALUES(\'" + id + "\', \'" + fileparts + "\');"
-    );
-    info.db.nextRow();
+    ) == false) {
+        std::cerr << "Statement to insert failed" << std::endl;
+    }
+    if (info.db.nextRow() == false) {
+        std::cerr << "Failure to insert" << std::endl;
+    }
     info.db.unlock();
 
     // send file id
@@ -122,17 +131,16 @@ bool FileTransfer::receiveFile(
     return true;
 deleteFiles:
     std::cerr << "Error encountered, deleting files" << std::endl;
+    std::stringstream ss(fileparts);
     for (size_t i = 0; i * 8 < fileparts.size(); ++i) {
         uint64_t id = 0;
-        memcpy(&id, fileparts.data() + i * 8, 8);
-        dpp::snowflake snowflake = id;
-        discord.remove(snowflake, discord.channel(BotWrapper::DATA));
+        ss >> id;
+        discord.remove(id, discord.channel(BotWrapper::DATA));
     }
     info.db.lock();
     // failure is irrelevant
     info.db.createStatement(
-        std::string("DELETE FROM info where ") +
-        "file = " + id + ";"
+        std::string("DELETE FROM info WHERE ") + "file = \'" + id + "\';"
     );
     info.db.nextRow();
     info.db.unlock();
@@ -155,11 +163,13 @@ bool FileTransfer::sendFile(int sd, BotWrapper& discord, Request::UserInfo& info
         "SELECT data FROM info WHERE file = \'" + fileID + "\';"
     );
     info.db.nextRow();
-    std::string fileparts = info.db.extract<std::string>(0);
+    std::stringstream ss(info.db.extract<std::string>(0));
     info.db.unlock();
-    for (size_t i = 0; i * 8 < fileparts.size(); ++i) {
+    size_t i = 0;
+    while (ss.good()) {
         uint64_t id = 0;
-        memcpy(&id, fileparts.c_str() + i * 8, 8);
+        ss >> id;
+        std::cout << id << std::endl;
         dpp::snowflake snowflake = id;
         std::vector<BotWrapper::File> files = discord.download(snowflake, discord.channel(BotWrapper::DATA));
         if (files.size() != 1) {

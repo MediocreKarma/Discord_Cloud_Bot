@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
     // no reason this to fail
     loginDB.nextRow();
     loginDB.unlock();
+    std::cout << "Polling for clients" << std::endl;
     while (true) {
         // cleanup clients
         socklen_t length = sizeof(from);
@@ -60,17 +61,14 @@ int main(int argc, char* argv[]) {
             pollfd{sd, POLLIN, 0}, 
             pollfd{STDIN_FILENO, POLLIN, 0}
         };
-        std::cout << "Polling for clients" << std::endl;
         int pollResult = poll(polledFDs.data(), polledFDs.size(), 60 * 1000);
         if (pollResult == -1) {
             perror("Error using poll");
             continue;
         }
         if (pollResult == 0) {
-            std::cout << "No poll found" << std::endl;
             continue;
         }
-        std::cout << "Poll got: " << pollResult << std::endl;
         if (polledFDs[STDIN_INDEX].revents & POLLIN) {
             std::cout << "Poll found a stdin input: ";
             std::string input;
@@ -91,7 +89,6 @@ int main(int argc, char* argv[]) {
             }
         }
         if (!(polledFDs[SD_INDEX].revents & POLLIN)) {
-            std::cout << "Poll did not find a client connection" << std::endl;
             continue;
         }
         std::cout << "Found a client" << std::endl;
@@ -111,15 +108,15 @@ int main(int argc, char* argv[]) {
     clientData.terminate();
     clientData.trim();
     close(sd);
-    if (loginMessageSnowflake != 0) {
-        discord.remove(loginMessageSnowflake, discord.channel(BotWrapper::LOG_INFO));
-    }
     if (saveRequest) {
+        if (loginMessageSnowflake != 0) {
+            discord.remove(loginMessageSnowflake, discord.channel(BotWrapper::LOG_INFO));
+        }
         discord.upload(
             discord.channel(BotWrapper::LOG_INFO), 
             {
                 Files::LOGIN_FILE.substr(Files::LOGIN_FILE.find_last_of('/') + 1), 
-                std::move(dpp::utility::read_file(Files::LOGIN_FILE))
+                dpp::utility::read_file(Files::LOGIN_FILE)
             }
         );
     }

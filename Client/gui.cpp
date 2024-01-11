@@ -291,9 +291,9 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     }
     drawAlways.push_back(std::ref<sf::Drawable>(titleText));
     std::array<RoundedRectangleTextShape, 3> fileHeader = {
-        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 9.f / 16, 50}), sf::Text("File name", GUI::Font, 40)),
-        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 1.f / 16, 50}), sf::Text("Type", GUI::Font, 40)),
-        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 1.6f / 16, 50}), sf::Text("Size", GUI::Font, 40)),
+        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 9.f / 16, 50}), sf::Text("File name", GUI::Font, 30)),
+        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 1.f / 16, 50}), sf::Text("Type", GUI::Font, 30)),
+        RoundedRectangleTextShape(sf::RoundedRectangleShape({window.getSize().x * 1.6f / 16, 50}), sf::Text("Size", GUI::Font, 30)),
     };
     for (auto& shape : fileHeader) {
         shape.setOrigin(
@@ -314,7 +314,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         window.getSize().x / 2 + fileHeader[0].getSize().x / 2 + fileHeader[2].getSize().x / 2,
         FILE_HEIGHT - 50
     );
-    sf::Text activePath = {"Path: \'" + current.path() + "\'", GUI::Font, 40};
+    sf::Text activePath = {"Path: \'" + current.path() + "\'", GUI::Font, 30};
     activePath.setFillColor(sf::Color::Black);
     {
         sf::FloatRect fr = activePath.getGlobalBounds();
@@ -327,7 +327,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
     std::vector<RoundedRectangleTextShape> sizeInfo;
     for (size_t i = 0; i < current.childrenSize(); ++i) {
         auto& childFile = current.child(current.childrenSize() - i - 1);
-        fileSquares.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 9.f / 16, 50}), sf::Text(childFile.name(), GUI::Font, 40), true);
+        fileSquares.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 9.f / 16, 50}), sf::Text(childFile.name(), GUI::Font, 30), true);
         fileSquares.back().setOrigin(
             fileSquares.back().getSize().x / 2,
             fileSquares.back().getSize().y / 2
@@ -338,7 +338,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         );
         fileSquares.back().setShapeFillColor(Colors::LightGray);
         std::string info = childFile.isDirectory() ? "Dir" : "File";
-        fileInfo.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 1.f / 16, 50}), sf::Text(info, GUI::Font, 40));
+        fileInfo.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 1.f / 16, 50}), sf::Text(info, GUI::Font, 30));
         fileInfo.back().setOrigin(
             fileInfo.back().getSize().x / 2,
             fileInfo.back().getSize().y / 2
@@ -349,7 +349,7 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
         );
         fileInfo.back().setShapeFillColor(Colors::LightGray);
         std::string size = sizeToByteConversion(childFile.size());
-        sizeInfo.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 1.6f / 16, 50}), sf::Text(size, GUI::Font, 40), true);
+        sizeInfo.emplace_back(sf::RoundedRectangleShape({window.getSize().x * 1.6f / 16, 50}), sf::Text(size, GUI::Font, 30), true);
         sizeInfo.back().setOrigin(
             sizeInfo.back().getSize().x / 2,
             sizeInfo.back().getSize().y / 2
@@ -424,10 +424,24 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                     }
                     if (uploadButton.hit(mouse)) {
                         std::string filePath = userInputString("Add file to cloud", "Enter path here", window);
+                        if (filePath == std::string(1, '\0')) {
+                            break;
+                        }
                         std::cout << "Input is: \'" << filePath << '\'' <<  std::endl;
+                        std::string nameOnly = filePath.substr(filePath.find_last_of('/') + 1);
+                        bool valid = true;
+                        for (size_t i = 0; i < current.childrenSize() && valid; ++i) {
+                            if (current.child(i).name() == nameOnly) {
+                                confirmationWindow("Error", "A file with the same name already exists", window);
+                                valid = false;
+                            }
+                        }
+                        if (!valid) {
+                            break;
+                        }
                         if (!std::filesystem::is_regular_file(filePath)) {
-                            //std::cerr << "Non-file type" << std::endl;
-
+                            confirmationWindow("Error", "Directory or non-existent file is not allowed", window);
+                            break;
                         }
                         return {UserRequests::Upload, filePath};
                     }
@@ -445,6 +459,15 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                         );
                         if (name != std::string(1, '\0')) {
                             return {UserRequests::CreateDirectory, name};
+                        }
+                    }
+                    else if (pasteButton.hit(mouse) && clipboard != nullptr) {
+                        std::string filename = clipboard->name();
+                        if (filename.size() > 30) {
+                            filename = filename.substr(0, 27) + "...";
+                        }
+                        if (confirmationWindow("Clipboard", "Paste \'" + filename + "\'?", window)) {
+                            return {UserRequests::Paste, std::monostate()};
                         }
                     }
                     else if (selected != -1) {
@@ -489,16 +512,6 @@ GUI::UserRequests GUI::currentDirectoryRequest(sf::RenderWindow& window, Directo
                             }
                             if (confirmationWindow("Clipboard", "Cut \'" + filename + "\'", window)) {
                                 return {UserRequests::Cut, std::monostate()};
-                            }
-                        }
-                        // add child
-                        if (pasteButton.hit(mouse) && clipboard != nullptr) {
-                            std::string filename = clipboard->name();
-                            if (filename.size() > 20) {
-                                filename = filename.substr(0, 17) + "...";
-                            }
-                            if (confirmationWindow("Clipboard", "Paste \'" + filename + "\'?", window)) {
-                                return {UserRequests::Paste, std::monostate()};
                             }
                         }
                         // go into dir

@@ -87,7 +87,7 @@ void clientHandler(
                 if (!loggedIn) {
                     smessage.type = ServerMessage::Error;
                     smessage.error = ServerMessage::WrongLogin;
-                    break;
+                    goto endHandler;
                 }
                 if (Request::sendTreeFile(client, userManagerFiles->tree)) {
                     std::cout << "File Tree Sent" << std::endl;
@@ -100,7 +100,7 @@ void clientHandler(
                 if (!loggedIn) {
                     smessage.type = ServerMessage::Error;
                     smessage.error = ServerMessage::WrongLogin;
-                    break;
+                    goto endHandler;
                 }
                 std::cout << "File upload requested" << std::endl;
                 bool newUpdate = FileTransfer::receiveFile(
@@ -111,7 +111,7 @@ void clientHandler(
                     std::string(cmessage.content.file.alias)
                 );
                 if (newUpdate) {
-                    updated |= true;
+                    updated = true;
                     smessage.type = ServerMessage::OK;
                 }
                 else {
@@ -124,7 +124,7 @@ void clientHandler(
                 if (!loggedIn) {
                     smessage.type = ServerMessage::Error;
                     smessage.error = ServerMessage::WrongLogin;
-                    break;
+                    goto endHandler;
                 }
                 std::cout << "Download requested" << std::endl;
                 if (FileTransfer::sendFile(
@@ -144,10 +144,12 @@ void clientHandler(
                 if (!loggedIn) {
                     smessage.type = ServerMessage::Error;
                     smessage.error = ServerMessage::WrongLogin;
-                    break;
+                    goto endHandler;
                 }
+                std::cout << "Tree file update requested" << std::endl;
                 if (FileTransfer::updateFileTree(client, *userManagerFiles, cmessage.content.file.size)) {
                     smessage.type = ServerMessage::OK;
+                    updated = true;
                 } 
                 else {
                     smessage.type = ServerMessage::Error;
@@ -158,10 +160,12 @@ void clientHandler(
                 if (!loggedIn) {
                     smessage.type = ServerMessage::Error;
                     smessage.error = ServerMessage::WrongLogin;
-                    break;
+                    goto endHandler;
                 }
+                std::cout << "Delete requested" << std::endl;
                 if (Request::deleteFile(client, cmessage.content.file.id, userManagerFiles->db, discord)) {
                     smessage.type = ServerMessage::OK;
+                    updated = true;
                 }
                 else {
                     smessage.type = ServerMessage::Error;
@@ -178,9 +182,15 @@ void clientHandler(
     }
 
 endHandler:
+    if (loggedIn) {
+        Request::loggedMutex.lock();
+        Request::loggedEmails.erase(userManagerFiles->email);
+        Request::loggedMutex.unlock();
+    }
     flag |= ClientThreads::TERMINATE_FLAG;
     if (updated) {
         Request::updateDiscord(*userManagerFiles, loginDB, discord);
+        flag |= ClientThreads::REQUEST_SAVE_FLAG;
     }
     std::cout << "Thread done" << std::endl;
     smessage = {ServerMessage::ServerQuit, ServerMessage::NoError};

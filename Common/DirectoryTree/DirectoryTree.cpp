@@ -156,6 +156,13 @@ DirectoryTree* DirectoryTree::parent() {
 }
 
 DirectoryTree DirectoryTree::clone() const {
+    if (isDirectory()) {
+        DirectoryTree cloneFile(id(), 0, name(), m_parent);
+        for (const auto& child : m_children) {
+            cloneFile.addChild(child->clone());
+        }
+        return cloneFile;
+    }
     DirectoryTree cloneFile(id(), size(), name(), m_parent);
     for (const auto& child : m_children) {
         cloneFile.addChild(child->clone());

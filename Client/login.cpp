@@ -115,10 +115,13 @@ void init(const sf::RenderWindow& window) {
 
 LoginScreen::UserInfoData getUserInfo(sf::RenderWindow& window, const bool wrongLogin = false, const bool wrongSignup = false) {
     init(window);
-    if (wrongLogin) {
+    if (wrongLogin && wrongSignup) {
+        errorOutput.setString("Email is already logged in");
+    }
+    else if (wrongLogin) {
         errorOutput.setString("You have entered an invalid username or password");
     }
-    if (wrongSignup) {
+    else if (wrongSignup) {
         errorOutput.setString("Invalid or already used email");
         return signUp(window);
     }
@@ -292,7 +295,7 @@ LoginScreen::UserInfoData signUp(sf::RenderWindow& window) {
     return LoginScreen::UserInfoData();
 }
 
-std::string getEmailConfirmationCode(sf::RenderWindow& window, bool wrongCodeEntered = false) {
+std::string LoginScreen::getEmailConfirmationCode(sf::RenderWindow& window, bool wrongCodeEntered = false) {
     init(window);
     if (wrongCodeEntered) {
         errorOutput.setString("You have entered the wrong code");
@@ -307,7 +310,7 @@ std::string getEmailConfirmationCode(sf::RenderWindow& window, bool wrongCodeEnt
     codeTextbox.setShapeFillColor(Colors::LightGray);
     const char alphabet[] = "0123456789";
     codeTextbox.setAlphabet(std::unordered_set<char>(alphabet, alphabet + sizeof(alphabet) / sizeof(char) - 1));
-    RoundedRectangleTextShape infoShape(sf::RoundedRectangleShape({0, 0}, 0, 0), sf::Text("Please be patient, the confirmation email\nmay take a few moments before arriving.", GUI::Font));
+    RoundedRectangleTextShape infoShape(sf::RoundedRectangleShape({2000, 0}, 0, 0), sf::Text("Please be patient, the confirmation email\nmay take a few moments before arriving.", GUI::Font));
     infoShape.setOrigin(infoShape.getSize().x / 2, infoShape.getSize().y / 2);
     infoShape.setPosition(
         window.getSize().x / 2,
@@ -472,6 +475,12 @@ std::string LoginScreen::loginProcedure(sf::RenderWindow& window, const int sd) 
                 continue;
             }
             // Server should not outright refuse login attempts
+            else if (smessage.type == ServerMessage::Error && smessage.error == ServerMessage::EmailAlreadyInUse) {
+                wrongLogin = true;
+                wrongSignup = true;
+                std::cout << ServerMessage::humanReadable(smessage.error) << std::endl;
+                continue;
+            }
             else if (smessage.type == ServerMessage::Error) {
                 std::cout << ServerMessage::humanReadable(smessage.error) << std::endl;
                 continue;
