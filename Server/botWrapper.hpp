@@ -2,6 +2,7 @@
 
 #include <dpp/dpp.h>
 #include <random>
+#include <unordered_set>
 
 class BotWrapper {
 public:

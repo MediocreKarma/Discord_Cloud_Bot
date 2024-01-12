@@ -43,6 +43,9 @@ dpp::snowflake BotWrapper::channel(const Channel chn) const {
     return snowflakes[static_cast<size_t>(chn)];
 }
 
+static std::mutex randMutex;
+static std::unordered_set<std::string> generatedCodes;
+
 std::string randString() {
     char alphabet[] =
         "0123456789"
@@ -52,13 +55,15 @@ std::string randString() {
     static std::random_device rd;
     static std::seed_seq ss = { rd(), rd(), rd(), rd() };
     static std::mt19937 rng(ss);
-    static std::mutex randMutex;
     std::lock_guard<std::mutex> lock(randMutex);
     std::uniform_int_distribution<size_t> uid(0, maxIndex);
     std::string result(8, '\0');
-    for (char& ch : result) {
-        ch = alphabet[uid(rng)];
-    }
+    do {
+        for (char& ch : result) {
+            ch = alphabet[uid(rng)];
+        }
+    } while (generatedCodes.contains(result));
+    generatedCodes.insert(result);
     return result;
 }
 
@@ -82,6 +87,7 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const File& file
             if (it != messageInfo.end()) {
                 dpp::snowflake flake = it->second;
                 messageInfo.erase(it);
+                generatedCodes.erase(code);
                 return flake;
             }
         }
@@ -105,7 +111,7 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vecto
     for (int i = 0; i < 2; ++i){
         auto start = std::chrono::steady_clock::now();
         auto stop  = start;
-        while (std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() < 50) {
+        while (std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() < 60) {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             stop = std::chrono::steady_clock::now();
             std::lock_guard<std::mutex> lock(uploadMutex);
@@ -113,6 +119,7 @@ dpp::snowflake BotWrapper::upload(const dpp::snowflake channel, const std::vecto
             if (it != messageInfo.end()) {
                 dpp::snowflake flake = it->second;
                 messageInfo.erase(it);
+                generatedCodes.erase(code);
                 return flake;
             }
         }
