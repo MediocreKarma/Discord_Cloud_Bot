@@ -22,6 +22,8 @@ std::string generateSalt() {
         "!@#$%^&*"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz"; 
+    static std::mutex randMutex;
+    std::lock_guard<std::mutex> lock(randMutex);
     std::uniform_int_distribution<size_t> uid(0, sizeof(alphabet) / sizeof(char) - 2);
     std::string salt(SALT_SIZE, '\0');
     for (char& c : salt) {
@@ -146,6 +148,8 @@ std::string generateFilename(const std::string& APPEND) {
     static const char alphabet[] = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz"; 
+    static std::mutex randMutex;
+    std::lock_guard<std::mutex> lock(randMutex);
     std::uniform_int_distribution<size_t> uid(0, sizeof(alphabet) / sizeof(char) - 2);
     std::string str(16, '\0');
     for (char& c : str) {

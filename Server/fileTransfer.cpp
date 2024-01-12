@@ -7,6 +7,8 @@ std::string generateStringNotInTree(const DirectoryTree& t) {
     static const char alphabet[] = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz";
+    static std::mutex randMutex;
+    std::lock_guard<std::mutex> lock(randMutex);
     std::uniform_int_distribution<size_t> uid(0, sizeof(alphabet) / sizeof(char) - 2);
     std::string code(DirectoryTree::ID_LEN, '\0');
     for (char& c : code) {

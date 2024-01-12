@@ -52,6 +52,8 @@ std::string randString() {
     static std::random_device rd;
     static std::seed_seq ss = { rd(), rd(), rd(), rd() };
     static std::mt19937 rng(ss);
+    static std::mutex randMutex;
+    std::lock_guard<std::mutex> lock(randMutex);
     std::uniform_int_distribution<size_t> uid(0, maxIndex);
     std::string result(8, '\0');
     for (char& ch : result) {

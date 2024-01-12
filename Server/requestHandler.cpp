@@ -103,6 +103,8 @@ std::string generateSignUpCode() {
     static std::seed_seq ss = { rd(), rd(), rd(), rd() };
     static std::mt19937 rng(ss);
     static std::uniform_int_distribution<char> uid('0', '9');
+    static std::mutex randMutex;
+    std::lock_guard<std::mutex> lock(randMutex);
     std::string code(6, '\0');
     for (char& ch : code) {
         ch = uid(rng);
